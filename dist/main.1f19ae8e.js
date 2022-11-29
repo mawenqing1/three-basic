@@ -36865,18 +36865,21 @@ scene.add(camera);
 // 添加物体
 //创建几何体
 var cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+//几何体材质
 var cubeMaterial = new THREE.MeshBasicMaterial({
   color: 0xffff00
 });
 var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+
+//修改物体位置
+// cube.position.set(5,0,0);
+
 scene.add(cube);
 
 //初始化渲染器
 var renderer = new THREE.WebGL1Renderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-
-// renderer.render(scene, camera);
 
 //创建轨道控制器
 var controls = new _OrbitControls.OrbitControls(camera, renderer.domElement);
@@ -36885,11 +36888,14 @@ var controls = new _OrbitControls.OrbitControls(camera, renderer.domElement);
 var axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
 function render() {
+  cube.position.x += 0.01;
+  if (cube.position.x > 5) {
+    cube.position.x = 0;
+  }
   renderer.render(scene, camera);
   requestAnimationFrame(render);
-  // controls.update();
+  controls.update();
 }
-
 render();
 },{"three":"../node_modules/three/build/three.module.js","three/examples/jsm/controls/OrbitControls":"../node_modules/three/examples/jsm/controls/OrbitControls.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
