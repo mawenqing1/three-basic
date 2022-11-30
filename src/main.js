@@ -40,7 +40,7 @@ scene.add(axesHelper);
 
 function render(time) {
     let t = time / 1000 % 5;
-    cube.position.x = t + 1;
+    cube.position.x = t;
     if(cube.position.x > 5) {
         cube.position.x = 0;
     }
@@ -48,9 +48,9 @@ function render(time) {
     // if(cube.scale.x > 5) {
     //     cube.scale.x = 1;
     // }
-    cube.rotation.x += Math.PI / 180;
-    cube.rotation.y += Math.PI / 180;
-    cube.rotation.z += Math.PI / 180;
+    cube.rotation.x = t + Math.PI / 180;
+    cube.rotation.y = t + Math.PI / 180;
+    cube.rotation.z = t + Math.PI / 180;
     renderer.render(scene, camera);
     requestAnimationFrame(render);
     controls.update();
