@@ -38,8 +38,10 @@ const controls = new OrbitControls(camera, renderer.domElement);
 const axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
 
-function render(time) {
-    let t = time / 1000 % 5;
+const clock = new THREE.Clock();
+
+function render() {
+    let t = clock.getElapsedTime() % 5;
     cube.position.x = t;
     if(cube.position.x > 5) {
         cube.position.x = 0;

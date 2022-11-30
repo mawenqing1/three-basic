@@ -36891,8 +36891,9 @@ var controls = new _OrbitControls.OrbitControls(camera, renderer.domElement);
 //添加坐标轴辅助器
 var axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
-function render(time) {
-  var t = time / 1000 % 5;
+var clock = new THREE.Clock();
+function render() {
+  var t = clock.getElapsedTime() % 5;
   cube.position.x = t;
   if (cube.position.x > 5) {
     cube.position.x = 0;
@@ -36934,7 +36935,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61395" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65448" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
