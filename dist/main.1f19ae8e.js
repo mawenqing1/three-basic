@@ -42291,10 +42291,14 @@ scene.add(axesHelper);
 var clock = new THREE.Clock();
 
 //动画
-_gsap.default.to(cube.position, {
+var animation1 = _gsap.default.to(cube.position, {
   x: 5,
   duration: 5,
   ease: "power1.inOut",
+  repeat: -1,
+  //重复次数
+  yoyo: true,
+  //delay 延时时间 
   onComplete: function onComplete() {
     console.log("动画完成");
   },
@@ -42302,10 +42306,20 @@ _gsap.default.to(cube.position, {
     console.log("动画开始");
   }
 });
+window.addEventListener("dblclick", function () {
+  if (animation1.isActive()) {
+    animation1.pause(); //暂停
+  } else {
+    animation1.resume(); //恢复
+  }
+});
+
 _gsap.default.to(cube.rotation, {
-  x: 5,
+  x: Math.PI * 2,
   duration: 5,
   ease: "power1.inOut",
+  repeat: -1,
+  yoyo: true,
   onComplete: function onComplete() {
     console.log("动画完成");
   },

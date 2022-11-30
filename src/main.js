@@ -50,10 +50,13 @@ scene.add(axesHelper);
 const clock = new THREE.Clock();
 
 //动画
-gsap.to(cube.position, {
+const animation1 = gsap.to(cube.position, {
     x: 5,
     duration: 5,
     ease: "power1.inOut",
+    repeat: -1,  //重复次数
+    yoyo: true,
+    //delay 延时时间 
     onComplete: () => {
         console.log("动画完成");
     },
@@ -62,10 +65,20 @@ gsap.to(cube.position, {
     },
 });
 
+window.addEventListener("dblclick", () => {
+    if(animation1.isActive()) {
+        animation1.pause();//暂停
+    } else {
+        animation1.resume(); //恢复
+    }
+})
+
 gsap.to(cube.rotation, {
-    x: 5,
+    x: Math.PI * 2,
     duration: 5,
     ease: "power1.inOut",
+    repeat: -1,
+    yoyo: true,
     onComplete: () => {
         console.log("动画完成");
     },
