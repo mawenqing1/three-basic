@@ -36891,8 +36891,9 @@ var controls = new _OrbitControls.OrbitControls(camera, renderer.domElement);
 //添加坐标轴辅助器
 var axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
-function render() {
-  cube.position.x += 0.01;
+function render(time) {
+  var t = time / 1000 % 5;
+  cube.position.x = t + 1;
   if (cube.position.x > 5) {
     cube.position.x = 0;
   }
