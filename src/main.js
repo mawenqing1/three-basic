@@ -1,5 +1,8 @@
 import * as THREE from "three";
+//轨道控制器
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+//动画库
+import gsap from "gsap";
 
 //创建场景
 const scene = new THREE.Scene();
@@ -38,7 +41,11 @@ const controls = new OrbitControls(camera, renderer.domElement);
 const axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
 
+//跟踪时间
 const clock = new THREE.Clock();
+
+//动画
+gsap.to()
 
 function render() {
     let t = clock.getElapsedTime() % 5;
