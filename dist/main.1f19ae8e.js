@@ -42291,20 +42291,41 @@ scene.add(axesHelper);
 var clock = new THREE.Clock();
 
 //动画
-_gsap.default.to();
-function render() {
-  var t = clock.getElapsedTime() % 5;
-  cube.position.x = t;
-  if (cube.position.x > 5) {
-    cube.position.x = 0;
+_gsap.default.to(cube.position, {
+  x: 5,
+  duration: 5,
+  ease: "power1.inOut",
+  onComplete: function onComplete() {
+    console.log("动画完成");
+  },
+  onStart: function onStart() {
+    console.log("动画开始");
   }
+});
+_gsap.default.to(cube.rotation, {
+  x: 5,
+  duration: 5,
+  ease: "power1.inOut",
+  onComplete: function onComplete() {
+    console.log("动画完成");
+  },
+  onStart: function onStart() {
+    console.log("动画开始");
+  }
+});
+function render() {
+  // let t = clock.getElapsedTime() % 5;
+  // cube.position.x = t;
+  // if(cube.position.x > 5) {
+  //     cube.position.x = 0;
+  // }
   // cube.scale.x += 0.01;
   // if(cube.scale.x > 5) {
   //     cube.scale.x = 1;
   // }
-  cube.rotation.x = t + Math.PI / 180;
-  cube.rotation.y = t + Math.PI / 180;
-  cube.rotation.z = t + Math.PI / 180;
+  // cube.rotation.x = t + Math.PI / 180;
+  // cube.rotation.y = t + Math.PI / 180;
+  // cube.rotation.z = t + Math.PI / 180;
   renderer.render(scene, camera);
   requestAnimationFrame(render);
   controls.update();
