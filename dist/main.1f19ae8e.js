@@ -36873,6 +36873,10 @@ var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
 
 //修改物体位置
 // cube.position.set(5,0,0);
+//缩放
+// cube.scale.set(3,2,1);
+//旋转
+// cube.rotation.set(Math.PI/4, 0, 0);
 
 scene.add(cube);
 
@@ -36892,6 +36896,13 @@ function render() {
   if (cube.position.x > 5) {
     cube.position.x = 0;
   }
+  // cube.scale.x += 0.01;
+  // if(cube.scale.x > 5) {
+  //     cube.scale.x = 1;
+  // }
+  cube.rotation.x += Math.PI / 180;
+  cube.rotation.y += Math.PI / 180;
+  cube.rotation.z += Math.PI / 180;
   renderer.render(scene, camera);
   requestAnimationFrame(render);
   controls.update();
@@ -36922,7 +36933,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50854" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61395" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
