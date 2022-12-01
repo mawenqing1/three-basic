@@ -44741,29 +44741,34 @@ scene.add(camera);
 
 // 添加物体
 //创建几何体
-var cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+// const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
 //几何体材质
-var cubeMaterial = new THREE.MeshBasicMaterial({
+// const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+// const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+// scene.add(cube);
+
+var geometry = new THREE.BufferGeometry();
+var vertices = new Float32Array([-1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0]);
+geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+var Material = new THREE.MeshBasicMaterial({
   color: 0xffff00
 });
-var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-
-//修改物体位置
-// cube.position.set(5,0,0);
-//缩放
-// cube.scale.set(3,2,1);
-//旋转
-// cube.rotation.set(Math.PI/4, 0, 0);
-
-scene.add(cube);
+var mesh = new THREE.Mesh(geometry, Material);
+scene.add(mesh);
 
 //gui 控制库
 var gui = new dat.GUI();
-gui.add(cube.position, "x").min(0).max(5).step(1).name("x轴坐标").onChange(function (value) {
-  // console.log("x:", value);
-}).onFinishChange(function (val) {
-  console.log(val);
-});
+// gui.add(cube.position, "x")
+//     .min(0)
+//     .max(5)
+//     .step(1)
+//     .name("x轴坐标")
+//     .onChange((value) => {
+//         // console.log("x:", value);
+//     })
+//     .onFinishChange((val) => {
+//         console.log(val);
+//     });
 var params = {
   color: "#ffff00",
   animation: function animation() {
@@ -44777,14 +44782,15 @@ var params = {
     }
   }
 };
-gui.addColor(params, 'color').onChange(function (val) {
-  console.log(val);
-  cube.material.color.set(val);
-});
-var folder = gui.addFolder("设置立方体");
-folder.add(cube.material, "wireframe").name("线框模式");
-folder.add(cube, "visible").name("是否显示");
-folder.add(params, 'animation').name('动画');
+// gui.addColor(params, 'color').onChange((val) => {
+//     console.log(val);
+//     cube.material.color.set(val)
+// });
+
+// const folder = gui.addFolder("设置立方体");
+// folder.add(cube.material, "wireframe").name("线框模式");
+// folder.add(cube,"visible").name("是否显示");
+// folder.add(params, 'animation').name('动画');
 
 //初始化渲染器
 var renderer = new THREE.WebGL1Renderer();
@@ -44804,34 +44810,34 @@ scene.add(axesHelper);
 var clock = new THREE.Clock();
 
 //动画
-var animation1 = _gsap.default.to(cube.position, {
-  x: 5,
-  duration: 5,
-  ease: "power1.inOut",
-  repeat: -1,
-  //重复次数
-  yoyo: true,
-  //delay 延时时间
-  onComplete: function onComplete() {
-    console.log("动画完成");
-  },
-  onStart: function onStart() {
-    console.log("动画开始");
-  }
-});
-var animation2 = _gsap.default.to(cube.rotation, {
-  x: Math.PI * 2,
-  duration: 5,
-  ease: "power1.inOut",
-  repeat: -1,
-  yoyo: true,
-  onComplete: function onComplete() {
-    console.log("动画完成");
-  },
-  onStart: function onStart() {
-    console.log("动画开始");
-  }
-});
+// const animation1 = gsap.to(cube.position, {
+//     x: 5,
+//     duration: 5,
+//     ease: "power1.inOut",
+//     repeat: -1,  //重复次数
+//     yoyo: true,
+//     //delay 延时时间
+//     onComplete: () => {
+//         console.log("动画完成");
+//     },
+//     onStart: () => {
+//         console.log("动画开始");
+//     },
+// });
+
+// const animation2 = gsap.to(cube.rotation, {
+//     x: Math.PI * 2,
+//     duration: 5,
+//     ease: "power1.inOut",
+//     repeat: -1,
+//     yoyo: true,
+//     onComplete: () => {
+//         console.log("动画完成");
+//     },
+//     onStart: () => {
+//         console.log("动画开始");
+//     },
+// });
 
 //全屏操作
 window.addEventListener("dblclick", function () {
@@ -44845,16 +44851,6 @@ window.addEventListener("dblclick", function () {
 function render() {
   // let t = clock.getElapsedTime() % 5;
   // cube.position.x = t;
-  // if(cube.position.x > 5) {
-  //     cube.position.x = 0;
-  // }
-  // cube.scale.x += 0.01;
-  // if(cube.scale.x > 5) {
-  //     cube.scale.x = 1;
-  // }
-  // cube.rotation.x = t + Math.PI / 180;
-  // cube.rotation.y = t + Math.PI / 180;
-  // cube.rotation.z = t + Math.PI / 180;
   renderer.render(scene, camera);
   requestAnimationFrame(render);
   controls.update();
