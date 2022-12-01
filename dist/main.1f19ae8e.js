@@ -42321,13 +42321,26 @@ var animation2 = _gsap.default.to(cube.rotation, {
     console.log("动画开始");
   }
 });
-window.addEventListener("dblclick", function () {
+window.addEventListener("dblclick", function (e) {
+  console.log(e);
   if (animation1.isActive()) {
     animation1.pause(); //暂停
     animation2.pause();
   } else {
     animation1.resume(); //恢复
     animation2.resume();
+  }
+});
+
+//全屏操作
+window.addEventListener("mousedown", function (e) {
+  if (e.buttons === 2) {
+    var fullScreenElement = document.fullscreenElement;
+    if (fullScreenElement) {
+      document.exitFullscreen();
+    } else {
+      renderer.domElement.requestFullscreen();
+    }
   }
 });
 function render() {

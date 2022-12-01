@@ -82,13 +82,26 @@ const animation2 = gsap.to(cube.rotation, {
     },
 });
 
-window.addEventListener("dblclick", () => {
+window.addEventListener("dblclick", (e) => {
+    console.log(e);
     if(animation1.isActive()) {
         animation1.pause();//暂停
         animation2.pause();
     } else {
         animation1.resume(); //恢复
         animation2.resume();
+    }
+});
+
+//全屏操作
+window.addEventListener("mousedown", (e) => {
+    if(e.buttons === 2) {
+        const fullScreenElement = document.fullscreenElement;
+        if(fullScreenElement) {
+            document.exitFullscreen();
+        } else {
+            renderer.domElement.requestFullscreen();
+        }
     }
 })
 
