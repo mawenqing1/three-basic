@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 //动画库
 import gsap from "gsap";
+import * as dat from "dat.gui";
 
 //创建场景
 const scene = new THREE.Scene();
@@ -34,6 +35,42 @@ const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
 
 scene.add(cube);
 
+//gui 控制库
+const gui = new dat.GUI();
+gui.add(cube.position, "x")
+    .min(0)
+    .max(5)
+    .step(1)
+    .name("x轴坐标")
+    .onChange((value) => {
+        // console.log("x:", value);
+    })
+    .onFinishChange((val) => {
+        console.log(val);
+    });
+const params = {
+    color: "#ffff00",
+    animation: () => {
+        //动画
+        if(animation1.isActive()) {
+            animation1.pause();
+            animation2.pause();
+        } else {
+            animation1.resume();
+            animation2.resume();
+        }
+    },
+}
+gui.addColor(params, 'color').onChange((val) => {
+    console.log(val);
+    cube.material.color.set(val)
+});
+
+const folder = gui.addFolder("设置立方体");
+folder.add(cube.material, "wireframe").name("线框模式");
+folder.add(cube,"visible").name("是否显示");
+folder.add(params, 'animation').name('动画');
+
 //初始化渲染器
 const renderer = new THREE.WebGL1Renderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -58,7 +95,7 @@ const animation1 = gsap.to(cube.position, {
     ease: "power1.inOut",
     repeat: -1,  //重复次数
     yoyo: true,
-    //delay 延时时间 
+    //delay 延时时间
     onComplete: () => {
         console.log("动画完成");
     },
@@ -66,7 +103,6 @@ const animation1 = gsap.to(cube.position, {
         console.log("动画开始");
     },
 });
-
 
 const animation2 = gsap.to(cube.rotation, {
     x: Math.PI * 2,
@@ -82,28 +118,28 @@ const animation2 = gsap.to(cube.rotation, {
     },
 });
 
-window.addEventListener("dblclick", (e) => {
-    console.log(e);
-    if(animation1.isActive()) {
-        animation1.pause();//暂停
-        animation2.pause();
-    } else {
-        animation1.resume(); //恢复
-        animation2.resume();
-    }
-});
+// window.addEventListener("dblclick", (e) => {
+//     console.log(e);
+//     if(animation1.isActive()) {
+//         animation1.pause();//暂停
+//         animation2.pause();
+//     } else {
+//         animation1.resume(); //恢复
+//         animation2.resume();
+//     }
+// });
 
 //全屏操作
 window.addEventListener("mousedown", (e) => {
-    if(e.buttons === 2) {
+    if (e.buttons === 2) {
         const fullScreenElement = document.fullscreenElement;
-        if(fullScreenElement) {
+        if (fullScreenElement) {
             document.exitFullscreen();
         } else {
             renderer.domElement.requestFullscreen();
         }
     }
-})
+});
 
 function render() {
     // let t = clock.getElapsedTime() % 5;
@@ -126,7 +162,7 @@ function render() {
 render();
 
 //自适应尺寸
-window.addEventListener('resize', () => {
+window.addEventListener("resize", () => {
     //更新相机摄像头
     camera.aspect = window.innerWidth / window.innerHeight;
     //更新摄像机投影矩阵
@@ -135,4 +171,4 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     //渲染器像素比例
     renderer.setPixelRatio(window.devicePixelRatio);
-})
+});
