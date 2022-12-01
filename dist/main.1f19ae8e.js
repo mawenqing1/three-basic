@@ -42282,6 +42282,8 @@ document.body.appendChild(renderer.domElement);
 
 //创建轨道控制器
 var controls = new _OrbitControls.OrbitControls(camera, renderer.domElement);
+//控制器阻尼
+controls.enableDamping = true;
 
 //添加坐标轴辅助器
 var axesHelper = new THREE.AxesHelper(5);
@@ -42306,15 +42308,7 @@ var animation1 = _gsap.default.to(cube.position, {
     console.log("动画开始");
   }
 });
-window.addEventListener("dblclick", function () {
-  if (animation1.isActive()) {
-    animation1.pause(); //暂停
-  } else {
-    animation1.resume(); //恢复
-  }
-});
-
-_gsap.default.to(cube.rotation, {
+var animation2 = _gsap.default.to(cube.rotation, {
   x: Math.PI * 2,
   duration: 5,
   ease: "power1.inOut",
@@ -42325,6 +42319,15 @@ _gsap.default.to(cube.rotation, {
   },
   onStart: function onStart() {
     console.log("动画开始");
+  }
+});
+window.addEventListener("dblclick", function () {
+  if (animation1.isActive()) {
+    animation1.pause(); //暂停
+    animation2.pause();
+  } else {
+    animation1.resume(); //恢复
+    animation2.resume();
   }
 });
 function render() {
@@ -42345,6 +42348,18 @@ function render() {
   controls.update();
 }
 render();
+
+//自适应尺寸
+window.addEventListener('resize', function () {
+  //更新相机摄像头
+  camera.aspect = window.innerWidth / window.innerHeight;
+  //更新摄像机投影矩阵
+  camera.updateProjectionMatrix();
+  //更新渲染器
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  //渲染器像素比例
+  renderer.setPixelRatio(window.devicePixelRatio);
+});
 },{"three":"../node_modules/three/build/three.module.js","three/examples/jsm/controls/OrbitControls":"../node_modules/three/examples/jsm/controls/OrbitControls.js","gsap":"../node_modules/gsap/index.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -42370,7 +42385,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65448" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53405" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

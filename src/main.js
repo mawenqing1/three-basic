@@ -41,6 +41,8 @@ document.body.appendChild(renderer.domElement);
 
 //创建轨道控制器
 const controls = new OrbitControls(camera, renderer.domElement);
+//控制器阻尼
+controls.enableDamping = true;
 
 //添加坐标轴辅助器
 const axesHelper = new THREE.AxesHelper(5);
@@ -65,15 +67,8 @@ const animation1 = gsap.to(cube.position, {
     },
 });
 
-window.addEventListener("dblclick", () => {
-    if(animation1.isActive()) {
-        animation1.pause();//暂停
-    } else {
-        animation1.resume(); //恢复
-    }
-})
 
-gsap.to(cube.rotation, {
+const animation2 = gsap.to(cube.rotation, {
     x: Math.PI * 2,
     duration: 5,
     ease: "power1.inOut",
@@ -86,6 +81,16 @@ gsap.to(cube.rotation, {
         console.log("动画开始");
     },
 });
+
+window.addEventListener("dblclick", () => {
+    if(animation1.isActive()) {
+        animation1.pause();//暂停
+        animation2.pause();
+    } else {
+        animation1.resume(); //恢复
+        animation2.resume();
+    }
+})
 
 function render() {
     // let t = clock.getElapsedTime() % 5;
@@ -106,3 +111,15 @@ function render() {
 }
 
 render();
+
+//自适应尺寸
+window.addEventListener('resize', () => {
+    //更新相机摄像头
+    camera.aspect = window.innerWidth / window.innerHeight;
+    //更新摄像机投影矩阵
+    camera.updateProjectionMatrix();
+    //更新渲染器
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    //渲染器像素比例
+    renderer.setPixelRatio(window.devicePixelRatio);
+})
