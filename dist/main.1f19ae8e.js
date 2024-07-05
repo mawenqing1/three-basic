@@ -55115,38 +55115,39 @@ var cubeGeometry = new THREE.BoxGeometry(15.5, 13.5, 1);
 var textureLoader = new THREE.TextureLoader();
 var texture = textureLoader.load('https://cdn.shopify.com/s/files/1/0741/5129/7333/files/exam-test.jpg');
 var materials = [new THREE.MeshBasicMaterial({
+  color: 0x51efe4,
   map: texture,
-  roughness: 50,
-  metalness: 0.5
+  roughness: 0.9,
+  metalness: 0
 }),
 // 正面
 new THREE.MeshBasicMaterial({
   map: texture,
-  roughness: 50,
-  metalness: 0.5
+  roughness: 0.9,
+  metalness: 0
 }),
 // 右
 new THREE.MeshBasicMaterial({
   map: texture,
-  roughness: 50,
-  metalness: 0.5
+  roughness: 0.9,
+  metalness: 0
 }),
 // 上面
 new THREE.MeshBasicMaterial({
   map: texture,
-  roughness: 50,
-  metalness: 0.5
+  roughness: 0.9,
+  metalness: 0
 }),
 // 下面
 new THREE.MeshBasicMaterial({
   map: texture,
-  roughness: 50,
-  metalness: 0.5
+  roughness: 0.9,
+  metalness: 0
 }),
 // 正面
 new THREE.MeshBasicMaterial() // 后
 ];
-// const cubeMaterial = new THREE.MeshBasicMaterial(materials);
+// const cubeMaterial = new THREE.MeshBasicMaterial();
 var cube = new THREE.Mesh(cubeGeometry, materials);
 scene.add(cube);
 
@@ -55301,7 +55302,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53178" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52849" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
