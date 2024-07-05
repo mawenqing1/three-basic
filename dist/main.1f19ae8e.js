@@ -44717,13 +44717,10382 @@ var index = {
 };
 var _default = index;
 exports.default = _default;
-},{}],"main.js":[function(require,module,exports) {
+},{}],"../node_modules/three/examples/jsm/nodes/core/constants.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.NodeUpdateType = exports.NodeType = exports.NodeShaderStage = void 0;
+var NodeShaderStage = {
+  VERTEX: 'vertex',
+  FRAGMENT: 'fragment'
+};
+exports.NodeShaderStage = NodeShaderStage;
+var NodeUpdateType = {
+  NONE: 'none',
+  FRAME: 'frame',
+  OBJECT: 'object'
+};
+exports.NodeUpdateType = NodeUpdateType;
+var NodeType = {
+  BOOLEAN: 'bool',
+  INTEGER: 'int',
+  FLOAT: 'float',
+  VECTOR2: 'vec2',
+  VECTOR3: 'vec3',
+  VECTOR4: 'vec4',
+  MATRIX3: 'mat3',
+  MATRIX4: 'mat4'
+};
+exports.NodeType = NodeType;
+},{}],"../node_modules/three/examples/jsm/nodes/core/NodeUtils.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getValueType = exports.getValueFromType = exports.getNodesKeys = exports.getCacheKey = void 0;
+var _three = require("three");
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct.bind(); } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+var getCacheKey = function getCacheKey(object) {
+  var cacheKey = '{';
+  if (object.isNode === true) {
+    cacheKey += "uuid:\"".concat(object.uuid, "\",");
+  }
+  var _iterator = _createForOfIteratorHelper(getNodesKeys(object)),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var property = _step.value;
+      cacheKey += "".concat(property, ":").concat(object[property].getCacheKey(), ",");
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+  cacheKey += '}';
+  return cacheKey;
+};
+exports.getCacheKey = getCacheKey;
+var getNodesKeys = function getNodesKeys(object) {
+  var props = [];
+  for (var name in object) {
+    var value = object[name];
+    if (value && value.isNode === true) {
+      props.push(name);
+    }
+  }
+  return props;
+};
+exports.getNodesKeys = getNodesKeys;
+var getValueType = function getValueType(value) {
+  if (typeof value === 'number') {
+    return 'float';
+  } else if (typeof value === 'boolean') {
+    return 'bool';
+  } else if (value?.isVector2 === true) {
+    return 'vec2';
+  } else if (value?.isVector3 === true) {
+    return 'vec3';
+  } else if (value?.isVector4 === true) {
+    return 'vec4';
+  } else if (value?.isMatrix3 === true) {
+    return 'mat3';
+  } else if (value?.isMatrix4 === true) {
+    return 'mat4';
+  } else if (value?.isColor === true) {
+    return 'color';
+  }
+  return null;
+};
+exports.getValueType = getValueType;
+var getValueFromType = function getValueFromType(type, ...params) {
+  var last4 = type?.slice(-4);
+  if (type === 'color') {
+    return _construct(_three.Color, params);
+  } else if (last4 === 'vec2') {
+    return _construct(_three.Vector2, params);
+  } else if (last4 === 'vec3') {
+    return _construct(_three.Vector3, params);
+  } else if (last4 === 'vec4') {
+    return _construct(_three.Vector4, params);
+  } else if (last4 === 'mat3') {
+    return _construct(_three.Matrix3, params);
+  } else if (last4 === 'mat4') {
+    return _construct(_three.Matrix4, params);
+  } else if (type === 'bool') {
+    return false;
+  } else if (type === 'float' || type === 'int' || type === 'uint') {
+    return 0;
+  }
+  return null;
+};
+exports.getValueFromType = getValueFromType;
+},{"three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/core/Node.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _constants = require("./constants.js");
+var _NodeUtils = require("./NodeUtils.js");
+var _three = require("three");
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+var _nodeId = 0;
+var Node = /*#__PURE__*/function () {
+  function Node(nodeType = null) {
+    _classCallCheck(this, Node);
+    this.isNode = true;
+    this.nodeType = nodeType;
+    this.updateType = _constants.NodeUpdateType.NONE;
+    this.uuid = _three.MathUtils.generateUUID();
+    Object.defineProperty(this, 'id', {
+      value: _nodeId++
+    });
+  }
+  _createClass(Node, [{
+    key: "type",
+    get: function get() {
+      return this.constructor.name;
+    }
+  }, {
+    key: "getChildren",
+    value: function getChildren() {
+      var children = [];
+      for (var property in this) {
+        var object = this[property];
+        if (Array.isArray(object) === true) {
+          var _iterator = _createForOfIteratorHelper(object),
+            _step;
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
+              var child = _step.value;
+              if (child?.isNode === true) {
+                children.push(child);
+              }
+            }
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
+          }
+        } else if (object?.isNode === true) {
+          children.push(object);
+        }
+      }
+      return children;
+    }
+  }, {
+    key: "getCacheKey",
+    value: function getCacheKey() {
+      return (0, _NodeUtils.getCacheKey)(this);
+    }
+  }, {
+    key: "getHash",
+    value: function getHash( /*builder*/
+    ) {
+      return this.uuid;
+    }
+  }, {
+    key: "getUpdateType",
+    value: function getUpdateType( /*builder*/
+    ) {
+      return this.updateType;
+    }
+  }, {
+    key: "getNodeType",
+    value: function getNodeType( /*builder*/
+    ) {
+      return this.nodeType;
+    }
+  }, {
+    key: "getConstructHash",
+    value: function getConstructHash( /*builder*/
+    ) {
+      return this.uuid;
+    }
+  }, {
+    key: "getReference",
+    value: function getReference(builder) {
+      var hash = this.getHash(builder);
+      var nodeFromHash = builder.getNodeFromHash(hash);
+      return nodeFromHash || this;
+    }
+  }, {
+    key: "construct",
+    value: function construct(builder) {
+      var nodeProperties = builder.getNodeProperties(this);
+      var _iterator2 = _createForOfIteratorHelper(this.getChildren()),
+        _step2;
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var childNode = _step2.value;
+          nodeProperties['_node' + childNode.id] = childNode;
+        }
+
+        // return a outputNode if exists
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+      return null;
+    }
+  }, {
+    key: "analyze",
+    value: function analyze(builder) {
+      var nodeData = builder.getDataFromNode(this);
+      nodeData.dependenciesCount = nodeData.dependenciesCount === undefined ? 1 : nodeData.dependenciesCount + 1;
+      if (nodeData.dependenciesCount === 1) {
+        // node flow children
+
+        var nodeProperties = builder.getNodeProperties(this);
+        for (var _i = 0, _Object$values = Object.values(nodeProperties); _i < _Object$values.length; _i++) {
+          var childNode = _Object$values[_i];
+          if (childNode?.isNode === true) {
+            childNode.build(builder);
+          }
+        }
+      }
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var _builder$getNodePrope = builder.getNodeProperties(this),
+        outputNode = _builder$getNodePrope.outputNode;
+      if (outputNode?.isNode === true) {
+        return outputNode.build(builder, output);
+      }
+    }
+  }, {
+    key: "update",
+    value: function update( /*frame*/
+    ) {
+      console.warn('Abstract function.');
+    }
+  }, {
+    key: "build",
+    value: function build(builder, output = null) {
+      var refNode = this.getReference(builder);
+      if (this !== refNode) {
+        return refNode.build(builder, output);
+      }
+      builder.addNode(this);
+      builder.addStack(this);
+
+      /* expected return:
+      	- "construct"	-> Node
+      	- "analyze"		-> null
+      	- "generate"	-> String
+      */
+      var result = null;
+      var buildStage = builder.getBuildStage();
+      if (buildStage === 'construct') {
+        var properties = builder.getNodeProperties(this);
+        if (properties.initialized !== true || builder.context.tempRead === false) {
+          properties.initialized = true;
+          properties.outputNode = this.construct(builder);
+          for (var _i2 = 0, _Object$values2 = Object.values(properties); _i2 < _Object$values2.length; _i2++) {
+            var childNode = _Object$values2[_i2];
+            if (childNode?.isNode === true) {
+              childNode.build(builder);
+            }
+          }
+        }
+      } else if (buildStage === 'analyze') {
+        this.analyze(builder);
+      } else if (buildStage === 'generate') {
+        var isGenerateOnce = this.generate.length === 1;
+        if (isGenerateOnce) {
+          var type = this.getNodeType(builder);
+          var nodeData = builder.getDataFromNode(this);
+          result = nodeData.snippet;
+          if (result === undefined /*|| builder.context.tempRead === false*/) {
+            result = this.generate(builder) || '';
+            nodeData.snippet = result;
+          }
+          result = builder.format(result, type, output);
+        } else {
+          result = this.generate(builder, output) || '';
+        }
+      }
+      builder.removeStack(this);
+      return result;
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(json) {
+      var nodeKeys = (0, _NodeUtils.getNodesKeys)(this);
+      if (nodeKeys.length > 0) {
+        var inputNodes = {};
+        var _iterator3 = _createForOfIteratorHelper(nodeKeys),
+          _step3;
+        try {
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+            var property = _step3.value;
+            inputNodes[property] = this[property].toJSON(json.meta).uuid;
+          }
+        } catch (err) {
+          _iterator3.e(err);
+        } finally {
+          _iterator3.f();
+        }
+        json.inputNodes = inputNodes;
+      }
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(json) {
+      if (json.inputNodes !== undefined) {
+        var nodes = json.meta.nodes;
+        for (var property in json.inputNodes) {
+          var uuid = json.inputNodes[property];
+          this[property] = nodes[uuid];
+        }
+      }
+    }
+  }, {
+    key: "toJSON",
+    value: function toJSON(meta) {
+      var uuid = this.uuid,
+        type = this.type;
+      var isRoot = meta === undefined || typeof meta === 'string';
+      if (isRoot) {
+        meta = {
+          textures: {},
+          images: {},
+          nodes: {}
+        };
+      }
+
+      // serialize
+
+      var data = meta.nodes[uuid];
+      if (data === undefined) {
+        data = {
+          uuid: uuid,
+          type: type,
+          meta: meta,
+          metadata: {
+            version: 4.5,
+            type: 'Node',
+            generator: 'Node.toJSON'
+          }
+        };
+        meta.nodes[data.uuid] = data;
+        this.serialize(data);
+        delete data.meta;
+      }
+
+      // TODO: Copied from Object3D.toJSON
+
+      function extractFromCache(cache) {
+        var values = [];
+        for (var key in cache) {
+          var _data = cache[key];
+          delete _data.metadata;
+          values.push(_data);
+        }
+        return values;
+      }
+      if (isRoot) {
+        var textures = extractFromCache(meta.textures);
+        var images = extractFromCache(meta.images);
+        var nodes = extractFromCache(meta.nodes);
+        if (textures.length > 0) data.textures = textures;
+        if (images.length > 0) data.images = images;
+        if (nodes.length > 0) data.nodes = nodes;
+      }
+      return data;
+    }
+  }]);
+  return Node;
+}();
+var _default = Node;
+exports.default = _default;
+},{"./constants.js":"../node_modules/three/examples/jsm/nodes/core/constants.js","./NodeUtils.js":"../node_modules/three/examples/jsm/nodes/core/NodeUtils.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/core/InputNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("./Node.js"));
+var _NodeUtils = require("./NodeUtils.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var InputNode = /*#__PURE__*/function (_Node) {
+  _inherits(InputNode, _Node);
+  var _super = _createSuper(InputNode);
+  function InputNode(value, nodeType = null) {
+    var _this;
+    _classCallCheck(this, InputNode);
+    _this = _super.call(this, nodeType);
+    _this.isInputNode = true;
+    _this.value = value;
+    return _this;
+  }
+  _createClass(InputNode, [{
+    key: "getNodeType",
+    value: function getNodeType( /*builder*/
+    ) {
+      if (this.nodeType === null) {
+        return (0, _NodeUtils.getValueType)(this.value);
+      }
+      return this.nodeType;
+    }
+  }, {
+    key: "getInputType",
+    value: function getInputType(builder) {
+      return this.getNodeType(builder);
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(InputNode.prototype), "serialize", this).call(this, data);
+      data.value = this.value?.toArray?.() || this.value;
+      data.valueType = (0, _NodeUtils.getValueType)(this.value);
+      data.nodeType = this.nodeType;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(InputNode.prototype), "deserialize", this).call(this, data);
+      this.nodeType = data.nodeType;
+      this.value = (0, _NodeUtils.getValueFromType)(data.valueType);
+      this.value = this.value?.fromArray?.(data.value) || data.value;
+    }
+  }, {
+    key: "generate",
+    value: function generate( /*builder, output*/
+    ) {
+      console.warn('Abstract function.');
+    }
+  }]);
+  return InputNode;
+}(_Node2.default);
+var _default = InputNode;
+exports.default = _default;
+},{"./Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","./NodeUtils.js":"../node_modules/three/examples/jsm/nodes/core/NodeUtils.js"}],"../node_modules/three/examples/jsm/nodes/core/UniformNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _InputNode2 = _interopRequireDefault(require("./InputNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var UniformNode = /*#__PURE__*/function (_InputNode) {
+  _inherits(UniformNode, _InputNode);
+  var _super = _createSuper(UniformNode);
+  function UniformNode(value, nodeType = null) {
+    var _this;
+    _classCallCheck(this, UniformNode);
+    _this = _super.call(this, value, nodeType);
+    _this.isUniformNode = true;
+    return _this;
+  }
+  _createClass(UniformNode, [{
+    key: "getUniformHash",
+    value: function getUniformHash(builder) {
+      return this.getHash(builder);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var type = this.getNodeType(builder);
+      var hash = this.getUniformHash(builder);
+      var sharedNode = builder.getNodeFromHash(hash);
+      if (sharedNode === undefined) {
+        builder.setHashNode(this, hash);
+        sharedNode = this;
+      }
+      var sharedNodeType = sharedNode.getInputType(builder);
+      var nodeUniform = builder.getUniformFromNode(sharedNode, builder.shaderStage, sharedNodeType);
+      var propertyName = builder.getPropertyName(nodeUniform);
+      return builder.format(propertyName, type, output);
+    }
+  }]);
+  return UniformNode;
+}(_InputNode2.default);
+var _default = UniformNode;
+exports.default = _default;
+},{"./InputNode.js":"../node_modules/three/examples/jsm/nodes/core/InputNode.js"}],"../node_modules/three/examples/jsm/nodes/core/ArrayUniformNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _UniformNode2 = _interopRequireDefault(require("./UniformNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var ArrayUniformNode = /*#__PURE__*/function (_UniformNode) {
+  _inherits(ArrayUniformNode, _UniformNode);
+  var _super = _createSuper(ArrayUniformNode);
+  function ArrayUniformNode(nodes = []) {
+    var _this;
+    _classCallCheck(this, ArrayUniformNode);
+    _this = _super.call(this);
+    _this.isArrayUniformNode = true;
+    _this.nodes = nodes;
+    return _this;
+  }
+  _createClass(ArrayUniformNode, [{
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      return this.nodes[0].getNodeType(builder);
+    }
+  }]);
+  return ArrayUniformNode;
+}(_UniformNode2.default);
+var _default = ArrayUniformNode;
+exports.default = _default;
+},{"./UniformNode.js":"../node_modules/three/examples/jsm/nodes/core/UniformNode.js"}],"../node_modules/three/examples/jsm/nodes/core/VaryingNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("./Node.js"));
+var _constants = require("./constants.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var VaryingNode = /*#__PURE__*/function (_Node) {
+  _inherits(VaryingNode, _Node);
+  var _super = _createSuper(VaryingNode);
+  function VaryingNode(node, name = null) {
+    var _this;
+    _classCallCheck(this, VaryingNode);
+    _this = _super.call(this);
+    _this.node = node;
+    _this.name = name;
+    return _this;
+  }
+  _createClass(VaryingNode, [{
+    key: "getHash",
+    value: function getHash(builder) {
+      return this.name || _get(_getPrototypeOf(VaryingNode.prototype), "getHash", this).call(this, builder);
+    }
+  }, {
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      // VaryingNode is auto type
+
+      return this.node.getNodeType(builder);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var name = this.name,
+        node = this.node;
+      var type = this.getNodeType(builder);
+      var nodeVarying = builder.getVaryingFromNode(this, type);
+
+      // this property can be used to check if the varying can be optimized for a var
+      nodeVarying.needsInterpolation || (nodeVarying.needsInterpolation = builder.shaderStage === 'fragment');
+      if (name !== null) {
+        nodeVarying.name = name;
+      }
+      var propertyName = builder.getPropertyName(nodeVarying, _constants.NodeShaderStage.VERTEX);
+
+      // force node run in vertex stage
+      builder.flowNodeFromShaderStage(_constants.NodeShaderStage.VERTEX, node, type, propertyName);
+      return builder.getPropertyName(nodeVarying);
+    }
+  }]);
+  return VaryingNode;
+}(_Node2.default);
+var _default = VaryingNode;
+exports.default = _default;
+},{"./Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","./constants.js":"../node_modules/three/examples/jsm/nodes/core/constants.js"}],"../node_modules/three/examples/jsm/nodes/core/AttributeNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("./Node.js"));
+var _VaryingNode = _interopRequireDefault(require("./VaryingNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var AttributeNode = /*#__PURE__*/function (_Node) {
+  _inherits(AttributeNode, _Node);
+  var _super = _createSuper(AttributeNode);
+  function AttributeNode(attributeName, nodeType = null) {
+    var _this;
+    _classCallCheck(this, AttributeNode);
+    _this = _super.call(this, nodeType);
+    _this._attributeName = attributeName;
+    return _this;
+  }
+  _createClass(AttributeNode, [{
+    key: "getHash",
+    value: function getHash(builder) {
+      return this.getAttributeName(builder);
+    }
+  }, {
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      var attributeName = this.getAttributeName(builder);
+      var nodeType = _get(_getPrototypeOf(AttributeNode.prototype), "getNodeType", this).call(this, builder);
+      if (nodeType === null) {
+        if (builder.hasGeometryAttribute(attributeName)) {
+          var attribute = builder.geometry.getAttribute(attributeName);
+          nodeType = builder.getTypeFromLength(attribute.itemSize);
+        } else {
+          nodeType = 'float';
+        }
+      }
+      return nodeType;
+    }
+  }, {
+    key: "setAttributeName",
+    value: function setAttributeName(attributeName) {
+      this._attributeName = attributeName;
+      return this;
+    }
+  }, {
+    key: "getAttributeName",
+    value: function getAttributeName( /*builder*/
+    ) {
+      return this._attributeName;
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var attributeName = this.getAttributeName(builder);
+      var nodeType = this.getNodeType(builder);
+      var geometryAttribute = builder.hasGeometryAttribute(attributeName);
+      if (geometryAttribute === true) {
+        var nodeAttribute = builder.getAttribute(attributeName, nodeType);
+        if (builder.isShaderStage('vertex')) {
+          return nodeAttribute.name;
+        } else {
+          var nodeVarying = new _VaryingNode.default(this);
+          return nodeVarying.build(builder, nodeAttribute.type);
+        }
+      } else {
+        console.warn("Attribute \"".concat(attributeName, "\" not found."));
+        return builder.getConst(nodeType);
+      }
+    }
+  }]);
+  return AttributeNode;
+}(_Node2.default);
+var _default = AttributeNode;
+exports.default = _default;
+},{"./Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","./VaryingNode.js":"../node_modules/three/examples/jsm/nodes/core/VaryingNode.js"}],"../node_modules/three/examples/jsm/nodes/core/BypassNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("./Node.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var BypassNode = /*#__PURE__*/function (_Node) {
+  _inherits(BypassNode, _Node);
+  var _super = _createSuper(BypassNode);
+  function BypassNode(returnNode, callNode) {
+    var _this;
+    _classCallCheck(this, BypassNode);
+    _this = _super.call(this);
+    _this.isBypassNode = true;
+    _this.outputNode = returnNode;
+    _this.callNode = callNode;
+    return _this;
+  }
+  _createClass(BypassNode, [{
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      return this.outputNode.getNodeType(builder);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var snippet = this.callNode.build(builder, 'void');
+      if (snippet !== '') {
+        builder.addFlowCode(snippet);
+      }
+      return this.outputNode.build(builder, output);
+    }
+  }]);
+  return BypassNode;
+}(_Node2.default);
+var _default = BypassNode;
+exports.default = _default;
+},{"./Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js"}],"../node_modules/three/examples/jsm/nodes/core/CodeNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("./Node.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var CodeNode = /*#__PURE__*/function (_Node) {
+  _inherits(CodeNode, _Node);
+  var _super = _createSuper(CodeNode);
+  function CodeNode(code = '', includes = []) {
+    var _this;
+    _classCallCheck(this, CodeNode);
+    _this = _super.call(this, 'code');
+    _this.isCodeNode = true;
+    _this.code = code;
+    _this._includes = includes;
+    return _this;
+  }
+  _createClass(CodeNode, [{
+    key: "setIncludes",
+    value: function setIncludes(includes) {
+      this._includes = includes;
+      return this;
+    }
+  }, {
+    key: "getIncludes",
+    value: function getIncludes( /*builder*/
+    ) {
+      return this._includes;
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var includes = this.getIncludes(builder);
+      var _iterator = _createForOfIteratorHelper(includes),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var include = _step.value;
+          include.build(builder);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+      var nodeCode = builder.getCodeFromNode(this, this.getNodeType(builder));
+      nodeCode.code = this.code;
+      return nodeCode.code;
+    }
+  }]);
+  return CodeNode;
+}(_Node2.default);
+var _default = CodeNode;
+exports.default = _default;
+},{"./Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js"}],"../node_modules/three/examples/jsm/nodes/core/ConstNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _InputNode2 = _interopRequireDefault(require("./InputNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var ConstNode = /*#__PURE__*/function (_InputNode) {
+  _inherits(ConstNode, _InputNode);
+  var _super = _createSuper(ConstNode);
+  function ConstNode(value, nodeType = null) {
+    var _this;
+    _classCallCheck(this, ConstNode);
+    _this = _super.call(this, value, nodeType);
+    _this.isConstNode = true;
+    return _this;
+  }
+  _createClass(ConstNode, [{
+    key: "generateConst",
+    value: function generateConst(builder) {
+      return builder.getConst(this.getNodeType(builder), this.value);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var type = this.getNodeType(builder);
+      return builder.format(this.generateConst(builder), type, output);
+    }
+  }]);
+  return ConstNode;
+}(_InputNode2.default);
+var _default = ConstNode;
+exports.default = _default;
+},{"./InputNode.js":"../node_modules/three/examples/jsm/nodes/core/InputNode.js"}],"../node_modules/three/examples/jsm/nodes/core/ContextNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("./Node.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var ContextNode = /*#__PURE__*/function (_Node) {
+  _inherits(ContextNode, _Node);
+  var _super = _createSuper(ContextNode);
+  function ContextNode(node, context = {}) {
+    var _this;
+    _classCallCheck(this, ContextNode);
+    _this = _super.call(this);
+    _this.isContextNode = true;
+    _this.node = node;
+    _this.context = context;
+    return _this;
+  }
+  _createClass(ContextNode, [{
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      return this.node.getNodeType(builder);
+    }
+  }, {
+    key: "construct",
+    value: function construct(builder) {
+      var previousContext = builder.getContext();
+      builder.setContext(_objectSpread(_objectSpread({}, builder.context), this.context));
+      var node = this.node.build(builder);
+      builder.setContext(previousContext);
+      return node;
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var previousContext = builder.getContext();
+      builder.setContext(_objectSpread(_objectSpread({}, builder.context), this.context));
+      var snippet = this.node.build(builder, output);
+      builder.setContext(previousContext);
+      return snippet;
+    }
+  }]);
+  return ContextNode;
+}(_Node2.default);
+var _default = ContextNode;
+exports.default = _default;
+},{"./Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js"}],"../node_modules/three/examples/jsm/nodes/core/TempNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("./Node.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var TempNode = /*#__PURE__*/function (_Node) {
+  _inherits(TempNode, _Node);
+  var _super = _createSuper(TempNode);
+  function TempNode(type) {
+    var _this;
+    _classCallCheck(this, TempNode);
+    _this = _super.call(this, type);
+    _this.isTempNode = true;
+    return _this;
+  }
+  _createClass(TempNode, [{
+    key: "build",
+    value: function build(builder, output) {
+      var buildStage = builder.getBuildStage();
+      if (buildStage === 'generate') {
+        var type = builder.getVectorType(this.getNodeType(builder, output));
+        var nodeData = builder.getDataFromNode(this);
+        if (builder.context.tempRead !== false && nodeData.propertyName !== undefined) {
+          return builder.format(nodeData.propertyName, type, output);
+        } else if (builder.context.tempWrite !== false && type !== 'void ' && output !== 'void' && nodeData.dependenciesCount > 1) {
+          var snippet = _get(_getPrototypeOf(TempNode.prototype), "build", this).call(this, builder, type);
+          var nodeVar = builder.getVarFromNode(this, type);
+          var propertyName = builder.getPropertyName(nodeVar);
+          builder.addFlowCode("".concat(propertyName, " = ").concat(snippet));
+          nodeData.snippet = snippet;
+          nodeData.propertyName = propertyName;
+          return builder.format(nodeData.propertyName, type, output);
+        }
+      }
+      return _get(_getPrototypeOf(TempNode.prototype), "build", this).call(this, builder, output);
+    }
+  }]);
+  return TempNode;
+}(_Node2.default);
+var _default = TempNode;
+exports.default = _default;
+},{"./Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js"}],"../node_modules/three/examples/jsm/nodes/core/ExpressionNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _TempNode2 = _interopRequireDefault(require("./TempNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var ExpressionNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(ExpressionNode, _TempNode);
+  var _super = _createSuper(ExpressionNode);
+  function ExpressionNode(snipped = '', nodeType = 'void') {
+    var _this;
+    _classCallCheck(this, ExpressionNode);
+    _this = _super.call(this, nodeType);
+    _this.snipped = snipped;
+    return _this;
+  }
+  _createClass(ExpressionNode, [{
+    key: "generate",
+    value: function generate(builder) {
+      var type = this.getNodeType(builder);
+      var snipped = this.snipped;
+      if (type === 'void') {
+        builder.addFlowCode(snipped);
+      } else {
+        return "( ".concat(snipped, " )");
+      }
+    }
+  }]);
+  return ExpressionNode;
+}(_TempNode2.default);
+var _default = ExpressionNode;
+exports.default = _default;
+},{"./TempNode.js":"../node_modules/three/examples/jsm/nodes/core/TempNode.js"}],"../node_modules/three/examples/jsm/nodes/core/FunctionCallNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _TempNode2 = _interopRequireDefault(require("./TempNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var FunctionCallNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(FunctionCallNode, _TempNode);
+  var _super = _createSuper(FunctionCallNode);
+  function FunctionCallNode(functionNode = null, parameters = {}) {
+    var _this;
+    _classCallCheck(this, FunctionCallNode);
+    _this = _super.call(this);
+    _this.functionNode = functionNode;
+    _this.parameters = parameters;
+    return _this;
+  }
+  _createClass(FunctionCallNode, [{
+    key: "setParameters",
+    value: function setParameters(parameters) {
+      this.parameters = parameters;
+      return this;
+    }
+  }, {
+    key: "getParameters",
+    value: function getParameters() {
+      return this.parameters;
+    }
+  }, {
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      return this.functionNode.getNodeType(builder);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var params = [];
+      var functionNode = this.functionNode;
+      var inputs = functionNode.getInputs(builder);
+      var parameters = this.parameters;
+      if (Array.isArray(parameters)) {
+        for (var i = 0; i < parameters.length; i++) {
+          var inputNode = inputs[i];
+          var node = parameters[i];
+          params.push(node.build(builder, inputNode.type));
+        }
+      } else {
+        var _iterator = _createForOfIteratorHelper(inputs),
+          _step;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var _inputNode = _step.value;
+            var _node = parameters[_inputNode.name];
+            if (_node !== undefined) {
+              params.push(_node.build(builder, _inputNode.type));
+            } else {
+              throw new Error("FunctionCallNode: Input '".concat(_inputNode.name, "' not found in FunctionNode."));
+            }
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      }
+      var functionName = functionNode.build(builder, 'property');
+      return "".concat(functionName, "( ").concat(params.join(', '), " )");
+    }
+  }]);
+  return FunctionCallNode;
+}(_TempNode2.default);
+var _default = FunctionCallNode;
+exports.default = _default;
+},{"./TempNode.js":"../node_modules/three/examples/jsm/nodes/core/TempNode.js"}],"../node_modules/three/examples/jsm/nodes/core/FunctionNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _CodeNode2 = _interopRequireDefault(require("./CodeNode.js"));
+var _FunctionCallNode = _interopRequireDefault(require("./FunctionCallNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var FunctionNode = /*#__PURE__*/function (_CodeNode) {
+  _inherits(FunctionNode, _CodeNode);
+  var _super = _createSuper(FunctionNode);
+  function FunctionNode(code = '', includes = []) {
+    var _this;
+    _classCallCheck(this, FunctionNode);
+    _this = _super.call(this, code, includes);
+    _this.keywords = {};
+    return _this;
+  }
+  _createClass(FunctionNode, [{
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      return this.getNodeFunction(builder).type;
+    }
+  }, {
+    key: "getInputs",
+    value: function getInputs(builder) {
+      return this.getNodeFunction(builder).inputs;
+    }
+  }, {
+    key: "getNodeFunction",
+    value: function getNodeFunction(builder) {
+      var nodeData = builder.getDataFromNode(this);
+      var nodeFunction = nodeData.nodeFunction;
+      if (nodeFunction === undefined) {
+        nodeFunction = builder.parser.parseFunction(this.code);
+        nodeData.nodeFunction = nodeFunction;
+      }
+      return nodeFunction;
+    }
+  }, {
+    key: "call",
+    value: function call(parameters = {}) {
+      return new _FunctionCallNode.default(this, parameters);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      _get(_getPrototypeOf(FunctionNode.prototype), "generate", this).call(this, builder);
+      var nodeFunction = this.getNodeFunction(builder);
+      var name = nodeFunction.name;
+      var type = nodeFunction.type;
+      var nodeCode = builder.getCodeFromNode(this, type);
+      if (name !== '') {
+        // use a custom property name
+
+        nodeCode.name = name;
+      }
+      var propertyName = builder.getPropertyName(nodeCode);
+      var code = this.getNodeFunction(builder).getCode(propertyName);
+      var keywords = this.keywords;
+      var keywordsProperties = Object.keys(keywords);
+      if (keywordsProperties.length > 0) {
+        var _iterator = _createForOfIteratorHelper(keywordsProperties),
+          _step;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var property = _step.value;
+            var propertyRegExp = new RegExp("\\b".concat(property, "\\b"), 'g');
+            var nodeProperty = keywords[property].build(builder, 'property');
+            code = code.replace(propertyRegExp, nodeProperty);
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      }
+      nodeCode.code = code;
+      if (output === 'property') {
+        return propertyName;
+      } else {
+        return builder.format("".concat(propertyName, "()"), type, output);
+      }
+    }
+  }]);
+  return FunctionNode;
+}(_CodeNode2.default);
+var _default = FunctionNode;
+exports.default = _default;
+},{"./CodeNode.js":"../node_modules/three/examples/jsm/nodes/core/CodeNode.js","./FunctionCallNode.js":"../node_modules/three/examples/jsm/nodes/core/FunctionCallNode.js"}],"../node_modules/three/examples/jsm/nodes/core/InstanceIndexNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("./Node.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var InstanceIndexNode = /*#__PURE__*/function (_Node) {
+  _inherits(InstanceIndexNode, _Node);
+  var _super = _createSuper(InstanceIndexNode);
+  function InstanceIndexNode() {
+    var _this;
+    _classCallCheck(this, InstanceIndexNode);
+    _this = _super.call(this, 'uint');
+    _this.isInstanceIndexNode = true;
+    return _this;
+  }
+  _createClass(InstanceIndexNode, [{
+    key: "generate",
+    value: function generate(builder) {
+      return builder.getInstanceIndex();
+    }
+  }]);
+  return InstanceIndexNode;
+}(_Node2.default);
+var _default = InstanceIndexNode;
+exports.default = _default;
+},{"./Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js"}],"../node_modules/three/examples/jsm/nodes/core/NodeAttribute.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var NodeAttribute = /*#__PURE__*/_createClass(function NodeAttribute(name, type) {
+  _classCallCheck(this, NodeAttribute);
+  this.isNodeAttribute = true;
+  this.name = name;
+  this.type = type;
+});
+var _default = NodeAttribute;
+exports.default = _default;
+},{}],"../node_modules/three/examples/jsm/nodes/core/NodeUniform.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+var NodeUniform = /*#__PURE__*/function () {
+  function NodeUniform(name, type, node, needsUpdate = undefined) {
+    _classCallCheck(this, NodeUniform);
+    this.isNodeUniform = true;
+    this.name = name;
+    this.type = type;
+    this.node = node;
+    this.needsUpdate = needsUpdate;
+  }
+  _createClass(NodeUniform, [{
+    key: "value",
+    get: function get() {
+      return this.node.value;
+    },
+    set: function set(val) {
+      this.node.value = val;
+    }
+  }]);
+  return NodeUniform;
+}();
+var _default = NodeUniform;
+exports.default = _default;
+},{}],"../node_modules/three/examples/jsm/nodes/core/NodeVar.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var NodeVar = /*#__PURE__*/_createClass(function NodeVar(name, type) {
+  _classCallCheck(this, NodeVar);
+  this.isNodeVar = true;
+  this.name = name;
+  this.type = type;
+});
+var _default = NodeVar;
+exports.default = _default;
+},{}],"../node_modules/three/examples/jsm/nodes/core/NodeVarying.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _NodeVar2 = _interopRequireDefault(require("./NodeVar.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var NodeVarying = /*#__PURE__*/function (_NodeVar) {
+  _inherits(NodeVarying, _NodeVar);
+  var _super = _createSuper(NodeVarying);
+  function NodeVarying(name, type) {
+    var _this;
+    _classCallCheck(this, NodeVarying);
+    _this = _super.call(this, name, type);
+    _this.needsInterpolation = false;
+    _this.isNodeVarying = true;
+    return _this;
+  }
+  return _createClass(NodeVarying);
+}(_NodeVar2.default);
+var _default = NodeVarying;
+exports.default = _default;
+},{"./NodeVar.js":"../node_modules/three/examples/jsm/nodes/core/NodeVar.js"}],"../node_modules/three/examples/jsm/nodes/core/NodeCode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var NodeCode = /*#__PURE__*/_createClass(function NodeCode(name, type, code = '') {
+  _classCallCheck(this, NodeCode);
+  this.name = name;
+  this.type = type;
+  this.code = code;
+  Object.defineProperty(this, 'isNodeCode', {
+    value: true
+  });
+});
+var _default = NodeCode;
+exports.default = _default;
+},{}],"../node_modules/three/examples/jsm/nodes/core/NodeKeywords.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+var NodeKeywords = /*#__PURE__*/function () {
+  function NodeKeywords() {
+    _classCallCheck(this, NodeKeywords);
+    this.keywords = [];
+    this.nodes = [];
+    this.keywordsCallback = {};
+  }
+  _createClass(NodeKeywords, [{
+    key: "getNode",
+    value: function getNode(name) {
+      var node = this.nodes[name];
+      if (node === undefined && this.keywordsCallback[name] !== undefined) {
+        node = this.keywordsCallback[name](name);
+        this.nodes[name] = node;
+      }
+      return node;
+    }
+  }, {
+    key: "addKeyword",
+    value: function addKeyword(name, callback) {
+      this.keywords.push(name);
+      this.keywordsCallback[name] = callback;
+      return this;
+    }
+  }, {
+    key: "parse",
+    value: function parse(code) {
+      var keywordNames = this.keywords;
+      var regExp = new RegExp("\\b".concat(keywordNames.join('\\b|\\b'), "\\b"), 'g');
+      var codeKeywords = code.match(regExp);
+      var keywordNodes = [];
+      if (codeKeywords !== null) {
+        var _iterator = _createForOfIteratorHelper(codeKeywords),
+          _step;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var keyword = _step.value;
+            var node = this.getNode(keyword);
+            if (node !== undefined && keywordNodes.indexOf(node) === -1) {
+              keywordNodes.push(node);
+            }
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      }
+      return keywordNodes;
+    }
+  }, {
+    key: "include",
+    value: function include(builder, code) {
+      var keywordNodes = this.parse(code);
+      var _iterator2 = _createForOfIteratorHelper(keywordNodes),
+        _step2;
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var keywordNode = _step2.value;
+          keywordNode.build(builder);
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+    }
+  }]);
+  return NodeKeywords;
+}();
+var _default = NodeKeywords;
+exports.default = _default;
+},{}],"../node_modules/three/examples/jsm/nodes/core/NodeBuilder.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.vector = exports.shaderStages = exports.defaultShaderStages = exports.default = void 0;
+var _NodeUniform = _interopRequireDefault(require("./NodeUniform.js"));
+var _NodeAttribute = _interopRequireDefault(require("./NodeAttribute.js"));
+var _NodeVarying = _interopRequireDefault(require("./NodeVarying.js"));
+var _NodeVar = _interopRequireDefault(require("./NodeVar.js"));
+var _NodeCode = _interopRequireDefault(require("./NodeCode.js"));
+var _NodeKeywords = _interopRequireDefault(require("./NodeKeywords.js"));
+var _constants = require("./constants.js");
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+var defaultShaderStages = ['fragment', 'vertex'];
+exports.defaultShaderStages = defaultShaderStages;
+var shaderStages = [].concat(defaultShaderStages, ['compute']);
+exports.shaderStages = shaderStages;
+var vector = ['x', 'y', 'z', 'w'];
+exports.vector = vector;
+var typeFromLength = new Map();
+typeFromLength.set(1, 'float');
+typeFromLength.set(2, 'vec2');
+typeFromLength.set(3, 'vec3');
+typeFromLength.set(4, 'vec4');
+typeFromLength.set(9, 'mat3');
+typeFromLength.set(16, 'mat4');
+var toFloat = function toFloat(value) {
+  value = Number(value);
+  return value + (value % 1 ? '' : '.0');
+};
+var NodeBuilder = /*#__PURE__*/function () {
+  function NodeBuilder(object, renderer, parser) {
+    _classCallCheck(this, NodeBuilder);
+    this.object = object;
+    this.material = object.material || null;
+    this.geometry = object.geometry || null;
+    this.renderer = renderer;
+    this.parser = parser;
+    this.nodes = [];
+    this.updateNodes = [];
+    this.hashNodes = {};
+    this.scene = null;
+    this.lightsNode = null;
+    this.fogNode = null;
+    this.vertexShader = null;
+    this.fragmentShader = null;
+    this.computeShader = null;
+    this.flowNodes = {
+      vertex: [],
+      fragment: [],
+      compute: []
+    };
+    this.flowCode = {
+      vertex: '',
+      fragment: '',
+      compute: []
+    };
+    this.uniforms = {
+      vertex: [],
+      fragment: [],
+      compute: [],
+      index: 0
+    };
+    this.codes = {
+      vertex: [],
+      fragment: [],
+      compute: []
+    };
+    this.attributes = [];
+    this.varyings = [];
+    this.vars = {
+      vertex: [],
+      fragment: [],
+      compute: []
+    };
+    this.flow = {
+      code: ''
+    };
+    this.stack = [];
+    this.context = {
+      keywords: new _NodeKeywords.default(),
+      material: object.material
+    };
+    this.nodesData = new WeakMap();
+    this.flowsData = new WeakMap();
+    this.shaderStage = null;
+    this.buildStage = null;
+  }
+  _createClass(NodeBuilder, [{
+    key: "node",
+    get: function get() {
+      return this.stack[this.stack.length - 1];
+    }
+  }, {
+    key: "addStack",
+    value: function addStack(node) {
+      /*
+      if ( this.stack.indexOf( node ) !== - 1 ) {
+      		console.warn( 'Recursive node: ', node );
+      	}
+      */
+
+      this.stack.push(node);
+    }
+  }, {
+    key: "removeStack",
+    value: function removeStack(node) {
+      var lastStack = this.stack.pop();
+      if (lastStack !== node) {
+        throw new Error('NodeBuilder: Invalid node stack!');
+      }
+    }
+  }, {
+    key: "setHashNode",
+    value: function setHashNode(node, hash) {
+      this.hashNodes[hash] = node;
+    }
+  }, {
+    key: "addNode",
+    value: function addNode(node) {
+      if (this.nodes.indexOf(node) === -1) {
+        var updateType = node.getUpdateType(this);
+        if (updateType !== _constants.NodeUpdateType.NONE) {
+          this.updateNodes.push(node);
+        }
+        this.nodes.push(node);
+        this.setHashNode(node, node.getHash(this));
+      }
+    }
+  }, {
+    key: "getMethod",
+    value: function getMethod(method) {
+      return method;
+    }
+  }, {
+    key: "getNodeFromHash",
+    value: function getNodeFromHash(hash) {
+      return this.hashNodes[hash];
+    }
+  }, {
+    key: "addFlow",
+    value: function addFlow(shaderStage, node) {
+      this.flowNodes[shaderStage].push(node);
+      return node;
+    }
+  }, {
+    key: "setContext",
+    value: function setContext(context) {
+      this.context = context;
+    }
+  }, {
+    key: "getContext",
+    value: function getContext() {
+      return this.context;
+    }
+  }, {
+    key: "isAvailable",
+    value: function isAvailable( /*name*/
+    ) {
+      return false;
+    }
+  }, {
+    key: "getInstanceIndex",
+    value: function getInstanceIndex() {
+      console.warn('Abstract function.');
+    }
+  }, {
+    key: "getFrontFacing",
+    value: function getFrontFacing() {
+      console.warn('Abstract function.');
+    }
+  }, {
+    key: "getTexture",
+    value: function getTexture( /* textureProperty, uvSnippet */
+    ) {
+      console.warn('Abstract function.');
+    }
+  }, {
+    key: "getTextureLevel",
+    value: function getTextureLevel( /* textureProperty, uvSnippet, levelSnippet */
+    ) {
+      console.warn('Abstract function.');
+    }
+  }, {
+    key: "getCubeTexture",
+    value: function getCubeTexture( /* textureProperty, uvSnippet */
+    ) {
+      console.warn('Abstract function.');
+    }
+  }, {
+    key: "getCubeTextureLevel",
+    value: function getCubeTextureLevel( /* textureProperty, uvSnippet, levelSnippet */
+    ) {
+      console.warn('Abstract function.');
+    }
+
+    // @TODO: rename to .generateConst()
+  }, {
+    key: "getConst",
+    value: function getConst(type, value = null) {
+      var _this = this;
+      if (value === null) {
+        if (type === 'float' || type === 'int' || type === 'uint') value = 0;else if (type === 'bool') value = false;else if (type === 'color') value = new _three.Color();else if (type === 'vec2') value = new _three.Vector2();else if (type === 'vec3') value = new _three.Vector3();else if (type === 'vec4') value = new _three.Vector4();
+      }
+      if (type === 'float') return toFloat(value);
+      if (type === 'int') return "".concat(Math.round(value));
+      if (type === 'uint') return value >= 0 ? "".concat(Math.round(value), "u") : '0u';
+      if (type === 'bool') return value ? 'true' : 'false';
+      if (type === 'color') return "".concat(this.getType('vec3'), "( ").concat(toFloat(value.r), ", ").concat(toFloat(value.g), ", ").concat(toFloat(value.b), " )");
+      var typeLength = this.getTypeLength(type);
+      var componentType = this.getComponentType(type);
+      var getConst = function getConst(value) {
+        return _this.getConst(componentType, value);
+      };
+      if (typeLength === 2) {
+        return "".concat(this.getType(type), "( ").concat(getConst(value.x), ", ").concat(getConst(value.y), " )");
+      } else if (typeLength === 3) {
+        return "".concat(this.getType(type), "( ").concat(getConst(value.x), ", ").concat(getConst(value.y), ", ").concat(getConst(value.z), " )");
+      } else if (typeLength === 4) {
+        return "".concat(this.getType(type), "( ").concat(getConst(value.x), ", ").concat(getConst(value.y), ", ").concat(getConst(value.z), ", ").concat(getConst(value.w), " )");
+      } else if (typeLength > 4) {
+        return "".concat(this.getType(type), "()");
+      }
+      throw new Error("NodeBuilder: Type '".concat(type, "' not found in generate constant attempt."));
+    }
+  }, {
+    key: "getType",
+    value: function getType(type) {
+      return type;
+    }
+  }, {
+    key: "generateMethod",
+    value: function generateMethod(method) {
+      return method;
+    }
+  }, {
+    key: "hasGeometryAttribute",
+    value: function hasGeometryAttribute(name) {
+      return this.geometry?.getAttribute(name) !== undefined;
+    }
+  }, {
+    key: "getAttribute",
+    value: function getAttribute(name, type) {
+      var attributes = this.attributes;
+
+      // find attribute
+      var _iterator = _createForOfIteratorHelper(attributes),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var _attribute = _step.value;
+          if (_attribute.name === name) {
+            return _attribute;
+          }
+        }
+
+        // create a new if no exist
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+      var attribute = new _NodeAttribute.default(name, type);
+      attributes.push(attribute);
+      return attribute;
+    }
+  }, {
+    key: "getPropertyName",
+    value: function getPropertyName(node /*, shaderStage*/) {
+      return node.name;
+    }
+  }, {
+    key: "isVector",
+    value: function isVector(type) {
+      return /vec\d/.test(type);
+    }
+  }, {
+    key: "isMatrix",
+    value: function isMatrix(type) {
+      return /mat\d/.test(type);
+    }
+  }, {
+    key: "isReference",
+    value: function isReference(type) {
+      return type === 'void' || type === 'property' || type === 'sampler' || type === 'texture' || type === 'cubeTexture';
+    }
+  }, {
+    key: "isShaderStage",
+    value: function isShaderStage(shaderStage) {
+      return this.shaderStage === shaderStage;
+    }
+  }, {
+    key: "getTextureEncodingFromMap",
+    value: function getTextureEncodingFromMap(map) {
+      var encoding;
+      if (map && map.isTexture) {
+        encoding = map.encoding;
+      } else if (map && map.isWebGLRenderTarget) {
+        encoding = map.texture.encoding;
+      } else {
+        encoding = _three.LinearEncoding;
+      }
+      return encoding;
+    }
+  }, {
+    key: "getComponentType",
+    value: function getComponentType(type) {
+      type = this.getVectorType(type);
+      var componentType = /(b|i|u|)(vec|mat)([2-4])/.exec(type);
+      if (componentType === null) return null;
+      if (componentType[1] === 'b') return 'bool';
+      if (componentType[1] === 'i') return 'int';
+      if (componentType[1] === 'u') return 'uint';
+      return 'float';
+    }
+  }, {
+    key: "getVectorType",
+    value: function getVectorType(type) {
+      if (type === 'color') return 'vec3';
+      if (type === 'texture') return 'vec4';
+      return type;
+    }
+  }, {
+    key: "getTypeFromLength",
+    value: function getTypeFromLength(length) {
+      return typeFromLength.get(length);
+    }
+  }, {
+    key: "getTypeLength",
+    value: function getTypeLength(type) {
+      var vecType = this.getVectorType(type);
+      var vecNum = /vec([2-4])/.exec(vecType);
+      if (vecNum !== null) return Number(vecNum[1]);
+      if (vecType === 'float' || vecType === 'bool' || vecType === 'int' || vecType === 'uint') return 1;
+      if (/mat3/.test(type) === true) return 9;
+      if (/mat4/.test(type) === true) return 16;
+      return 0;
+    }
+  }, {
+    key: "getVectorFromMatrix",
+    value: function getVectorFromMatrix(type) {
+      return type.replace('mat', 'vec');
+    }
+  }, {
+    key: "getDataFromNode",
+    value: function getDataFromNode(node, shaderStage = this.shaderStage) {
+      var nodeData = this.nodesData.get(node);
+      if (nodeData === undefined) {
+        nodeData = {
+          vertex: {},
+          fragment: {},
+          compute: {}
+        };
+        this.nodesData.set(node, nodeData);
+      }
+      return shaderStage !== null ? nodeData[shaderStage] : nodeData;
+    }
+  }, {
+    key: "getNodeProperties",
+    value: function getNodeProperties(node, shaderStage = this.shaderStage) {
+      var nodeData = this.getDataFromNode(this, shaderStage);
+      var constructHash = node.getConstructHash(this);
+      nodeData.properties = nodeData.properties || {};
+      nodeData.properties[constructHash] = nodeData.properties[constructHash] || {
+        outputNode: null
+      };
+      return nodeData.properties[constructHash];
+    }
+  }, {
+    key: "getUniformFromNode",
+    value: function getUniformFromNode(node, shaderStage, type) {
+      var nodeData = this.getDataFromNode(node, shaderStage);
+      var nodeUniform = nodeData.uniform;
+      if (nodeUniform === undefined) {
+        var index = this.uniforms.index++;
+        nodeUniform = new _NodeUniform.default('nodeUniform' + index, type, node);
+        this.uniforms[shaderStage].push(nodeUniform);
+        nodeData.uniform = nodeUniform;
+      }
+      return nodeUniform;
+    }
+  }, {
+    key: "getVarFromNode",
+    value: function getVarFromNode(node, type, shaderStage = this.shaderStage) {
+      var nodeData = this.getDataFromNode(node, shaderStage);
+      var nodeVar = nodeData.variable;
+      if (nodeVar === undefined) {
+        var vars = this.vars[shaderStage];
+        var index = vars.length;
+        nodeVar = new _NodeVar.default('nodeVar' + index, type);
+        vars.push(nodeVar);
+        nodeData.variable = nodeVar;
+      }
+      return nodeVar;
+    }
+  }, {
+    key: "getVaryingFromNode",
+    value: function getVaryingFromNode(node, type) {
+      var nodeData = this.getDataFromNode(node, null);
+      var nodeVarying = nodeData.varying;
+      if (nodeVarying === undefined) {
+        var varyings = this.varyings;
+        var index = varyings.length;
+        nodeVarying = new _NodeVarying.default('nodeVarying' + index, type);
+        varyings.push(nodeVarying);
+        nodeData.varying = nodeVarying;
+      }
+      return nodeVarying;
+    }
+  }, {
+    key: "getCodeFromNode",
+    value: function getCodeFromNode(node, type, shaderStage = this.shaderStage) {
+      var nodeData = this.getDataFromNode(node);
+      var nodeCode = nodeData.code;
+      if (nodeCode === undefined) {
+        var codes = this.codes[shaderStage];
+        var index = codes.length;
+        nodeCode = new _NodeCode.default('nodeCode' + index, type);
+        codes.push(nodeCode);
+        nodeData.code = nodeCode;
+      }
+      return nodeCode;
+    }
+  }, {
+    key: "addFlowCode",
+    value: function addFlowCode(code) {
+      this.flow.code += code;
+    }
+  }, {
+    key: "getFlowData",
+    value: function getFlowData(node /*, shaderStage*/) {
+      return this.flowsData.get(node);
+    }
+  }, {
+    key: "flowNode",
+    value: function flowNode(node) {
+      var output = node.getNodeType(this);
+      var flowData = this.flowChildNode(node, output);
+      this.flowsData.set(node, flowData);
+      return flowData;
+    }
+  }, {
+    key: "flowChildNode",
+    value: function flowChildNode(node, output = null) {
+      var previousFlow = this.flow;
+      var flow = {
+        code: ''
+      };
+      this.flow = flow;
+      flow.result = node.build(this, output);
+      this.flow = previousFlow;
+      return flow;
+    }
+  }, {
+    key: "flowNodeFromShaderStage",
+    value: function flowNodeFromShaderStage(shaderStage, node, output = null, propertyName = null) {
+      var previousShaderStage = this.shaderStage;
+      this.setShaderStage(shaderStage);
+      var flowData = this.flowChildNode(node, output);
+      if (propertyName !== null) {
+        flowData.code += "".concat(propertyName, " = ").concat(flowData.result, ";\n\t");
+      }
+      this.flowCode[shaderStage] = this.flowCode[shaderStage] + flowData.code;
+      this.setShaderStage(previousShaderStage);
+      return flowData;
+    }
+  }, {
+    key: "getAttributes",
+    value: function getAttributes( /*shaderStage*/
+    ) {
+      console.warn('Abstract function.');
+    }
+  }, {
+    key: "getVaryings",
+    value: function getVaryings( /*shaderStage*/
+    ) {
+      console.warn('Abstract function.');
+    }
+  }, {
+    key: "getVars",
+    value: function getVars(shaderStage) {
+      var snippet = '';
+      var vars = this.vars[shaderStage];
+      var _iterator2 = _createForOfIteratorHelper(vars),
+        _step2;
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var variable = _step2.value;
+          snippet += "".concat(variable.type, " ").concat(variable.name, "; ");
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+      return snippet;
+    }
+  }, {
+    key: "getUniforms",
+    value: function getUniforms( /*shaderStage*/
+    ) {
+      console.warn('Abstract function.');
+    }
+  }, {
+    key: "getCodes",
+    value: function getCodes(shaderStage) {
+      var codes = this.codes[shaderStage];
+      var code = '';
+      var _iterator3 = _createForOfIteratorHelper(codes),
+        _step3;
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var nodeCode = _step3.value;
+          code += nodeCode.code + '\n';
+        }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+      }
+      return code;
+    }
+  }, {
+    key: "getHash",
+    value: function getHash() {
+      return this.vertexShader + this.fragmentShader + this.computeShader;
+    }
+  }, {
+    key: "setShaderStage",
+    value: function setShaderStage(shaderStage) {
+      this.shaderStage = shaderStage;
+    }
+  }, {
+    key: "getShaderStage",
+    value: function getShaderStage() {
+      return this.shaderStage;
+    }
+  }, {
+    key: "setBuildStage",
+    value: function setBuildStage(buildStage) {
+      this.buildStage = buildStage;
+    }
+  }, {
+    key: "getBuildStage",
+    value: function getBuildStage() {
+      return this.buildStage;
+    }
+  }, {
+    key: "buildCode",
+    value: function buildCode() {
+      console.warn('Abstract function.');
+    }
+  }, {
+    key: "build",
+    value: function build() {
+      // stage 1: generate shader node
+
+      this.setBuildStage('construct');
+      var _iterator4 = _createForOfIteratorHelper(shaderStages),
+        _step4;
+      try {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var shaderStage = _step4.value;
+          this.setShaderStage(shaderStage);
+          var flowNodes = this.flowNodes[shaderStage];
+          var _iterator7 = _createForOfIteratorHelper(flowNodes),
+            _step7;
+          try {
+            for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+              var node = _step7.value;
+              node.build(this);
+            }
+          } catch (err) {
+            _iterator7.e(err);
+          } finally {
+            _iterator7.f();
+          }
+        }
+
+        // stage 2: analyze nodes to possible optimization and validation
+      } catch (err) {
+        _iterator4.e(err);
+      } finally {
+        _iterator4.f();
+      }
+      this.setBuildStage('analyze');
+      var _iterator5 = _createForOfIteratorHelper(shaderStages),
+        _step5;
+      try {
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+          var _shaderStage = _step5.value;
+          this.setShaderStage(_shaderStage);
+          var _flowNodes = this.flowNodes[_shaderStage];
+          var _iterator8 = _createForOfIteratorHelper(_flowNodes),
+            _step8;
+          try {
+            for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+              var _node = _step8.value;
+              _node.build(this);
+            }
+          } catch (err) {
+            _iterator8.e(err);
+          } finally {
+            _iterator8.f();
+          }
+        }
+
+        // stage 3: pre-build vertex code used in fragment shader
+      } catch (err) {
+        _iterator5.e(err);
+      } finally {
+        _iterator5.f();
+      }
+      this.setBuildStage('generate');
+      if (this.context.vertex && this.context.vertex.isNode) {
+        this.flowNodeFromShaderStage('vertex', this.context.vertex);
+      }
+
+      // stage 4: generate shader
+
+      this.setBuildStage('generate');
+      var _iterator6 = _createForOfIteratorHelper(shaderStages),
+        _step6;
+      try {
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var _shaderStage2 = _step6.value;
+          this.setShaderStage(_shaderStage2);
+          var _flowNodes2 = this.flowNodes[_shaderStage2];
+          var _iterator9 = _createForOfIteratorHelper(_flowNodes2),
+            _step9;
+          try {
+            for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+              var _node2 = _step9.value;
+              this.flowNode(_node2);
+            }
+          } catch (err) {
+            _iterator9.e(err);
+          } finally {
+            _iterator9.f();
+          }
+        }
+      } catch (err) {
+        _iterator6.e(err);
+      } finally {
+        _iterator6.f();
+      }
+      this.setBuildStage(null);
+      this.setShaderStage(null);
+
+      // stage 5: build code for a specific output
+
+      this.buildCode();
+      return this;
+    }
+  }, {
+    key: "format",
+    value: function format(snippet, fromType, toType) {
+      fromType = this.getVectorType(fromType);
+      toType = this.getVectorType(toType);
+      if (fromType === toType || toType === null || this.isReference(toType)) {
+        return snippet;
+      }
+      var fromTypeLength = this.getTypeLength(fromType);
+      var toTypeLength = this.getTypeLength(toType);
+      if (fromTypeLength > 4) {
+        // fromType is matrix-like
+
+        // @TODO: ignore for now
+
+        return snippet;
+      }
+      if (toTypeLength > 4 || toTypeLength === 0) {
+        // toType is matrix-like or unknown
+
+        // @TODO: ignore for now
+
+        return snippet;
+      }
+      if (fromTypeLength === toTypeLength) {
+        return "".concat(this.getType(toType), "( ").concat(snippet, " )");
+      }
+      if (fromTypeLength > toTypeLength) {
+        return this.format("".concat(snippet, ".").concat('xyz'.slice(0, toTypeLength)), this.getTypeFromLength(toTypeLength), toType);
+      }
+      if (toTypeLength === 4) {
+        // toType is vec4-like
+
+        return "".concat(this.getType(toType), "( ").concat(this.format(snippet, fromType, 'vec3'), ", 1.0 )");
+      }
+      if (fromTypeLength === 2) {
+        // fromType is vec2-like and toType is vec3-like
+
+        return "".concat(this.getType(toType), "( ").concat(this.format(snippet, fromType, 'vec2'), ", 0.0 )");
+      }
+      return "".concat(this.getType(toType), "( ").concat(snippet, " )"); // fromType is float-like
+    }
+  }, {
+    key: "getSignature",
+    value: function getSignature() {
+      return "// Three.js r".concat(_three.REVISION, " - NodeMaterial System\n");
+    }
+  }]);
+  return NodeBuilder;
+}();
+var _default = NodeBuilder;
+exports.default = _default;
+},{"./NodeUniform.js":"../node_modules/three/examples/jsm/nodes/core/NodeUniform.js","./NodeAttribute.js":"../node_modules/three/examples/jsm/nodes/core/NodeAttribute.js","./NodeVarying.js":"../node_modules/three/examples/jsm/nodes/core/NodeVarying.js","./NodeVar.js":"../node_modules/three/examples/jsm/nodes/core/NodeVar.js","./NodeCode.js":"../node_modules/three/examples/jsm/nodes/core/NodeCode.js","./NodeKeywords.js":"../node_modules/three/examples/jsm/nodes/core/NodeKeywords.js","./constants.js":"../node_modules/three/examples/jsm/nodes/core/constants.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/core/NodeFrame.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _constants = require("./constants.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+var NodeFrame = /*#__PURE__*/function () {
+  function NodeFrame() {
+    _classCallCheck(this, NodeFrame);
+    this.time = 0;
+    this.deltaTime = 0;
+    this.frameId = 0;
+    this.startTime = null;
+    this.updateMap = new WeakMap();
+    this.renderer = null;
+    this.material = null;
+    this.camera = null;
+    this.object = null;
+  }
+  _createClass(NodeFrame, [{
+    key: "updateNode",
+    value: function updateNode(node) {
+      if (node.updateType === _constants.NodeUpdateType.FRAME) {
+        if (this.updateMap.get(node) !== this.frameId) {
+          this.updateMap.set(node, this.frameId);
+          node.update(this);
+        }
+      } else if (node.updateType === _constants.NodeUpdateType.OBJECT) {
+        node.update(this);
+      }
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      this.frameId++;
+      if (this.lastTime === undefined) this.lastTime = performance.now();
+      this.deltaTime = (performance.now() - this.lastTime) / 1000;
+      this.lastTime = performance.now();
+      this.time += this.deltaTime;
+    }
+  }]);
+  return NodeFrame;
+}();
+var _default = NodeFrame;
+exports.default = _default;
+},{"./constants.js":"../node_modules/three/examples/jsm/nodes/core/constants.js"}],"../node_modules/three/examples/jsm/nodes/core/NodeFunctionInput.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var NodeFunctionInput = /*#__PURE__*/_createClass(function NodeFunctionInput(type, name, count = null, qualifier = '', isConst = false) {
+  _classCallCheck(this, NodeFunctionInput);
+  this.type = type;
+  this.name = name;
+  this.count = count;
+  this.qualifier = qualifier;
+  this.isConst = isConst;
+});
+NodeFunctionInput.isNodeFunctionInput = true;
+var _default = NodeFunctionInput;
+exports.default = _default;
+},{}],"../node_modules/three/examples/jsm/nodes/core/PropertyNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("./Node.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var PropertyNode = /*#__PURE__*/function (_Node) {
+  _inherits(PropertyNode, _Node);
+  var _super = _createSuper(PropertyNode);
+  function PropertyNode(name = null, nodeType = 'vec4') {
+    var _this;
+    _classCallCheck(this, PropertyNode);
+    _this = _super.call(this, nodeType);
+    _this.name = name;
+    return _this;
+  }
+  _createClass(PropertyNode, [{
+    key: "getHash",
+    value: function getHash(builder) {
+      return this.name || _get(_getPrototypeOf(PropertyNode.prototype), "getHash", this).call(this, builder);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var nodeVary = builder.getVarFromNode(this, this.getNodeType(builder));
+      var name = this.name;
+      if (name !== null) {
+        nodeVary.name = name;
+      }
+      return builder.getPropertyName(nodeVary);
+    }
+  }]);
+  return PropertyNode;
+}(_Node2.default);
+var _default = PropertyNode;
+exports.default = _default;
+},{"./Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js"}],"../node_modules/three/examples/jsm/nodes/math/OperatorNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _TempNode2 = _interopRequireDefault(require("../core/TempNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var OperatorNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(OperatorNode, _TempNode);
+  var _super = _createSuper(OperatorNode);
+  function OperatorNode(op, aNode, bNode, ...params) {
+    var _this;
+    _classCallCheck(this, OperatorNode);
+    _this = _super.call(this);
+    _this.op = op;
+    if (params.length > 0) {
+      var finalBNode = bNode;
+      for (var i = 0; i < params.length; i++) {
+        finalBNode = new OperatorNode(op, finalBNode, params[i]);
+      }
+      bNode = finalBNode;
+    }
+    _this.aNode = aNode;
+    _this.bNode = bNode;
+    return _this;
+  }
+  _createClass(OperatorNode, [{
+    key: "getNodeType",
+    value: function getNodeType(builder, output) {
+      var op = this.op;
+      var aNode = this.aNode;
+      var bNode = this.bNode;
+      var typeA = aNode.getNodeType(builder);
+      var typeB = bNode.getNodeType(builder);
+      if (typeA === 'void' || typeB === 'void') {
+        return 'void';
+      } else if (op === '=' || op === '%') {
+        return typeA;
+      } else if (op === '&' || op === '|' || op === '^' || op === '>>' || op === '<<') {
+        return 'int';
+      } else if (op === '==' || op === '&&' || op === '||' || op === '^^') {
+        return 'bool';
+      } else if (op === '<' || op === '>' || op === '<=' || op === '>=') {
+        var typeLength = builder.getTypeLength(output);
+        return typeLength > 1 ? "bvec".concat(typeLength) : 'bool';
+      } else {
+        if (typeA === 'float' && builder.isMatrix(typeB)) {
+          return typeB;
+        } else if (builder.isMatrix(typeA) && builder.isVector(typeB)) {
+          // matrix x vector
+
+          return builder.getVectorFromMatrix(typeA);
+        } else if (builder.isVector(typeA) && builder.isMatrix(typeB)) {
+          // vector x matrix
+
+          return builder.getVectorFromMatrix(typeB);
+        } else if (builder.getTypeLength(typeB) > builder.getTypeLength(typeA)) {
+          // anytype x anytype: use the greater length vector
+
+          return typeB;
+        }
+        return typeA;
+      }
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var op = this.op;
+      var aNode = this.aNode;
+      var bNode = this.bNode;
+      var type = this.getNodeType(builder, output);
+      var typeA = null;
+      var typeB = null;
+      if (type !== 'void') {
+        typeA = aNode.getNodeType(builder);
+        typeB = bNode.getNodeType(builder);
+        if (op === '=') {
+          typeB = typeA;
+        } else if (op === '<' || op === '>' || op === '<=' || op === '>=') {
+          if (builder.isVector(typeA)) {
+            typeB = typeA;
+          } else {
+            typeA = typeB = 'float';
+          }
+        } else if (builder.isMatrix(typeA) && builder.isVector(typeB)) {
+          // matrix x vector
+
+          typeB = builder.getVectorFromMatrix(typeA);
+        } else if (builder.isVector(typeA) && builder.isMatrix(typeB)) {
+          // vector x matrix
+
+          typeA = builder.getVectorFromMatrix(typeB);
+        } else {
+          // anytype x anytype
+
+          typeA = typeB = type;
+        }
+      } else {
+        typeA = typeB = type;
+      }
+      var a = aNode.build(builder, typeA);
+      var b = bNode.build(builder, typeB);
+      var outputLength = builder.getTypeLength(output);
+      if (output !== 'void') {
+        if (op === '=') {
+          builder.addFlowCode("".concat(a, " ").concat(this.op, " ").concat(b));
+          return a;
+        } else if (op === '<' && outputLength > 1) {
+          return builder.format("".concat(builder.getMethod('lessThan'), "( ").concat(a, ", ").concat(b, " )"), type, output);
+        } else if (op === '<=' && outputLength > 1) {
+          return builder.format("".concat(builder.getMethod('lessThanEqual'), "( ").concat(a, ", ").concat(b, " )"), type, output);
+        } else if (op === '>' && outputLength > 1) {
+          return builder.format("".concat(builder.getMethod('greaterThan'), "( ").concat(a, ", ").concat(b, " )"), type, output);
+        } else if (op === '>=' && outputLength > 1) {
+          return builder.format("".concat(builder.getMethod('greaterThanEqual'), "( ").concat(a, ", ").concat(b, " )"), type, output);
+        } else {
+          return builder.format("( ".concat(a, " ").concat(this.op, " ").concat(b, " )"), type, output);
+        }
+      } else if (typeA !== 'void') {
+        return builder.format("".concat(a, " ").concat(this.op, " ").concat(b), type, output);
+      }
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(OperatorNode.prototype), "serialize", this).call(this, data);
+      data.op = this.op;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(OperatorNode.prototype), "deserialize", this).call(this, data);
+      this.op = data.op;
+    }
+  }]);
+  return OperatorNode;
+}(_TempNode2.default);
+var _default = OperatorNode;
+exports.default = _default;
+},{"../core/TempNode.js":"../node_modules/three/examples/jsm/nodes/core/TempNode.js"}],"../node_modules/three/examples/jsm/nodes/core/VarNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("./Node.js"));
+var _OperatorNode = _interopRequireDefault(require("../math/OperatorNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct.bind(); } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var VarNode = /*#__PURE__*/function (_Node) {
+  _inherits(VarNode, _Node);
+  var _super = _createSuper(VarNode);
+  function VarNode(node, name = null) {
+    var _this;
+    _classCallCheck(this, VarNode);
+    _this = _super.call(this);
+    _this.node = node;
+    _this.name = name;
+    return _this;
+  }
+  _createClass(VarNode, [{
+    key: "op",
+    value: function op(_op, ...params) {
+      this.node = _construct(_OperatorNode.default, [_op, this.node].concat(params));
+      return this;
+    }
+  }, {
+    key: "assign",
+    value: function assign(...params) {
+      return this.op.apply(this, ['='].concat(params));
+    }
+  }, {
+    key: "add",
+    value: function add(...params) {
+      return this.op.apply(this, ['+'].concat(params));
+    }
+  }, {
+    key: "sub",
+    value: function sub(...params) {
+      return this.op.apply(this, ['-'].concat(params));
+    }
+  }, {
+    key: "mul",
+    value: function mul(...params) {
+      return this.op.apply(this, ['*'].concat(params));
+    }
+  }, {
+    key: "div",
+    value: function div(...params) {
+      return this.op.apply(this, ['/'].concat(params));
+    }
+  }, {
+    key: "getHash",
+    value: function getHash(builder) {
+      return this.name || _get(_getPrototypeOf(VarNode.prototype), "getHash", this).call(this, builder);
+    }
+  }, {
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      return this.node.getNodeType(builder);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var node = this.node;
+      var name = this.name;
+      if (name === null && node.isTempNode === true) {
+        return node.build(builder);
+      }
+      var type = builder.getVectorType(this.getNodeType(builder));
+      var snippet = node.build(builder, type);
+      var nodeVar = builder.getVarFromNode(this, type);
+      if (name !== null) {
+        nodeVar.name = name;
+      }
+      var propertyName = builder.getPropertyName(nodeVar);
+      builder.addFlowCode("".concat(propertyName, " = ").concat(snippet));
+      return propertyName;
+    }
+  }]);
+  return VarNode;
+}(_Node2.default);
+var _default = VarNode;
+exports.default = _default;
+},{"./Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../math/OperatorNode.js":"../node_modules/three/examples/jsm/nodes/math/OperatorNode.js"}],"../node_modules/three/examples/jsm/nodes/utils/SplitNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _NodeBuilder = require("../core/NodeBuilder.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var vectorComponents = 'xyzw';
+var SplitNode = /*#__PURE__*/function (_Node) {
+  _inherits(SplitNode, _Node);
+  var _super = _createSuper(SplitNode);
+  function SplitNode(node, components = 'x') {
+    var _this;
+    _classCallCheck(this, SplitNode);
+    _this = _super.call(this);
+    _this.node = node;
+    _this.components = components;
+    return _this;
+  }
+  _createClass(SplitNode, [{
+    key: "getVectorLength",
+    value: function getVectorLength() {
+      var vectorLength = this.components.length;
+      var _iterator = _createForOfIteratorHelper(this.components),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var c = _step.value;
+          vectorLength = Math.max(_NodeBuilder.vector.indexOf(c) + 1, vectorLength);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+      return vectorLength;
+    }
+  }, {
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      return builder.getTypeFromLength(this.components.length);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var node = this.node;
+      var nodeTypeLength = builder.getTypeLength(node.getNodeType(builder));
+      var snippet = null;
+      if (nodeTypeLength > 1) {
+        var type = null;
+        var componentsLength = this.getVectorLength();
+        if (componentsLength >= nodeTypeLength) {
+          // needed expand the input node
+
+          type = builder.getTypeFromLength(this.getVectorLength());
+        }
+        var nodeSnippet = node.build(builder, type);
+        if (this.components.length === nodeTypeLength && this.components === vectorComponents.slice(0, this.components.length)) {
+          // unecessary swizzle
+
+          snippet = builder.format(nodeSnippet, type, output);
+        } else {
+          snippet = builder.format("".concat(nodeSnippet, ".").concat(this.components), this.getNodeType(builder), output);
+        }
+      } else {
+        // ignore .components if .node returns float/integer
+
+        snippet = node.build(builder, output);
+      }
+      return snippet;
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(SplitNode.prototype), "serialize", this).call(this, data);
+      data.components = this.components;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(SplitNode.prototype), "deserialize", this).call(this, data);
+      this.components = data.components;
+    }
+  }]);
+  return SplitNode;
+}(_Node2.default);
+var _default = SplitNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../core/NodeBuilder.js":"../node_modules/three/examples/jsm/nodes/core/NodeBuilder.js"}],"../node_modules/three/examples/jsm/nodes/math/MathNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _TempNode2 = _interopRequireDefault(require("../core/TempNode.js"));
+var _ExpressionNode = _interopRequireDefault(require("../core/ExpressionNode.js"));
+var _SplitNode = _interopRequireDefault(require("../utils/SplitNode.js"));
+var _OperatorNode = _interopRequireDefault(require("./OperatorNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var MathNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(MathNode, _TempNode);
+  var _super = _createSuper(MathNode);
+  // 1 input
+
+  // 2 inputs
+
+  // 3 inputs
+
+  function MathNode(method, aNode, bNode = null, cNode = null) {
+    var _this;
+    _classCallCheck(this, MathNode);
+    _this = _super.call(this);
+    _this.method = method;
+    _this.aNode = aNode;
+    _this.bNode = bNode;
+    _this.cNode = cNode;
+    return _this;
+  }
+  _createClass(MathNode, [{
+    key: "getInputType",
+    value: function getInputType(builder) {
+      var aType = this.aNode.getNodeType(builder);
+      var bType = this.bNode ? this.bNode.getNodeType(builder) : null;
+      var cType = this.cNode ? this.cNode.getNodeType(builder) : null;
+      var aLen = builder.isMatrix(aType) ? 0 : builder.getTypeLength(aType);
+      var bLen = builder.isMatrix(bType) ? 0 : builder.getTypeLength(bType);
+      var cLen = builder.isMatrix(cType) ? 0 : builder.getTypeLength(cType);
+      if (aLen > bLen && aLen > cLen) {
+        return aType;
+      } else if (bLen > cLen) {
+        return bType;
+      } else if (cLen > aLen) {
+        return cType;
+      }
+      return aType;
+    }
+  }, {
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      var method = this.method;
+      if (method === MathNode.LENGTH || method === MathNode.DISTANCE || method === MathNode.DOT) {
+        return 'float';
+      } else if (method === MathNode.CROSS) {
+        return 'vec3';
+      } else {
+        return this.getInputType(builder);
+      }
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var method = this.method;
+      var type = this.getNodeType(builder);
+      var inputType = this.getInputType(builder);
+      var a = this.aNode;
+      var b = this.bNode;
+      var c = this.cNode;
+      var isWebGL = builder.renderer.isWebGLRenderer === true;
+      if (method === MathNode.TRANSFORM_DIRECTION) {
+        // dir can be either a direction vector or a normal vector
+        // upper-left 3x3 of matrix is assumed to be orthogonal
+
+        var tA = a;
+        var tB = b;
+        if (builder.isMatrix(tA.getNodeType(builder))) {
+          tB = new _ExpressionNode.default("".concat(builder.getType('vec4'), "( ").concat(tB.build(builder, 'vec3'), ", 0.0 )"), 'vec4');
+        } else {
+          tA = new _ExpressionNode.default("".concat(builder.getType('vec4'), "( ").concat(tA.build(builder, 'vec3'), ", 0.0 )"), 'vec4');
+        }
+        var mulNode = new _SplitNode.default(new _OperatorNode.default('*', tA, tB), 'xyz');
+        return new MathNode(MathNode.NORMALIZE, mulNode).build(builder);
+      } else if (method === MathNode.NEGATE) {
+        return builder.format('( -' + a.build(builder, inputType) + ' )', type, output);
+      } else if (method === MathNode.INVERT) {
+        return builder.format('( 1.0 - ' + a.build(builder, inputType) + ' )', type, output);
+      } else if (method === MathNode.RECIPROCAL) {
+        return builder.format('( 1.0 / ' + a.build(builder, inputType) + ' )', type, output);
+      } else {
+        var params = [];
+        if (method === MathNode.CROSS) {
+          params.push(a.build(builder, type), b.build(builder, type));
+        } else if (method === MathNode.STEP) {
+          params.push(a.build(builder, builder.getTypeLength(a.getNodeType(builder)) === 1 ? 'float' : inputType), b.build(builder, inputType));
+        } else if (isWebGL && (method === MathNode.MIN || method === MathNode.MAX) || method === MathNode.MOD) {
+          params.push(a.build(builder, inputType), b.build(builder, builder.getTypeLength(b.getNodeType(builder)) === 1 ? 'float' : inputType));
+        } else if (method === MathNode.REFRACT) {
+          params.push(a.build(builder, inputType), b.build(builder, inputType), c.build(builder, 'float'));
+        } else if (method === MathNode.MIX) {
+          params.push(a.build(builder, inputType), b.build(builder, inputType), c.build(builder, builder.getTypeLength(c.getNodeType(builder)) === 1 ? 'float' : inputType));
+        } else {
+          params.push(a.build(builder, inputType));
+          if (c !== null) {
+            params.push(b.build(builder, inputType), c.build(builder, inputType));
+          } else if (b !== null) {
+            params.push(b.build(builder, inputType));
+          }
+        }
+        return builder.format("".concat(builder.getMethod(method), "( ").concat(params.join(', '), " )"), type, output);
+      }
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(MathNode.prototype), "serialize", this).call(this, data);
+      data.method = this.method;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(MathNode.prototype), "deserialize", this).call(this, data);
+      this.method = data.method;
+    }
+  }]);
+  return MathNode;
+}(_TempNode2.default);
+_defineProperty(MathNode, "RADIANS", 'radians');
+_defineProperty(MathNode, "DEGREES", 'degrees');
+_defineProperty(MathNode, "EXP", 'exp');
+_defineProperty(MathNode, "EXP2", 'exp2');
+_defineProperty(MathNode, "LOG", 'log');
+_defineProperty(MathNode, "LOG2", 'log2');
+_defineProperty(MathNode, "SQRT", 'sqrt');
+_defineProperty(MathNode, "INVERSE_SQRT", 'inversesqrt');
+_defineProperty(MathNode, "FLOOR", 'floor');
+_defineProperty(MathNode, "CEIL", 'ceil');
+_defineProperty(MathNode, "NORMALIZE", 'normalize');
+_defineProperty(MathNode, "FRACT", 'fract');
+_defineProperty(MathNode, "SIN", 'sin');
+_defineProperty(MathNode, "COS", 'cos');
+_defineProperty(MathNode, "TAN", 'tan');
+_defineProperty(MathNode, "ASIN", 'asin');
+_defineProperty(MathNode, "ACOS", 'acos');
+_defineProperty(MathNode, "ATAN", 'atan');
+_defineProperty(MathNode, "ABS", 'abs');
+_defineProperty(MathNode, "SIGN", 'sign');
+_defineProperty(MathNode, "LENGTH", 'length');
+_defineProperty(MathNode, "NEGATE", 'negate');
+_defineProperty(MathNode, "INVERT", 'invert');
+_defineProperty(MathNode, "DFDX", 'dFdx');
+_defineProperty(MathNode, "DFDY", 'dFdy');
+_defineProperty(MathNode, "ROUND", 'round');
+_defineProperty(MathNode, "RECIPROCAL", 'reciprocal');
+_defineProperty(MathNode, "ATAN2", 'atan2');
+_defineProperty(MathNode, "MIN", 'min');
+_defineProperty(MathNode, "MAX", 'max');
+_defineProperty(MathNode, "MOD", 'mod');
+_defineProperty(MathNode, "STEP", 'step');
+_defineProperty(MathNode, "REFLECT", 'reflect');
+_defineProperty(MathNode, "DISTANCE", 'distance');
+_defineProperty(MathNode, "DOT", 'dot');
+_defineProperty(MathNode, "CROSS", 'cross');
+_defineProperty(MathNode, "POW", 'pow');
+_defineProperty(MathNode, "TRANSFORM_DIRECTION", 'transformDirection');
+_defineProperty(MathNode, "MIX", 'mix');
+_defineProperty(MathNode, "CLAMP", 'clamp');
+_defineProperty(MathNode, "REFRACT", 'refract');
+_defineProperty(MathNode, "SMOOTHSTEP", 'smoothstep');
+_defineProperty(MathNode, "FACEFORWARD", 'faceforward');
+var _default = MathNode;
+exports.default = _default;
+},{"../core/TempNode.js":"../node_modules/three/examples/jsm/nodes/core/TempNode.js","../core/ExpressionNode.js":"../node_modules/three/examples/jsm/nodes/core/ExpressionNode.js","../utils/SplitNode.js":"../node_modules/three/examples/jsm/nodes/utils/SplitNode.js","./OperatorNode.js":"../node_modules/three/examples/jsm/nodes/math/OperatorNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/Object3DNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _three = require("three");
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _UniformNode = _interopRequireDefault(require("../core/UniformNode.js"));
+var _constants = require("../core/constants.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var Object3DNode = /*#__PURE__*/function (_Node) {
+  _inherits(Object3DNode, _Node);
+  var _super = _createSuper(Object3DNode);
+  function Object3DNode(scope = Object3DNode.VIEW_MATRIX, object3d = null) {
+    var _this;
+    _classCallCheck(this, Object3DNode);
+    _this = _super.call(this);
+    _this.scope = scope;
+    _this.object3d = object3d;
+    _this.updateType = _constants.NodeUpdateType.OBJECT;
+    _this._uniformNode = new _UniformNode.default(null);
+    return _this;
+  }
+  _createClass(Object3DNode, [{
+    key: "getNodeType",
+    value: function getNodeType() {
+      var scope = this.scope;
+      if (scope === Object3DNode.WORLD_MATRIX || scope === Object3DNode.VIEW_MATRIX) {
+        return 'mat4';
+      } else if (scope === Object3DNode.NORMAL_MATRIX) {
+        return 'mat3';
+      } else if (scope === Object3DNode.POSITION || scope === Object3DNode.VIEW_POSITION) {
+        return 'vec3';
+      }
+    }
+  }, {
+    key: "update",
+    value: function update(frame) {
+      var object = this.object3d;
+      var uniformNode = this._uniformNode;
+      var scope = this.scope;
+      if (scope === Object3DNode.VIEW_MATRIX) {
+        uniformNode.value = object.modelViewMatrix;
+      } else if (scope === Object3DNode.NORMAL_MATRIX) {
+        uniformNode.value = object.normalMatrix;
+      } else if (scope === Object3DNode.WORLD_MATRIX) {
+        uniformNode.value = object.matrixWorld;
+      } else if (scope === Object3DNode.POSITION) {
+        uniformNode.value.setFromMatrixPosition(object.matrixWorld);
+      } else if (scope === Object3DNode.VIEW_POSITION) {
+        var camera = frame.camera;
+        uniformNode.value = uniformNode.value || new _three.Vector3();
+        uniformNode.value.setFromMatrixPosition(object.matrixWorld);
+        uniformNode.value.applyMatrix4(camera.matrixWorldInverse);
+      }
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var scope = this.scope;
+      if (scope === Object3DNode.WORLD_MATRIX || scope === Object3DNode.VIEW_MATRIX) {
+        this._uniformNode.nodeType = 'mat4';
+      } else if (scope === Object3DNode.NORMAL_MATRIX) {
+        this._uniformNode.nodeType = 'mat3';
+      } else if (scope === Object3DNode.POSITION || scope === Object3DNode.VIEW_POSITION) {
+        this._uniformNode.nodeType = 'vec3';
+      }
+      return this._uniformNode.build(builder);
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(Object3DNode.prototype), "serialize", this).call(this, data);
+      data.scope = this.scope;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(Object3DNode.prototype), "deserialize", this).call(this, data);
+      this.scope = data.scope;
+    }
+  }]);
+  return Object3DNode;
+}(_Node2.default);
+_defineProperty(Object3DNode, "VIEW_MATRIX", 'viewMatrix');
+_defineProperty(Object3DNode, "NORMAL_MATRIX", 'normalMatrix');
+_defineProperty(Object3DNode, "WORLD_MATRIX", 'worldMatrix');
+_defineProperty(Object3DNode, "POSITION", 'position');
+_defineProperty(Object3DNode, "VIEW_POSITION", 'viewPosition');
+var _default = Object3DNode;
+exports.default = _default;
+},{"three":"../node_modules/three/build/three.module.js","../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../core/UniformNode.js":"../node_modules/three/examples/jsm/nodes/core/UniformNode.js","../core/constants.js":"../node_modules/three/examples/jsm/nodes/core/constants.js"}],"../node_modules/three/examples/jsm/nodes/accessors/ModelNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Object3DNode2 = _interopRequireDefault(require("./Object3DNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var ModelNode = /*#__PURE__*/function (_Object3DNode) {
+  _inherits(ModelNode, _Object3DNode);
+  var _super = _createSuper(ModelNode);
+  function ModelNode(scope = ModelNode.VIEW_MATRIX) {
+    _classCallCheck(this, ModelNode);
+    return _super.call(this, scope);
+  }
+  _createClass(ModelNode, [{
+    key: "update",
+    value: function update(frame) {
+      this.object3d = frame.object;
+      _get(_getPrototypeOf(ModelNode.prototype), "update", this).call(this, frame);
+    }
+  }]);
+  return ModelNode;
+}(_Object3DNode2.default);
+var _default = ModelNode;
+exports.default = _default;
+},{"./Object3DNode.js":"../node_modules/three/examples/jsm/nodes/accessors/Object3DNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/CameraNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Object3DNode2 = _interopRequireDefault(require("./Object3DNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var CameraNode = /*#__PURE__*/function (_Object3DNode) {
+  _inherits(CameraNode, _Object3DNode);
+  var _super = _createSuper(CameraNode);
+  function CameraNode(scope = CameraNode.POSITION) {
+    _classCallCheck(this, CameraNode);
+    return _super.call(this, scope);
+  }
+  _createClass(CameraNode, [{
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      var scope = this.scope;
+      if (scope === CameraNode.PROJECTION_MATRIX) {
+        return 'mat4';
+      }
+      return _get(_getPrototypeOf(CameraNode.prototype), "getNodeType", this).call(this, builder);
+    }
+  }, {
+    key: "update",
+    value: function update(frame) {
+      var camera = frame.camera;
+      var uniformNode = this._uniformNode;
+      var scope = this.scope;
+      if (scope === CameraNode.PROJECTION_MATRIX) {
+        uniformNode.value = camera.projectionMatrix;
+      } else if (scope === CameraNode.VIEW_MATRIX) {
+        uniformNode.value = camera.matrixWorldInverse;
+      } else {
+        this.object3d = camera;
+        _get(_getPrototypeOf(CameraNode.prototype), "update", this).call(this, frame);
+      }
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var scope = this.scope;
+      if (scope === CameraNode.PROJECTION_MATRIX) {
+        this._uniformNode.nodeType = 'mat4';
+      }
+      return _get(_getPrototypeOf(CameraNode.prototype), "generate", this).call(this, builder);
+    }
+  }]);
+  return CameraNode;
+}(_Object3DNode2.default);
+_defineProperty(CameraNode, "PROJECTION_MATRIX", 'projectionMatrix');
+var _default = CameraNode;
+exports.default = _default;
+},{"./Object3DNode.js":"../node_modules/three/examples/jsm/nodes/accessors/Object3DNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/NormalNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _AttributeNode = _interopRequireDefault(require("../core/AttributeNode.js"));
+var _VaryingNode = _interopRequireDefault(require("../core/VaryingNode.js"));
+var _ModelNode = _interopRequireDefault(require("../accessors/ModelNode.js"));
+var _CameraNode = _interopRequireDefault(require("../accessors/CameraNode.js"));
+var _OperatorNode = _interopRequireDefault(require("../math/OperatorNode.js"));
+var _MathNode = _interopRequireDefault(require("../math/MathNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var NormalNode = /*#__PURE__*/function (_Node) {
+  _inherits(NormalNode, _Node);
+  var _super = _createSuper(NormalNode);
+  function NormalNode(scope = NormalNode.LOCAL) {
+    var _this;
+    _classCallCheck(this, NormalNode);
+    _this = _super.call(this, 'vec3');
+    _this.scope = scope;
+    return _this;
+  }
+  _createClass(NormalNode, [{
+    key: "getHash",
+    value: function getHash( /*builder*/
+    ) {
+      return "normal-".concat(this.scope);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var scope = this.scope;
+      var outputNode = null;
+      if (scope === NormalNode.GEOMETRY) {
+        outputNode = new _AttributeNode.default('normal', 'vec3');
+      } else if (scope === NormalNode.LOCAL) {
+        outputNode = new _VaryingNode.default(new NormalNode(NormalNode.GEOMETRY));
+      } else if (scope === NormalNode.VIEW) {
+        var vertexNode = new _OperatorNode.default('*', new _ModelNode.default(_ModelNode.default.NORMAL_MATRIX), new NormalNode(NormalNode.LOCAL));
+        outputNode = new _MathNode.default(_MathNode.default.NORMALIZE, new _VaryingNode.default(vertexNode));
+      } else if (scope === NormalNode.WORLD) {
+        // To use INVERSE_TRANSFORM_DIRECTION only inverse the param order like this: MathNode( ..., Vector, Matrix );
+        var _vertexNode = new _MathNode.default(_MathNode.default.TRANSFORM_DIRECTION, new NormalNode(NormalNode.VIEW), new _CameraNode.default(_CameraNode.default.VIEW_MATRIX));
+        outputNode = new _MathNode.default(_MathNode.default.NORMALIZE, new _VaryingNode.default(_vertexNode));
+      }
+      return outputNode.build(builder, this.getNodeType(builder));
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(NormalNode.prototype), "serialize", this).call(this, data);
+      data.scope = this.scope;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(NormalNode.prototype), "deserialize", this).call(this, data);
+      this.scope = data.scope;
+    }
+  }]);
+  return NormalNode;
+}(_Node2.default);
+_defineProperty(NormalNode, "GEOMETRY", 'geometry');
+_defineProperty(NormalNode, "LOCAL", 'local');
+_defineProperty(NormalNode, "VIEW", 'view');
+_defineProperty(NormalNode, "WORLD", 'world');
+var _default = NormalNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../core/AttributeNode.js":"../node_modules/three/examples/jsm/nodes/core/AttributeNode.js","../core/VaryingNode.js":"../node_modules/three/examples/jsm/nodes/core/VaryingNode.js","../accessors/ModelNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ModelNode.js","../accessors/CameraNode.js":"../node_modules/three/examples/jsm/nodes/accessors/CameraNode.js","../math/OperatorNode.js":"../node_modules/three/examples/jsm/nodes/math/OperatorNode.js","../math/MathNode.js":"../node_modules/three/examples/jsm/nodes/math/MathNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/TangentNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _AttributeNode = _interopRequireDefault(require("../core/AttributeNode.js"));
+var _VaryingNode = _interopRequireDefault(require("../core/VaryingNode.js"));
+var _ModelNode = _interopRequireDefault(require("../accessors/ModelNode.js"));
+var _CameraNode = _interopRequireDefault(require("../accessors/CameraNode.js"));
+var _OperatorNode = _interopRequireDefault(require("../math/OperatorNode.js"));
+var _MathNode = _interopRequireDefault(require("../math/MathNode.js"));
+var _SplitNode = _interopRequireDefault(require("../utils/SplitNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var TangentNode = /*#__PURE__*/function (_Node) {
+  _inherits(TangentNode, _Node);
+  var _super = _createSuper(TangentNode);
+  function TangentNode(scope = TangentNode.LOCAL) {
+    var _this;
+    _classCallCheck(this, TangentNode);
+    _this = _super.call(this);
+    _this.scope = scope;
+    return _this;
+  }
+  _createClass(TangentNode, [{
+    key: "getHash",
+    value: function getHash( /*builder*/
+    ) {
+      return "tangent-".concat(this.scope);
+    }
+  }, {
+    key: "getNodeType",
+    value: function getNodeType() {
+      var scope = this.scope;
+      if (scope === TangentNode.GEOMETRY) {
+        return 'vec4';
+      }
+      return 'vec3';
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var scope = this.scope;
+      var outputNode = null;
+      if (scope === TangentNode.GEOMETRY) {
+        outputNode = new _AttributeNode.default('tangent', 'vec4');
+      } else if (scope === TangentNode.LOCAL) {
+        outputNode = new _VaryingNode.default(new _SplitNode.default(new TangentNode(TangentNode.GEOMETRY), 'xyz'));
+      } else if (scope === TangentNode.VIEW) {
+        var vertexNode = new _SplitNode.default(new _OperatorNode.default('*', new _ModelNode.default(_ModelNode.default.VIEW_MATRIX), new TangentNode(TangentNode.LOCAL)), 'xyz');
+        outputNode = new _MathNode.default(_MathNode.default.NORMALIZE, new _VaryingNode.default(vertexNode));
+      } else if (scope === TangentNode.WORLD) {
+        var _vertexNode = new _MathNode.default(_MathNode.default.TRANSFORM_DIRECTION, new TangentNode(TangentNode.VIEW), new _CameraNode.default(_CameraNode.default.VIEW_MATRIX));
+        outputNode = new _MathNode.default(_MathNode.default.NORMALIZE, new _VaryingNode.default(_vertexNode));
+      }
+      return outputNode.build(builder, this.getNodeType(builder));
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(TangentNode.prototype), "serialize", this).call(this, data);
+      data.scope = this.scope;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(TangentNode.prototype), "deserialize", this).call(this, data);
+      this.scope = data.scope;
+    }
+  }]);
+  return TangentNode;
+}(_Node2.default);
+_defineProperty(TangentNode, "GEOMETRY", 'geometry');
+_defineProperty(TangentNode, "LOCAL", 'local');
+_defineProperty(TangentNode, "VIEW", 'view');
+_defineProperty(TangentNode, "WORLD", 'world');
+var _default = TangentNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../core/AttributeNode.js":"../node_modules/three/examples/jsm/nodes/core/AttributeNode.js","../core/VaryingNode.js":"../node_modules/three/examples/jsm/nodes/core/VaryingNode.js","../accessors/ModelNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ModelNode.js","../accessors/CameraNode.js":"../node_modules/three/examples/jsm/nodes/accessors/CameraNode.js","../math/OperatorNode.js":"../node_modules/three/examples/jsm/nodes/math/OperatorNode.js","../math/MathNode.js":"../node_modules/three/examples/jsm/nodes/math/MathNode.js","../utils/SplitNode.js":"../node_modules/three/examples/jsm/nodes/utils/SplitNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/BitangentNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _VaryingNode = _interopRequireDefault(require("../core/VaryingNode.js"));
+var _OperatorNode = _interopRequireDefault(require("../math/OperatorNode.js"));
+var _MathNode = _interopRequireDefault(require("../math/MathNode.js"));
+var _SplitNode = _interopRequireDefault(require("../utils/SplitNode.js"));
+var _NormalNode = _interopRequireDefault(require("./NormalNode.js"));
+var _TangentNode = _interopRequireDefault(require("./TangentNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var BitangentNode = /*#__PURE__*/function (_Node) {
+  _inherits(BitangentNode, _Node);
+  var _super = _createSuper(BitangentNode);
+  function BitangentNode(scope = BitangentNode.LOCAL) {
+    var _this;
+    _classCallCheck(this, BitangentNode);
+    _this = _super.call(this, 'vec3');
+    _this.scope = scope;
+    return _this;
+  }
+  _createClass(BitangentNode, [{
+    key: "getHash",
+    value: function getHash( /*builder*/
+    ) {
+      return "bitangent-".concat(this.scope);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var scope = this.scope;
+      var crossNormalTangent = new _MathNode.default(_MathNode.default.CROSS, new _NormalNode.default(scope), new _TangentNode.default(scope));
+      var tangentW = new _SplitNode.default(new _TangentNode.default(_TangentNode.default.GEOMETRY), 'w');
+      var vertexNode = new _SplitNode.default(new _OperatorNode.default('*', crossNormalTangent, tangentW), 'xyz');
+      var outputNode = new _MathNode.default(_MathNode.default.NORMALIZE, new _VaryingNode.default(vertexNode));
+      return outputNode.build(builder, this.getNodeType(builder));
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(BitangentNode.prototype), "serialize", this).call(this, data);
+      data.scope = this.scope;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(BitangentNode.prototype), "deserialize", this).call(this, data);
+      this.scope = data.scope;
+    }
+  }]);
+  return BitangentNode;
+}(_Node2.default);
+_defineProperty(BitangentNode, "GEOMETRY", 'geometry');
+_defineProperty(BitangentNode, "LOCAL", 'local');
+_defineProperty(BitangentNode, "VIEW", 'view');
+_defineProperty(BitangentNode, "WORLD", 'world');
+var _default = BitangentNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../core/VaryingNode.js":"../node_modules/three/examples/jsm/nodes/core/VaryingNode.js","../math/OperatorNode.js":"../node_modules/three/examples/jsm/nodes/math/OperatorNode.js","../math/MathNode.js":"../node_modules/three/examples/jsm/nodes/math/MathNode.js","../utils/SplitNode.js":"../node_modules/three/examples/jsm/nodes/utils/SplitNode.js","./NormalNode.js":"../node_modules/three/examples/jsm/nodes/accessors/NormalNode.js","./TangentNode.js":"../node_modules/three/examples/jsm/nodes/accessors/TangentNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/BufferNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _UniformNode2 = _interopRequireDefault(require("../core/UniformNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var BufferNode = /*#__PURE__*/function (_UniformNode) {
+  _inherits(BufferNode, _UniformNode);
+  var _super = _createSuper(BufferNode);
+  function BufferNode(value, bufferType, bufferCount = 0) {
+    var _this;
+    _classCallCheck(this, BufferNode);
+    _this = _super.call(this, value, bufferType);
+    _this.isBufferNode = true;
+    _this.bufferType = bufferType;
+    _this.bufferCount = bufferCount;
+    return _this;
+  }
+  _createClass(BufferNode, [{
+    key: "getInputType",
+    value: function getInputType( /*builder*/
+    ) {
+      return 'buffer';
+    }
+  }]);
+  return BufferNode;
+}(_UniformNode2.default);
+var _default = BufferNode;
+exports.default = _default;
+},{"../core/UniformNode.js":"../node_modules/three/examples/jsm/nodes/core/UniformNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/UVNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _AttributeNode2 = _interopRequireDefault(require("../core/AttributeNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var UVNode = /*#__PURE__*/function (_AttributeNode) {
+  _inherits(UVNode, _AttributeNode);
+  var _super = _createSuper(UVNode);
+  function UVNode(index = 0) {
+    var _this;
+    _classCallCheck(this, UVNode);
+    _this = _super.call(this, null, 'vec2');
+    _this.isUVNode = true;
+    _this.index = index;
+    return _this;
+  }
+  _createClass(UVNode, [{
+    key: "getAttributeName",
+    value: function getAttributeName( /*builder*/
+    ) {
+      var index = this.index;
+      return 'uv' + (index > 0 ? index + 1 : '');
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(UVNode.prototype), "serialize", this).call(this, data);
+      data.index = this.index;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(UVNode.prototype), "deserialize", this).call(this, data);
+      this.index = data.index;
+    }
+  }]);
+  return UVNode;
+}(_AttributeNode2.default);
+var _default = UVNode;
+exports.default = _default;
+},{"../core/AttributeNode.js":"../node_modules/three/examples/jsm/nodes/core/AttributeNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/TextureNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _UniformNode2 = _interopRequireDefault(require("../core/UniformNode.js"));
+var _UVNode = _interopRequireDefault(require("./UVNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var TextureNode = /*#__PURE__*/function (_UniformNode) {
+  _inherits(TextureNode, _UniformNode);
+  var _super = _createSuper(TextureNode);
+  function TextureNode(value, uvNode = new _UVNode.default(), levelNode = null) {
+    var _this;
+    _classCallCheck(this, TextureNode);
+    _this = _super.call(this, value, 'vec4');
+    _this.isTextureNode = true;
+    _this.uvNode = uvNode;
+    _this.levelNode = levelNode;
+    return _this;
+  }
+  _createClass(TextureNode, [{
+    key: "getUniformHash",
+    value: function getUniformHash( /*builder*/
+    ) {
+      return this.value.uuid;
+    }
+  }, {
+    key: "getInputType",
+    value: function getInputType( /*builder*/
+    ) {
+      return 'texture';
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var texture = this.value;
+      if (!texture || texture.isTexture !== true) {
+        throw new Error('TextureNode: Need a three.js texture.');
+      }
+      var textureProperty = _get(_getPrototypeOf(TextureNode.prototype), "generate", this).call(this, builder, 'texture');
+      if (output === 'sampler') {
+        return textureProperty + '_sampler';
+      } else if (builder.isReference(output)) {
+        return textureProperty;
+      } else {
+        var nodeData = builder.getDataFromNode(this);
+        var snippet = nodeData.snippet;
+        if (snippet === undefined) {
+          var uvSnippet = this.uvNode.build(builder, 'vec2');
+          var levelNode = this.levelNode;
+          if (levelNode !== null) {
+            var levelSnippet = levelNode.build(builder, 'float');
+            snippet = builder.getTextureLevel(textureProperty, uvSnippet, levelSnippet);
+          } else {
+            snippet = builder.getTexture(textureProperty, uvSnippet);
+          }
+          nodeData.snippet = snippet;
+        }
+        return builder.format(snippet, 'vec4', output);
+      }
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(TextureNode.prototype), "serialize", this).call(this, data);
+      data.value = this.value.toJSON(data.meta).uuid;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(TextureNode.prototype), "deserialize", this).call(this, data);
+      this.value = data.meta.textures[data.value];
+    }
+  }]);
+  return TextureNode;
+}(_UniformNode2.default);
+var _default = TextureNode;
+exports.default = _default;
+},{"../core/UniformNode.js":"../node_modules/three/examples/jsm/nodes/core/UniformNode.js","./UVNode.js":"../node_modules/three/examples/jsm/nodes/accessors/UVNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/ReferenceNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _UniformNode = _interopRequireDefault(require("../core/UniformNode.js"));
+var _constants = require("../core/constants.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var ReferenceNode = /*#__PURE__*/function (_Node) {
+  _inherits(ReferenceNode, _Node);
+  var _super = _createSuper(ReferenceNode);
+  function ReferenceNode(property, uniformType, object = null) {
+    var _this;
+    _classCallCheck(this, ReferenceNode);
+    _this = _super.call(this);
+    _this.property = property;
+    _this.uniformType = uniformType;
+    _this.object = object;
+    _this.node = null;
+    _this.updateType = _constants.NodeUpdateType.OBJECT;
+    _this.setNodeType(uniformType);
+    return _this;
+  }
+  _createClass(ReferenceNode, [{
+    key: "setNodeType",
+    value: function setNodeType(uniformType) {
+      this.node = new _UniformNode.default(null, uniformType);
+      this.nodeType = uniformType;
+      if (uniformType === 'color') {
+        this.nodeType = 'vec3';
+      } else if (uniformType === 'texture') {
+        this.nodeType = 'vec4';
+      }
+    }
+  }, {
+    key: "getNodeType",
+    value: function getNodeType() {
+      return this.uniformType;
+    }
+  }, {
+    key: "update",
+    value: function update(frame) {
+      var object = this.object !== null ? this.object : frame.object;
+      var value = object[this.property];
+      this.node.value = value;
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      return this.node.build(builder, this.getNodeType(builder));
+    }
+  }]);
+  return ReferenceNode;
+}(_Node2.default);
+var _default = ReferenceNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../core/UniformNode.js":"../node_modules/three/examples/jsm/nodes/core/UniformNode.js","../core/constants.js":"../node_modules/three/examples/jsm/nodes/core/constants.js"}],"../node_modules/three/examples/jsm/nodes/accessors/MaterialReferenceNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _ReferenceNode2 = _interopRequireDefault(require("./ReferenceNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var MaterialReferenceNode = /*#__PURE__*/function (_ReferenceNode) {
+  _inherits(MaterialReferenceNode, _ReferenceNode);
+  var _super = _createSuper(MaterialReferenceNode);
+  function MaterialReferenceNode(property, inputType, material = null) {
+    var _this;
+    _classCallCheck(this, MaterialReferenceNode);
+    _this = _super.call(this, property, inputType, material);
+    _this.material = material;
+    return _this;
+  }
+  _createClass(MaterialReferenceNode, [{
+    key: "update",
+    value: function update(frame) {
+      this.object = this.material !== null ? this.material : frame.material;
+      _get(_getPrototypeOf(MaterialReferenceNode.prototype), "update", this).call(this, frame);
+    }
+  }]);
+  return MaterialReferenceNode;
+}(_ReferenceNode2.default);
+var _default = MaterialReferenceNode;
+exports.default = _default;
+},{"./ReferenceNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ReferenceNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/MaterialNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _OperatorNode = _interopRequireDefault(require("../math/OperatorNode.js"));
+var _MaterialReferenceNode = _interopRequireDefault(require("./MaterialReferenceNode.js"));
+var _TextureNode = _interopRequireDefault(require("./TextureNode.js"));
+var _SplitNode = _interopRequireDefault(require("../utils/SplitNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var MaterialNode = /*#__PURE__*/function (_Node) {
+  _inherits(MaterialNode, _Node);
+  var _super = _createSuper(MaterialNode);
+  function MaterialNode(scope = MaterialNode.COLOR) {
+    var _this;
+    _classCallCheck(this, MaterialNode);
+    _this = _super.call(this);
+    _this.scope = scope;
+    return _this;
+  }
+  _createClass(MaterialNode, [{
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      var scope = this.scope;
+      var material = builder.context.material;
+      if (scope === MaterialNode.COLOR) {
+        return material.map !== null ? 'vec4' : 'vec3';
+      } else if (scope === MaterialNode.OPACITY || scope === MaterialNode.ROTATION) {
+        return 'float';
+      } else if (scope === MaterialNode.EMISSIVE) {
+        return 'vec3';
+      } else if (scope === MaterialNode.ROUGHNESS || scope === MaterialNode.METALNESS) {
+        return 'float';
+      }
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var material = builder.context.material;
+      var scope = this.scope;
+      var node = null;
+      if (scope === MaterialNode.ALPHA_TEST) {
+        node = new _MaterialReferenceNode.default('alphaTest', 'float');
+      } else if (scope === MaterialNode.COLOR) {
+        var colorNode = new _MaterialReferenceNode.default('color', 'color');
+        if (material.map?.isTexture === true) {
+          //new MaterialReferenceNode( 'map', 'texture' )
+          var map = new _TextureNode.default(material.map);
+          node = new _OperatorNode.default('*', colorNode, map);
+        } else {
+          node = colorNode;
+        }
+      } else if (scope === MaterialNode.OPACITY) {
+        var opacityNode = new _MaterialReferenceNode.default('opacity', 'float');
+        if (material.alphaMap?.isTexture === true) {
+          node = new _OperatorNode.default('*', opacityNode, new _MaterialReferenceNode.default('alphaMap', 'texture'));
+        } else {
+          node = opacityNode;
+        }
+      } else if (scope === MaterialNode.ROUGHNESS) {
+        var roughnessNode = new _MaterialReferenceNode.default('roughness', 'float');
+        if (material.roughnessMap?.isTexture === true) {
+          node = new _OperatorNode.default('*', roughnessNode, new _SplitNode.default(new _TextureNode.default(material.roughnessMap), 'g'));
+        } else {
+          node = roughnessNode;
+        }
+      } else if (scope === MaterialNode.METALNESS) {
+        var metalnessNode = new _MaterialReferenceNode.default('metalness', 'float');
+        if (material.metalnessMap?.isTexture === true) {
+          node = new _OperatorNode.default('*', metalnessNode, new _SplitNode.default(new _TextureNode.default(material.metalnessMap), 'b'));
+        } else {
+          node = metalnessNode;
+        }
+      } else if (scope === MaterialNode.EMISSIVE) {
+        var emissiveNode = new _MaterialReferenceNode.default('emissive', 'color');
+        if (material.emissiveMap?.isTexture === true) {
+          node = new _OperatorNode.default('*', emissiveNode, new _TextureNode.default(material.emissiveMap));
+        } else {
+          node = emissiveNode;
+        }
+      } else if (scope === MaterialNode.ROTATION) {
+        node = new _MaterialReferenceNode.default('rotation', 'float');
+      } else {
+        var outputType = this.getNodeType(builder);
+        node = new _MaterialReferenceNode.default(scope, outputType);
+      }
+      return node.build(builder, output);
+    }
+  }]);
+  return MaterialNode;
+}(_Node2.default);
+_defineProperty(MaterialNode, "ALPHA_TEST", 'alphaTest');
+_defineProperty(MaterialNode, "COLOR", 'color');
+_defineProperty(MaterialNode, "OPACITY", 'opacity');
+_defineProperty(MaterialNode, "ROUGHNESS", 'roughness');
+_defineProperty(MaterialNode, "METALNESS", 'metalness');
+_defineProperty(MaterialNode, "EMISSIVE", 'emissive');
+_defineProperty(MaterialNode, "ROTATION", 'rotation');
+var _default = MaterialNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../math/OperatorNode.js":"../node_modules/three/examples/jsm/nodes/math/OperatorNode.js","./MaterialReferenceNode.js":"../node_modules/three/examples/jsm/nodes/accessors/MaterialReferenceNode.js","./TextureNode.js":"../node_modules/three/examples/jsm/nodes/accessors/TextureNode.js","../utils/SplitNode.js":"../node_modules/three/examples/jsm/nodes/utils/SplitNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/PositionNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _AttributeNode = _interopRequireDefault(require("../core/AttributeNode.js"));
+var _VaryingNode = _interopRequireDefault(require("../core/VaryingNode.js"));
+var _ModelNode = _interopRequireDefault(require("../accessors/ModelNode.js"));
+var _MathNode = _interopRequireDefault(require("../math/MathNode.js"));
+var _OperatorNode = _interopRequireDefault(require("../math/OperatorNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var PositionNode = /*#__PURE__*/function (_Node) {
+  _inherits(PositionNode, _Node);
+  var _super = _createSuper(PositionNode);
+  function PositionNode(scope = PositionNode.LOCAL) {
+    var _this;
+    _classCallCheck(this, PositionNode);
+    _this = _super.call(this, 'vec3');
+    _this.scope = scope;
+    return _this;
+  }
+  _createClass(PositionNode, [{
+    key: "getHash",
+    value: function getHash( /*builder*/
+    ) {
+      return "position-".concat(this.scope);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var scope = this.scope;
+      var outputNode = null;
+      if (scope === PositionNode.GEOMETRY) {
+        outputNode = new _AttributeNode.default('position', 'vec3');
+      } else if (scope === PositionNode.LOCAL) {
+        outputNode = new _VaryingNode.default(new PositionNode(PositionNode.GEOMETRY));
+      } else if (scope === PositionNode.WORLD) {
+        var vertexPositionNode = new _MathNode.default(_MathNode.default.TRANSFORM_DIRECTION, new _ModelNode.default(_ModelNode.default.WORLD_MATRIX), new PositionNode(PositionNode.LOCAL));
+        outputNode = new _VaryingNode.default(vertexPositionNode);
+      } else if (scope === PositionNode.VIEW) {
+        var _vertexPositionNode = new _OperatorNode.default('*', new _ModelNode.default(_ModelNode.default.VIEW_MATRIX), new PositionNode(PositionNode.LOCAL));
+        outputNode = new _VaryingNode.default(_vertexPositionNode);
+      } else if (scope === PositionNode.VIEW_DIRECTION) {
+        var _vertexPositionNode2 = new _MathNode.default(_MathNode.default.NEGATE, new PositionNode(PositionNode.VIEW));
+        outputNode = new _MathNode.default(_MathNode.default.NORMALIZE, new _VaryingNode.default(_vertexPositionNode2));
+      } else if (scope === PositionNode.WORLD_DIRECTION) {
+        var _vertexPositionNode3 = new _MathNode.default(_MathNode.default.NEGATE, new PositionNode(PositionNode.WORLD));
+        outputNode = new _MathNode.default(_MathNode.default.NORMALIZE, new _VaryingNode.default(_vertexPositionNode3));
+      }
+      return outputNode.build(builder, this.getNodeType(builder));
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(PositionNode.prototype), "serialize", this).call(this, data);
+      data.scope = this.scope;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(PositionNode.prototype), "deserialize", this).call(this, data);
+      this.scope = data.scope;
+    }
+  }]);
+  return PositionNode;
+}(_Node2.default);
+_defineProperty(PositionNode, "GEOMETRY", 'geometry');
+_defineProperty(PositionNode, "LOCAL", 'local');
+_defineProperty(PositionNode, "WORLD", 'world');
+_defineProperty(PositionNode, "WORLD_DIRECTION", 'worldDirection');
+_defineProperty(PositionNode, "VIEW", 'view');
+_defineProperty(PositionNode, "VIEW_DIRECTION", 'viewDirection');
+var _default = PositionNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../core/AttributeNode.js":"../node_modules/three/examples/jsm/nodes/core/AttributeNode.js","../core/VaryingNode.js":"../node_modules/three/examples/jsm/nodes/core/VaryingNode.js","../accessors/ModelNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ModelNode.js","../math/MathNode.js":"../node_modules/three/examples/jsm/nodes/math/MathNode.js","../math/OperatorNode.js":"../node_modules/three/examples/jsm/nodes/math/OperatorNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/ModelViewProjectionNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _CameraNode = _interopRequireDefault(require("../accessors/CameraNode.js"));
+var _ModelNode = _interopRequireDefault(require("../accessors/ModelNode.js"));
+var _OperatorNode = _interopRequireDefault(require("../math/OperatorNode.js"));
+var _PositionNode = _interopRequireDefault(require("../accessors/PositionNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var ModelViewProjectionNode = /*#__PURE__*/function (_Node) {
+  _inherits(ModelViewProjectionNode, _Node);
+  var _super = _createSuper(ModelViewProjectionNode);
+  function ModelViewProjectionNode(position = new _PositionNode.default()) {
+    var _this;
+    _classCallCheck(this, ModelViewProjectionNode);
+    _this = _super.call(this, 'vec4');
+    _this.position = position;
+    return _this;
+  }
+  _createClass(ModelViewProjectionNode, [{
+    key: "generate",
+    value: function generate(builder) {
+      var position = this.position;
+      var mvpMatrix = new _OperatorNode.default('*', new _CameraNode.default(_CameraNode.default.PROJECTION_MATRIX), new _ModelNode.default(_ModelNode.default.VIEW_MATRIX));
+      var mvpNode = new _OperatorNode.default('*', mvpMatrix, position);
+      return mvpNode.build(builder);
+    }
+  }]);
+  return ModelViewProjectionNode;
+}(_Node2.default);
+var _default = ModelViewProjectionNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../accessors/CameraNode.js":"../node_modules/three/examples/jsm/nodes/accessors/CameraNode.js","../accessors/ModelNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ModelNode.js","../math/OperatorNode.js":"../node_modules/three/examples/jsm/nodes/math/OperatorNode.js","../accessors/PositionNode.js":"../node_modules/three/examples/jsm/nodes/accessors/PositionNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/PointUVNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var PointUVNode = /*#__PURE__*/function (_Node) {
+  _inherits(PointUVNode, _Node);
+  var _super = _createSuper(PointUVNode);
+  function PointUVNode() {
+    var _this;
+    _classCallCheck(this, PointUVNode);
+    _this = _super.call(this, 'vec2');
+    _this.isPointUVNode = true;
+    return _this;
+  }
+  _createClass(PointUVNode, [{
+    key: "generate",
+    value: function generate( /*builder*/
+    ) {
+      return 'vec2( gl_PointCoord.x, 1.0 - gl_PointCoord.y )';
+    }
+  }]);
+  return PointUVNode;
+}(_Node2.default);
+var _default = PointUVNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js"}],"../node_modules/three/examples/jsm/nodes/accessors/StorageBufferNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _BufferNode2 = _interopRequireDefault(require("./BufferNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var StorageBufferNode = /*#__PURE__*/function (_BufferNode) {
+  _inherits(StorageBufferNode, _BufferNode);
+  var _super = _createSuper(StorageBufferNode);
+  function StorageBufferNode(value, bufferType, bufferCount = 0) {
+    var _this;
+    _classCallCheck(this, StorageBufferNode);
+    _this = _super.call(this, value, bufferType, bufferCount);
+    _this.isStorageBufferNode = true;
+    return _this;
+  }
+  _createClass(StorageBufferNode, [{
+    key: "getInputType",
+    value: function getInputType( /*builder*/
+    ) {
+      return 'storageBuffer';
+    }
+  }]);
+  return StorageBufferNode;
+}(_BufferNode2.default);
+var _default = StorageBufferNode;
+exports.default = _default;
+},{"./BufferNode.js":"../node_modules/three/examples/jsm/nodes/accessors/BufferNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/UserDataNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _ReferenceNode2 = _interopRequireDefault(require("./ReferenceNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var UserDataNode = /*#__PURE__*/function (_ReferenceNode) {
+  _inherits(UserDataNode, _ReferenceNode);
+  var _super = _createSuper(UserDataNode);
+  function UserDataNode(property, inputType, userData = null) {
+    var _this;
+    _classCallCheck(this, UserDataNode);
+    _this = _super.call(this, property, inputType, userData);
+    _this.userData = userData;
+    return _this;
+  }
+  _createClass(UserDataNode, [{
+    key: "update",
+    value: function update(frame) {
+      this.object = this.userData !== null ? this.userData : frame.object.userData;
+      _get(_getPrototypeOf(UserDataNode.prototype), "update", this).call(this, frame);
+    }
+  }]);
+  return UserDataNode;
+}(_ReferenceNode2.default);
+var _default = UserDataNode;
+exports.default = _default;
+},{"./ReferenceNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ReferenceNode.js"}],"../node_modules/three/examples/jsm/nodes/display/FrontFacingNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var FrontFacingNode = /*#__PURE__*/function (_Node) {
+  _inherits(FrontFacingNode, _Node);
+  var _super = _createSuper(FrontFacingNode);
+  function FrontFacingNode() {
+    var _this;
+    _classCallCheck(this, FrontFacingNode);
+    _this = _super.call(this, 'bool');
+    _this.isFrontFacingNode = true;
+    return _this;
+  }
+  _createClass(FrontFacingNode, [{
+    key: "generate",
+    value: function generate(builder) {
+      return builder.getFrontFacing();
+    }
+  }]);
+  return FrontFacingNode;
+}(_Node2.default);
+var _default = FrontFacingNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js"}],"../node_modules/three/examples/jsm/nodes/gpgpu/ComputeNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _constants = require("../core/constants.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var ComputeNode = /*#__PURE__*/function (_Node) {
+  _inherits(ComputeNode, _Node);
+  var _super = _createSuper(ComputeNode);
+  function ComputeNode(computeNode, count, workgroupSize = [64]) {
+    var _this;
+    _classCallCheck(this, ComputeNode);
+    _this = _super.call(this, 'void');
+    _this.isComputeNode = true;
+    _this.computeNode = computeNode;
+    _this.count = count;
+    _this.workgroupSize = workgroupSize;
+    _this.dispatchCount = 0;
+    _this.updateType = _constants.NodeUpdateType.OBJECT;
+    _this.updateDispatchCount();
+    return _this;
+  }
+  _createClass(ComputeNode, [{
+    key: "updateDispatchCount",
+    value: function updateDispatchCount() {
+      var count = this.count,
+        workgroupSize = this.workgroupSize;
+      var size = workgroupSize[0];
+      for (var i = 1; i < workgroupSize.length; i++) {
+        size *= workgroupSize[i];
+      }
+      this.dispatchCount = Math.ceil(count / size);
+    }
+  }, {
+    key: "onInit",
+    value: function onInit() {}
+  }, {
+    key: "update",
+    value: function update({
+      renderer: renderer
+    }) {
+      renderer.compute(this);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var shaderStage = builder.shaderStage;
+      if (shaderStage === 'compute') {
+        var snippet = this.computeNode.build(builder, 'void');
+        if (snippet !== '') {
+          builder.addFlowCode(snippet);
+        }
+      }
+    }
+  }]);
+  return ComputeNode;
+}(_Node2.default);
+var _default = ComputeNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../core/constants.js":"../node_modules/three/examples/jsm/nodes/core/constants.js"}],"../node_modules/three/examples/jsm/nodes/math/CondNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _PropertyNode = _interopRequireDefault(require("../core/PropertyNode.js"));
+var _ContextNode = _interopRequireDefault(require("../core/ContextNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var CondNode = /*#__PURE__*/function (_Node) {
+  _inherits(CondNode, _Node);
+  var _super = _createSuper(CondNode);
+  function CondNode(condNode, ifNode, elseNode) {
+    var _this;
+    _classCallCheck(this, CondNode);
+    _this = _super.call(this);
+    _this.condNode = condNode;
+    _this.ifNode = ifNode;
+    _this.elseNode = elseNode;
+    return _this;
+  }
+  _createClass(CondNode, [{
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      var ifType = this.ifNode.getNodeType(builder);
+      var elseType = this.elseNode.getNodeType(builder);
+      if (builder.getTypeLength(elseType) > builder.getTypeLength(ifType)) {
+        return elseType;
+      }
+      return ifType;
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var type = this.getNodeType(builder);
+      var context = {
+        tempWrite: false
+      };
+      var nodeProperty = new _PropertyNode.default(null, type).build(builder);
+      var nodeSnippet = new _ContextNode.default(this.condNode /*, context*/).build(builder, 'bool'),
+        ifSnippet = new _ContextNode.default(this.ifNode, context).build(builder, type),
+        elseSnippet = new _ContextNode.default(this.elseNode, context).build(builder, type);
+      builder.addFlowCode("if ( ".concat(nodeSnippet, " ) {\n\n\t\t").concat(nodeProperty, " = ").concat(ifSnippet, ";\n\n\t} else {\n\n\t\t").concat(nodeProperty, " = ").concat(elseSnippet, ";\n\n\t}"));
+      return nodeProperty;
+    }
+  }]);
+  return CondNode;
+}(_Node2.default);
+var _default = CondNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../core/PropertyNode.js":"../node_modules/three/examples/jsm/nodes/core/PropertyNode.js","../core/ContextNode.js":"../node_modules/three/examples/jsm/nodes/core/ContextNode.js"}],"../node_modules/three/examples/jsm/nodes/utils/ArrayElementNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node = _interopRequireDefault(require("../core/Node.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var ArrayElementNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(ArrayElementNode, _TempNode);
+  var _super = _createSuper(ArrayElementNode);
+  function ArrayElementNode(node, indexNode) {
+    var _this;
+    _classCallCheck(this, ArrayElementNode);
+    _this = _super.call(this);
+    _this.node = node;
+    _this.indexNode = indexNode;
+    return _this;
+  }
+  _createClass(ArrayElementNode, [{
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      return this.node.getNodeType(builder);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var nodeSnippet = this.node.build(builder);
+      var indexSnippet = this.indexNode.build(builder, 'uint');
+      return "".concat(nodeSnippet, "[ ").concat(indexSnippet, " ]");
+    }
+  }]);
+  return ArrayElementNode;
+}(_Node.default);
+var _default = ArrayElementNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js"}],"../node_modules/three/examples/jsm/nodes/utils/ConvertNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var ConvertNode = /*#__PURE__*/function (_Node) {
+  _inherits(ConvertNode, _Node);
+  var _super = _createSuper(ConvertNode);
+  function ConvertNode(node, convertTo) {
+    var _this;
+    _classCallCheck(this, ConvertNode);
+    _this = _super.call(this);
+    _this.node = node;
+    _this.convertTo = convertTo;
+    return _this;
+  }
+  _createClass(ConvertNode, [{
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      var requestType = this.node.getNodeType(builder);
+      var convertTo = null;
+      var _iterator = _createForOfIteratorHelper(this.convertTo.split('|')),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var overloadingType = _step.value;
+          if (convertTo === null || builder.getTypeLength(requestType) === builder.getTypeLength(overloadingType)) {
+            convertTo = overloadingType;
+          }
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+      return convertTo;
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var node = this.node;
+      var type = this.getNodeType(builder);
+      var snippet = node.build(builder, type);
+      return builder.format(snippet, type, output);
+    }
+  }]);
+  return ConvertNode;
+}(_Node2.default);
+var _default = ConvertNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js"}],"../node_modules/three/examples/jsm/nodes/utils/JoinNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node = _interopRequireDefault(require("../core/Node.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var JoinNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(JoinNode, _TempNode);
+  var _super = _createSuper(JoinNode);
+  function JoinNode(nodes = []) {
+    var _this;
+    _classCallCheck(this, JoinNode);
+    _this = _super.call(this);
+    _this.nodes = nodes;
+    return _this;
+  }
+  _createClass(JoinNode, [{
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      return builder.getTypeFromLength(this.nodes.reduce(function (count, cur) {
+        return count + builder.getTypeLength(cur.getNodeType(builder));
+      }, 0));
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var type = this.getNodeType(builder);
+      var nodes = this.nodes;
+      var snippetValues = [];
+      var _iterator = _createForOfIteratorHelper(nodes),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var input = _step.value;
+          var inputSnippet = input.build(builder);
+          snippetValues.push(inputSnippet);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+      var snippet = "".concat(builder.getType(type), "( ").concat(snippetValues.join(', '), " )");
+      return builder.format(snippet, type, output);
+    }
+  }]);
+  return JoinNode;
+}(_Node.default);
+var _default = JoinNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js"}],"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.nodeProxy = exports.nodeObjects = exports.nodeObject = exports.nodeImmutable = exports.nodeArray = exports.getConstNodeType = exports.cacheMaps = exports.ShaderNode = exports.ConvertType = void 0;
+var _ArrayElementNode = _interopRequireDefault(require("../utils/ArrayElementNode.js"));
+var _ConvertNode = _interopRequireDefault(require("../utils/ConvertNode.js"));
+var _JoinNode = _interopRequireDefault(require("../utils/JoinNode.js"));
+var _SplitNode = _interopRequireDefault(require("../utils/SplitNode.js"));
+var _ConstNode = _interopRequireDefault(require("../core/ConstNode.js"));
+var _NodeUtils = require("../core/NodeUtils.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct.bind(); } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+var shaderNodeHandler = {
+  construct: function construct(NodeClosure, params) {
+    var inputs = params.shift();
+    return NodeClosure.apply(void 0, [nodeObjects(inputs)].concat(_toConsumableArray(params)));
+  },
+  get: function get(node, prop) {
+    if (typeof prop === 'string' && node[prop] === undefined) {
+      if (/^[xyzwrgbastpq]{1,4}$/.test(prop) === true) {
+        // accessing properties ( swizzle )
+
+        prop = prop.replace(/r|s/g, 'x').replace(/g|t/g, 'y').replace(/b|p/g, 'z').replace(/a|q/g, 'w');
+        return nodeObject(new _SplitNode.default(node, prop));
+      } else if (/^\d+$/.test(prop) === true) {
+        // accessing array
+
+        return nodeObject(new _ArrayElementNode.default(node, new _ConstNode.default(Number(prop), 'uint')));
+      }
+    }
+    return node[prop];
+  }
+};
+var nodeObjectsCacheMap = new WeakMap();
+var ShaderNodeObject = function ShaderNodeObject(obj) {
+  var type = _typeof(obj);
+  if (type === 'number' || type === 'boolean') {
+    return nodeObject(getAutoTypedConstNode(obj));
+  } else if (type === 'object') {
+    if (obj?.isNode === true) {
+      var _nodeObject = nodeObjectsCacheMap.get(obj);
+      if (_nodeObject === undefined) {
+        _nodeObject = new Proxy(obj, shaderNodeHandler);
+        nodeObjectsCacheMap.set(obj, _nodeObject);
+        nodeObjectsCacheMap.set(_nodeObject, _nodeObject);
+      }
+      return _nodeObject;
+    }
+  }
+  return obj;
+};
+var ShaderNodeObjects = function ShaderNodeObjects(objects) {
+  for (var name in objects) {
+    objects[name] = nodeObject(objects[name]);
+  }
+  return objects;
+};
+var ShaderNodeArray = function ShaderNodeArray(array) {
+  var len = array.length;
+  for (var i = 0; i < len; i++) {
+    array[i] = nodeObject(array[i]);
+  }
+  return array;
+};
+var ShaderNodeProxy = function ShaderNodeProxy(NodeClass, scope = null, factor = null, settings = null) {
+  var assignNode = function assignNode(node) {
+    return nodeObject(settings !== null ? Object.assign(node, settings) : node);
+  };
+  if (scope === null) {
+    return function (...params) {
+      return assignNode(_construct(NodeClass, _toConsumableArray(nodeArray(params))));
+    };
+  } else if (factor !== null) {
+    factor = nodeObject(factor);
+    return function (...params) {
+      return assignNode(_construct(NodeClass, [scope].concat(_toConsumableArray(nodeArray(params)), [factor])));
+    };
+  } else {
+    return function (...params) {
+      return assignNode(_construct(NodeClass, [scope].concat(_toConsumableArray(nodeArray(params)))));
+    };
+  }
+};
+var ShaderNodeImmutable = function ShaderNodeImmutable(NodeClass, ...params) {
+  return nodeObject(_construct(NodeClass, _toConsumableArray(nodeArray(params))));
+};
+var ShaderNodeScript = function ShaderNodeScript(jsFunc) {
+  // @TODO: Move this to Node extended class
+
+  var self = {
+    build: function build(builder) {
+      self.call({}, builder);
+      return '';
+    },
+    call: function call(inputs, builder) {
+      inputs = nodeObjects(inputs);
+      return nodeObject(jsFunc(inputs, builder));
+    }
+  };
+  return self;
+};
+var ShaderNode = new Proxy(ShaderNodeScript, shaderNodeHandler);
+exports.ShaderNode = ShaderNode;
+var nodeObject = function nodeObject(val) {
+  return (/* new */ShaderNodeObject(val)
+  );
+};
+exports.nodeObject = nodeObject;
+var nodeObjects = function nodeObjects(val) {
+  return new ShaderNodeObjects(val);
+};
+exports.nodeObjects = nodeObjects;
+var nodeArray = function nodeArray(val) {
+  return new ShaderNodeArray(val);
+};
+exports.nodeArray = nodeArray;
+var nodeProxy = function nodeProxy(...val) {
+  return _construct(ShaderNodeProxy, val);
+};
+exports.nodeProxy = nodeProxy;
+var nodeImmutable = function nodeImmutable(...val) {
+  return _construct(ShaderNodeImmutable, val);
+};
+exports.nodeImmutable = nodeImmutable;
+var bools = [false, true];
+var uints = [0, 1, 2, 3];
+var ints = [-1, -2];
+var floats = [0.5, 1.5, 1 / 3, 1e-6, 1e6, Math.PI, Math.PI * 2, 1 / Math.PI, 2 / Math.PI, 1 / (Math.PI * 2), Math.PI / 2];
+var boolsCacheMap = new Map();
+for (var _i = 0, _bools = bools; _i < _bools.length; _i++) {
+  var bool = _bools[_i];
+  boolsCacheMap.set(bool, new _ConstNode.default(bool));
+}
+var uintsCacheMap = new Map();
+for (var _i2 = 0, _uints = uints; _i2 < _uints.length; _i2++) {
+  var uint = _uints[_i2];
+  uintsCacheMap.set(uint, new _ConstNode.default(uint, 'uint'));
+}
+var intsCacheMap = new Map(_toConsumableArray(uintsCacheMap).map(function (el) {
+  return new _ConstNode.default(el.value, 'int');
+}));
+for (var _i3 = 0, _ints = ints; _i3 < _ints.length; _i3++) {
+  var int = _ints[_i3];
+  intsCacheMap.set(int, new _ConstNode.default(int, 'int'));
+}
+var floatsCacheMap = new Map(_toConsumableArray(intsCacheMap).map(function (el) {
+  return new _ConstNode.default(el.value);
+}));
+for (var _i4 = 0, _floats = floats; _i4 < _floats.length; _i4++) {
+  var float = _floats[_i4];
+  floatsCacheMap.set(float, new _ConstNode.default(float));
+}
+for (var _i5 = 0, _floats2 = floats; _i5 < _floats2.length; _i5++) {
+  var _float = _floats2[_i5];
+  floatsCacheMap.set(-_float, new _ConstNode.default(-_float));
+}
+var cacheMaps = {
+  bool: boolsCacheMap,
+  uint: uintsCacheMap,
+  ints: intsCacheMap,
+  float: floatsCacheMap
+};
+exports.cacheMaps = cacheMaps;
+var constNodesCacheMap = new Map([].concat(_toConsumableArray(boolsCacheMap), _toConsumableArray(floatsCacheMap)));
+var getAutoTypedConstNode = function getAutoTypedConstNode(value) {
+  if (constNodesCacheMap.has(value)) {
+    return constNodesCacheMap.get(value);
+  } else if (value.isNode === true) {
+    return value;
+  } else {
+    return new _ConstNode.default(value);
+  }
+};
+var ConvertType = function ConvertType(type, cacheMap = null) {
+  return function (...params) {
+    if (params.length === 0) {
+      return nodeObject(new _ConstNode.default((0, _NodeUtils.getValueFromType)(type), type));
+    } else {
+      if (type === 'color' && params[0].isNode !== true) {
+        params = [_NodeUtils.getValueFromType.apply(void 0, [type].concat(_toConsumableArray(params)))];
+      }
+      if (params.length === 1 && cacheMap !== null && cacheMap.has(params[0])) {
+        return cacheMap.get(params[0]);
+      }
+      var nodes = params.map(getAutoTypedConstNode);
+      if (nodes.length === 1) {
+        return nodeObject(nodes[0].nodeType === type ? nodes[0] : new _ConvertNode.default(nodes[0], type));
+      }
+      return nodeObject(new _ConvertNode.default(new _JoinNode.default(nodes), type));
+    }
+  };
+};
+exports.ConvertType = ConvertType;
+var getConstNodeType = function getConstNodeType(value) {
+  return value.nodeType || value.convertTo || (typeof value === 'string' ? value : null);
+};
+exports.getConstNodeType = getConstNodeType;
+},{"../utils/ArrayElementNode.js":"../node_modules/three/examples/jsm/nodes/utils/ArrayElementNode.js","../utils/ConvertNode.js":"../node_modules/three/examples/jsm/nodes/utils/ConvertNode.js","../utils/JoinNode.js":"../node_modules/three/examples/jsm/nodes/utils/JoinNode.js","../utils/SplitNode.js":"../node_modules/three/examples/jsm/nodes/utils/SplitNode.js","../core/ConstNode.js":"../node_modules/three/examples/jsm/nodes/core/ConstNode.js","../core/NodeUtils.js":"../node_modules/three/examples/jsm/nodes/core/NodeUtils.js"}],"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.INFINITY = exports.EPSILON = void 0;
+Object.defineProperty(exports, "ShaderNode", {
+  enumerable: true,
+  get: function () {
+    return _ShaderNode.ShaderNode;
+  }
+});
+exports.mix = exports.min = exports.metalness = exports.max = exports.materialRoughness = exports.materialRotation = exports.materialReference = exports.materialOpacity = exports.materialMetalness = exports.materialEmissive = exports.materialColor = exports.materialAlphaTest = exports.mat4 = exports.mat3 = exports.luminance = exports.lumaCoeffs = exports.log2 = exports.log = exports.lessThanEqual = exports.lessThan = exports.length = exports.label = exports.ivec4 = exports.ivec3 = exports.ivec2 = exports.invert = exports.inversesqrt = exports.int = exports.instanceIndex = exports.imat4 = exports.imat3 = exports.greaterThanEqual = exports.greaterThan = exports.func = exports.frontFacing = exports.fract = exports.fn = exports.floor = exports.float = exports.faceforward = exports.faceDirection = exports.expression = exports.exp2 = exports.exp = exports.equal = exports.element = exports.dotNV = exports.dot = exports.div = exports.distance = exports.diffuseColor = exports.difference = exports.degrees = exports.dFdy = exports.dFdx = exports.cross = exports.cos = exports.convert = exports.context = exports.cond = exports.compute = exports.color = exports.code = exports.clamp = exports.ceil = exports.cameraWorldMatrix = exports.cameraViewMatrix = exports.cameraProjectionMatrix = exports.cameraPosition = exports.cameraNormalMatrix = exports.call = exports.bypass = exports.bvec4 = exports.bvec3 = exports.bvec2 = exports.buffer = exports.bool = exports.bmat4 = exports.bmat3 = exports.bitangentWorld = exports.bitangentView = exports.bitangentLocal = exports.bitangentGeometry = exports.bitXor = exports.bitOr = exports.bitAnd = exports.attribute = exports.atan2 = exports.atan = exports.assign = exports.asin = exports.and = exports.alphaTest = exports.add = exports.acos = exports.abs = exports.TBNViewMatrix = void 0;
+exports.negate = exports.mul = exports.modelWorldMatrix = exports.modelViewProjection = exports.modelViewPosition = exports.modelViewMatrix = exports.modelPosition = exports.modelNormalMatrix = exports.mod = void 0;
+Object.defineProperty(exports, "nodeArray", {
+  enumerable: true,
+  get: function () {
+    return _ShaderNode.nodeArray;
+  }
+});
+Object.defineProperty(exports, "nodeImmutable", {
+  enumerable: true,
+  get: function () {
+    return _ShaderNode.nodeImmutable;
+  }
+});
+Object.defineProperty(exports, "nodeObject", {
+  enumerable: true,
+  get: function () {
+    return _ShaderNode.nodeObject;
+  }
+});
+Object.defineProperty(exports, "nodeObjects", {
+  enumerable: true,
+  get: function () {
+    return _ShaderNode.nodeObjects;
+  }
+});
+Object.defineProperty(exports, "nodeProxy", {
+  enumerable: true,
+  get: function () {
+    return _ShaderNode.nodeProxy;
+  }
+});
+exports.xor = exports.vec4 = exports.vec3 = exports.vec2 = exports.varying = exports.uvec4 = exports.uvec3 = exports.uvec2 = exports.uv = exports.userData = exports.uniform = exports.umat4 = exports.umat3 = exports.uint = exports.transformedTangentWorld = exports.transformedTangentView = exports.transformedNormalWorld = exports.transformedNormalView = exports.transformedBitangentWorld = exports.transformedBitangentView = exports.transformDirection = exports.texture = exports.temp = exports.tangentWorld = exports.tangentView = exports.tangentLocal = exports.tangentGeometry = exports.tan = exports.sub = exports.storage = exports.step = exports.sqrt = exports.specularColor = exports.smoothstep = exports.sin = exports.sign = exports.shiftRight = exports.shiftLeft = exports.sampler = exports.round = exports.roughness = exports.remainder = exports.refract = exports.reflect = exports.reference = exports.reciprocal = exports.radians = exports.property = exports.pow4 = exports.pow3 = exports.pow2 = exports.pow = exports.positionWorldDirection = exports.positionWorld = exports.positionViewDirection = exports.positionView = exports.positionLocal = exports.positionGeometry = exports.pointUV = exports.or = exports.normalize = exports.normalWorld = exports.normalView = exports.normalLocal = exports.normalGeometry = void 0;
+var _AttributeNode = _interopRequireDefault(require("../core/AttributeNode.js"));
+var _BypassNode = _interopRequireDefault(require("../core/BypassNode.js"));
+var _CodeNode = _interopRequireDefault(require("../core/CodeNode.js"));
+var _ContextNode = _interopRequireDefault(require("../core/ContextNode.js"));
+var _ExpressionNode = _interopRequireDefault(require("../core/ExpressionNode.js"));
+var _FunctionCallNode = _interopRequireDefault(require("../core/FunctionCallNode.js"));
+var _FunctionNode = _interopRequireDefault(require("../core/FunctionNode.js"));
+var _InstanceIndexNode = _interopRequireDefault(require("../core/InstanceIndexNode.js"));
+var _PropertyNode = _interopRequireDefault(require("../core/PropertyNode.js"));
+var _UniformNode = _interopRequireDefault(require("../core/UniformNode.js"));
+var _VarNode = _interopRequireDefault(require("../core/VarNode.js"));
+var _VaryingNode = _interopRequireDefault(require("../core/VaryingNode.js"));
+var _BitangentNode = _interopRequireDefault(require("../accessors/BitangentNode.js"));
+var _BufferNode = _interopRequireDefault(require("../accessors/BufferNode.js"));
+var _CameraNode = _interopRequireDefault(require("../accessors/CameraNode.js"));
+var _MaterialNode = _interopRequireDefault(require("../accessors/MaterialNode.js"));
+var _MaterialReferenceNode = _interopRequireDefault(require("../accessors/MaterialReferenceNode.js"));
+var _ModelViewProjectionNode = _interopRequireDefault(require("../accessors/ModelViewProjectionNode.js"));
+var _NormalNode = _interopRequireDefault(require("../accessors/NormalNode.js"));
+var _ModelNode = _interopRequireDefault(require("../accessors/ModelNode.js"));
+var _PointUVNode = _interopRequireDefault(require("../accessors/PointUVNode.js"));
+var _PositionNode = _interopRequireDefault(require("../accessors/PositionNode.js"));
+var _ReferenceNode = _interopRequireDefault(require("../accessors/ReferenceNode.js"));
+var _StorageBufferNode = _interopRequireDefault(require("../accessors/StorageBufferNode.js"));
+var _TangentNode = _interopRequireDefault(require("../accessors/TangentNode.js"));
+var _TextureNode = _interopRequireDefault(require("../accessors/TextureNode.js"));
+var _UserDataNode = _interopRequireDefault(require("../accessors/UserDataNode.js"));
+var _UVNode = _interopRequireDefault(require("../accessors/UVNode.js"));
+var _FrontFacingNode = _interopRequireDefault(require("../display/FrontFacingNode.js"));
+var _ComputeNode = _interopRequireDefault(require("../gpgpu/ComputeNode.js"));
+var _MathNode = _interopRequireDefault(require("../math/MathNode.js"));
+var _OperatorNode = _interopRequireDefault(require("../math/OperatorNode.js"));
+var _CondNode = _interopRequireDefault(require("../math/CondNode.js"));
+var _ArrayElementNode = _interopRequireDefault(require("../utils/ArrayElementNode.js"));
+var _ConvertNode = _interopRequireDefault(require("../utils/ConvertNode.js"));
+var _ShaderNode = require("./ShaderNode.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct.bind(); } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+var color = new _ShaderNode.ConvertType('color');
+exports.color = color;
+var float = new _ShaderNode.ConvertType('float', _ShaderNode.cacheMaps.float);
+exports.float = float;
+var int = new _ShaderNode.ConvertType('int', _ShaderNode.cacheMaps.int);
+exports.int = int;
+var uint = new _ShaderNode.ConvertType('uint', _ShaderNode.cacheMaps.uint);
+exports.uint = uint;
+var bool = new _ShaderNode.ConvertType('bool', _ShaderNode.cacheMaps.bool);
+exports.bool = bool;
+var vec2 = new _ShaderNode.ConvertType('vec2');
+exports.vec2 = vec2;
+var ivec2 = new _ShaderNode.ConvertType('ivec2');
+exports.ivec2 = ivec2;
+var uvec2 = new _ShaderNode.ConvertType('uvec2');
+exports.uvec2 = uvec2;
+var bvec2 = new _ShaderNode.ConvertType('bvec2');
+exports.bvec2 = bvec2;
+var vec3 = new _ShaderNode.ConvertType('vec3');
+exports.vec3 = vec3;
+var ivec3 = new _ShaderNode.ConvertType('ivec3');
+exports.ivec3 = ivec3;
+var uvec3 = new _ShaderNode.ConvertType('uvec3');
+exports.uvec3 = uvec3;
+var bvec3 = new _ShaderNode.ConvertType('bvec3');
+exports.bvec3 = bvec3;
+var vec4 = new _ShaderNode.ConvertType('vec4');
+exports.vec4 = vec4;
+var ivec4 = new _ShaderNode.ConvertType('ivec4');
+exports.ivec4 = ivec4;
+var uvec4 = new _ShaderNode.ConvertType('uvec4');
+exports.uvec4 = uvec4;
+var bvec4 = new _ShaderNode.ConvertType('bvec4');
+exports.bvec4 = bvec4;
+var mat3 = new _ShaderNode.ConvertType('mat3');
+exports.mat3 = mat3;
+var imat3 = new _ShaderNode.ConvertType('imat3');
+exports.imat3 = imat3;
+var umat3 = new _ShaderNode.ConvertType('umat3');
+exports.umat3 = umat3;
+var bmat3 = new _ShaderNode.ConvertType('bmat3');
+exports.bmat3 = bmat3;
+var mat4 = new _ShaderNode.ConvertType('mat4');
+exports.mat4 = mat4;
+var imat4 = new _ShaderNode.ConvertType('imat4');
+exports.imat4 = imat4;
+var umat4 = new _ShaderNode.ConvertType('umat4');
+exports.umat4 = umat4;
+var bmat4 = new _ShaderNode.ConvertType('bmat4');
+
+// core
+
+// @TODO: ArrayUniformNode
+exports.bmat4 = bmat4;
+var func = function func(code, includes) {
+  var node = (0, _ShaderNode.nodeObject)(new _FunctionNode.default(code, includes));
+  var call = node.call.bind(node);
+  node.call = function (...params) {
+    return (0, _ShaderNode.nodeObject)(call(params.length > 1 || params[0]?.isNode === true ? (0, _ShaderNode.nodeArray)(params) : (0, _ShaderNode.nodeObjects)(params[0])));
+  };
+  return node;
+};
+exports.func = func;
+var uniform = function uniform(nodeOrType) {
+  var nodeType = (0, _ShaderNode.getConstNodeType)(nodeOrType);
+
+  // @TODO: get ConstNode from .traverse() in the future
+  var value = nodeOrType.isNode === true ? nodeOrType.node?.value || nodeOrType.value : nodeOrType;
+  return (0, _ShaderNode.nodeObject)(new _UniformNode.default(value, nodeType));
+};
+exports.uniform = uniform;
+var fn = function fn(code, includes) {
+  return func(code, includes).call;
+};
+exports.fn = fn;
+var attribute = function attribute(name, nodeType) {
+  return (0, _ShaderNode.nodeObject)(new _AttributeNode.default(name, nodeType));
+};
+exports.attribute = attribute;
+var property = function property(name, nodeOrType) {
+  return (0, _ShaderNode.nodeObject)(new _PropertyNode.default(name, (0, _ShaderNode.getConstNodeType)(nodeOrType)));
+};
+exports.property = property;
+var convert = function convert(node, types) {
+  return (0, _ShaderNode.nodeObject)(new _ConvertNode.default((0, _ShaderNode.nodeObject)(node), types));
+};
+exports.convert = convert;
+var bypass = (0, _ShaderNode.nodeProxy)(_BypassNode.default);
+exports.bypass = bypass;
+var code = (0, _ShaderNode.nodeProxy)(_CodeNode.default);
+exports.code = code;
+var context = (0, _ShaderNode.nodeProxy)(_ContextNode.default);
+exports.context = context;
+var expression = (0, _ShaderNode.nodeProxy)(_ExpressionNode.default);
+exports.expression = expression;
+var call = (0, _ShaderNode.nodeProxy)(_FunctionCallNode.default);
+exports.call = call;
+var instanceIndex = (0, _ShaderNode.nodeImmutable)(_InstanceIndexNode.default);
+exports.instanceIndex = instanceIndex;
+var label = (0, _ShaderNode.nodeProxy)(_VarNode.default);
+exports.label = label;
+var temp = label;
+exports.temp = temp;
+var varying = (0, _ShaderNode.nodeProxy)(_VaryingNode.default);
+
+// math
+exports.varying = varying;
+var EPSILON = float(1e-6);
+exports.EPSILON = EPSILON;
+var INFINITY = float(1e6);
+exports.INFINITY = INFINITY;
+var cond = (0, _ShaderNode.nodeProxy)(_CondNode.default);
+exports.cond = cond;
+var add = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '+');
+exports.add = add;
+var sub = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '-');
+exports.sub = sub;
+var mul = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '*');
+exports.mul = mul;
+var div = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '/');
+exports.div = div;
+var remainder = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '%');
+exports.remainder = remainder;
+var equal = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '==');
+exports.equal = equal;
+var assign = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '=');
+exports.assign = assign;
+var lessThan = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '<');
+exports.lessThan = lessThan;
+var greaterThan = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '>');
+exports.greaterThan = greaterThan;
+var lessThanEqual = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '<=');
+exports.lessThanEqual = lessThanEqual;
+var greaterThanEqual = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '>=');
+exports.greaterThanEqual = greaterThanEqual;
+var and = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '&&');
+exports.and = and;
+var or = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '||');
+exports.or = or;
+var xor = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '^^');
+exports.xor = xor;
+var bitAnd = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '&');
+exports.bitAnd = bitAnd;
+var bitOr = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '|');
+exports.bitOr = bitOr;
+var bitXor = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '^');
+exports.bitXor = bitXor;
+var shiftLeft = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '<<');
+exports.shiftLeft = shiftLeft;
+var shiftRight = (0, _ShaderNode.nodeProxy)(_OperatorNode.default, '>>');
+exports.shiftRight = shiftRight;
+var radians = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.RADIANS);
+exports.radians = radians;
+var degrees = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.DEGREES);
+exports.degrees = degrees;
+var exp = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.EXP);
+exports.exp = exp;
+var exp2 = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.EXP2);
+exports.exp2 = exp2;
+var log = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.LOG);
+exports.log = log;
+var log2 = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.LOG2);
+exports.log2 = log2;
+var sqrt = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.SQRT);
+exports.sqrt = sqrt;
+var inversesqrt = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.INVERSE_SQRT);
+exports.inversesqrt = inversesqrt;
+var floor = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.FLOOR);
+exports.floor = floor;
+var ceil = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.CEIL);
+exports.ceil = ceil;
+var normalize = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.NORMALIZE);
+exports.normalize = normalize;
+var fract = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.FRACT);
+exports.fract = fract;
+var sin = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.SIN);
+exports.sin = sin;
+var cos = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.COS);
+exports.cos = cos;
+var tan = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.TAN);
+exports.tan = tan;
+var asin = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.ASIN);
+exports.asin = asin;
+var acos = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.ACOS);
+exports.acos = acos;
+var atan = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.ATAN);
+exports.atan = atan;
+var abs = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.ABS);
+exports.abs = abs;
+var sign = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.SIGN);
+exports.sign = sign;
+var length = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.LENGTH);
+exports.length = length;
+var negate = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.NEGATE);
+exports.negate = negate;
+var invert = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.INVERT);
+exports.invert = invert;
+var dFdx = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.DFDX);
+exports.dFdx = dFdx;
+var dFdy = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.DFDY);
+exports.dFdy = dFdy;
+var round = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.ROUND);
+exports.round = round;
+var reciprocal = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.RECIPROCAL);
+exports.reciprocal = reciprocal;
+var atan2 = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.ATAN2);
+exports.atan2 = atan2;
+var min = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.MIN);
+exports.min = min;
+var max = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.MAX);
+exports.max = max;
+var mod = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.MOD);
+exports.mod = mod;
+var step = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.STEP);
+exports.step = step;
+var reflect = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.REFLECT);
+exports.reflect = reflect;
+var distance = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.DISTANCE);
+exports.distance = distance;
+var dot = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.DOT);
+exports.dot = dot;
+var cross = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.CROSS);
+exports.cross = cross;
+var pow = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.POW);
+exports.pow = pow;
+var pow2 = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.POW, 2);
+exports.pow2 = pow2;
+var pow3 = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.POW, 3);
+exports.pow3 = pow3;
+var pow4 = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.POW, 4);
+exports.pow4 = pow4;
+var transformDirection = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.TRANSFORM_DIRECTION);
+exports.transformDirection = transformDirection;
+var mix = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.MIX);
+exports.mix = mix;
+var clamp = function clamp(value, low = 0, high = 1) {
+  return (0, _ShaderNode.nodeObject)(new _MathNode.default(_MathNode.default.CLAMP, (0, _ShaderNode.nodeObject)(value), (0, _ShaderNode.nodeObject)(low), (0, _ShaderNode.nodeObject)(high)));
+};
+exports.clamp = clamp;
+var refract = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.REFRACT);
+exports.refract = refract;
+var smoothstep = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.SMOOTHSTEP);
+exports.smoothstep = smoothstep;
+var faceforward = (0, _ShaderNode.nodeProxy)(_MathNode.default, _MathNode.default.FACEFORWARD);
+
+// accessors
+exports.faceforward = faceforward;
+var buffer = function buffer(value, nodeOrType, count) {
+  return (0, _ShaderNode.nodeObject)(new _BufferNode.default(value, (0, _ShaderNode.getConstNodeType)(nodeOrType), count));
+};
+exports.buffer = buffer;
+var storage = function storage(value, nodeOrType, count) {
+  return (0, _ShaderNode.nodeObject)(new _StorageBufferNode.default(value, (0, _ShaderNode.getConstNodeType)(nodeOrType), count));
+};
+exports.storage = storage;
+var cameraProjectionMatrix = (0, _ShaderNode.nodeImmutable)(_CameraNode.default, _CameraNode.default.PROJECTION_MATRIX);
+exports.cameraProjectionMatrix = cameraProjectionMatrix;
+var cameraViewMatrix = (0, _ShaderNode.nodeImmutable)(_CameraNode.default, _CameraNode.default.VIEW_MATRIX);
+exports.cameraViewMatrix = cameraViewMatrix;
+var cameraNormalMatrix = (0, _ShaderNode.nodeImmutable)(_CameraNode.default, _CameraNode.default.NORMAL_MATRIX);
+exports.cameraNormalMatrix = cameraNormalMatrix;
+var cameraWorldMatrix = (0, _ShaderNode.nodeImmutable)(_CameraNode.default, _CameraNode.default.WORLD_MATRIX);
+exports.cameraWorldMatrix = cameraWorldMatrix;
+var cameraPosition = (0, _ShaderNode.nodeImmutable)(_CameraNode.default, _CameraNode.default.POSITION);
+exports.cameraPosition = cameraPosition;
+var materialAlphaTest = (0, _ShaderNode.nodeImmutable)(_MaterialNode.default, _MaterialNode.default.ALPHA_TEST);
+exports.materialAlphaTest = materialAlphaTest;
+var materialColor = (0, _ShaderNode.nodeImmutable)(_MaterialNode.default, _MaterialNode.default.COLOR);
+exports.materialColor = materialColor;
+var materialEmissive = (0, _ShaderNode.nodeImmutable)(_MaterialNode.default, _MaterialNode.default.EMISSIVE);
+exports.materialEmissive = materialEmissive;
+var materialOpacity = (0, _ShaderNode.nodeImmutable)(_MaterialNode.default, _MaterialNode.default.OPACITY);
+//export const materialSpecular = nodeImmutable( MaterialNode, MaterialNode.SPECULAR );
+exports.materialOpacity = materialOpacity;
+var materialRoughness = (0, _ShaderNode.nodeImmutable)(_MaterialNode.default, _MaterialNode.default.ROUGHNESS);
+exports.materialRoughness = materialRoughness;
+var materialMetalness = (0, _ShaderNode.nodeImmutable)(_MaterialNode.default, _MaterialNode.default.METALNESS);
+exports.materialMetalness = materialMetalness;
+var materialRotation = (0, _ShaderNode.nodeImmutable)(_MaterialNode.default, _MaterialNode.default.ROTATION);
+exports.materialRotation = materialRotation;
+var diffuseColor = (0, _ShaderNode.nodeImmutable)(_PropertyNode.default, 'DiffuseColor', 'vec4');
+exports.diffuseColor = diffuseColor;
+var roughness = (0, _ShaderNode.nodeImmutable)(_PropertyNode.default, 'Roughness', 'float');
+exports.roughness = roughness;
+var metalness = (0, _ShaderNode.nodeImmutable)(_PropertyNode.default, 'Metalness', 'float');
+exports.metalness = metalness;
+var alphaTest = (0, _ShaderNode.nodeImmutable)(_PropertyNode.default, 'AlphaTest', 'float');
+exports.alphaTest = alphaTest;
+var specularColor = (0, _ShaderNode.nodeImmutable)(_PropertyNode.default, 'SpecularColor', 'color');
+exports.specularColor = specularColor;
+var reference = function reference(name, nodeOrType, object) {
+  return (0, _ShaderNode.nodeObject)(new _ReferenceNode.default(name, (0, _ShaderNode.getConstNodeType)(nodeOrType), object));
+};
+exports.reference = reference;
+var materialReference = function materialReference(name, nodeOrType, material) {
+  return (0, _ShaderNode.nodeObject)(new _MaterialReferenceNode.default(name, (0, _ShaderNode.getConstNodeType)(nodeOrType), material));
+};
+exports.materialReference = materialReference;
+var userData = function userData(name, inputType, _userData) {
+  return (0, _ShaderNode.nodeObject)(new _UserDataNode.default(name, inputType, _userData));
+};
+exports.userData = userData;
+var modelViewProjection = (0, _ShaderNode.nodeProxy)(_ModelViewProjectionNode.default);
+exports.modelViewProjection = modelViewProjection;
+var normalGeometry = (0, _ShaderNode.nodeImmutable)(_NormalNode.default, _NormalNode.default.GEOMETRY);
+exports.normalGeometry = normalGeometry;
+var normalLocal = (0, _ShaderNode.nodeImmutable)(_NormalNode.default, _NormalNode.default.LOCAL);
+exports.normalLocal = normalLocal;
+var normalView = (0, _ShaderNode.nodeImmutable)(_NormalNode.default, _NormalNode.default.VIEW);
+exports.normalView = normalView;
+var normalWorld = (0, _ShaderNode.nodeImmutable)(_NormalNode.default, _NormalNode.default.WORLD);
+exports.normalWorld = normalWorld;
+var transformedNormalView = (0, _ShaderNode.nodeImmutable)(_VarNode.default, normalView, 'TransformedNormalView');
+exports.transformedNormalView = transformedNormalView;
+var transformedNormalWorld = normalize(transformDirection(transformedNormalView, cameraViewMatrix));
+exports.transformedNormalWorld = transformedNormalWorld;
+var tangentGeometry = (0, _ShaderNode.nodeImmutable)(_TangentNode.default, _TangentNode.default.GEOMETRY);
+exports.tangentGeometry = tangentGeometry;
+var tangentLocal = (0, _ShaderNode.nodeImmutable)(_TangentNode.default, _TangentNode.default.LOCAL);
+exports.tangentLocal = tangentLocal;
+var tangentView = (0, _ShaderNode.nodeImmutable)(_TangentNode.default, _TangentNode.default.VIEW);
+exports.tangentView = tangentView;
+var tangentWorld = (0, _ShaderNode.nodeImmutable)(_TangentNode.default, _TangentNode.default.WORLD);
+exports.tangentWorld = tangentWorld;
+var transformedTangentView = (0, _ShaderNode.nodeImmutable)(_VarNode.default, tangentView, 'TransformedTangentView');
+exports.transformedTangentView = transformedTangentView;
+var transformedTangentWorld = normalize(transformDirection(transformedTangentView, cameraViewMatrix));
+exports.transformedTangentWorld = transformedTangentWorld;
+var bitangentGeometry = (0, _ShaderNode.nodeImmutable)(_BitangentNode.default, _BitangentNode.default.GEOMETRY);
+exports.bitangentGeometry = bitangentGeometry;
+var bitangentLocal = (0, _ShaderNode.nodeImmutable)(_BitangentNode.default, _BitangentNode.default.LOCAL);
+exports.bitangentLocal = bitangentLocal;
+var bitangentView = (0, _ShaderNode.nodeImmutable)(_BitangentNode.default, _BitangentNode.default.VIEW);
+exports.bitangentView = bitangentView;
+var bitangentWorld = (0, _ShaderNode.nodeImmutable)(_BitangentNode.default, _BitangentNode.default.WORLD);
+exports.bitangentWorld = bitangentWorld;
+var transformedBitangentView = normalize(mul(cross(transformedNormalView, transformedTangentView), tangentGeometry.w));
+exports.transformedBitangentView = transformedBitangentView;
+var transformedBitangentWorld = normalize(transformDirection(transformedBitangentView, cameraViewMatrix));
+exports.transformedBitangentWorld = transformedBitangentWorld;
+var modelViewMatrix = (0, _ShaderNode.nodeImmutable)(_ModelNode.default, _ModelNode.default.VIEW_MATRIX);
+exports.modelViewMatrix = modelViewMatrix;
+var modelNormalMatrix = (0, _ShaderNode.nodeImmutable)(_ModelNode.default, _ModelNode.default.NORMAL_MATRIX);
+exports.modelNormalMatrix = modelNormalMatrix;
+var modelWorldMatrix = (0, _ShaderNode.nodeImmutable)(_ModelNode.default, _ModelNode.default.WORLD_MATRIX);
+exports.modelWorldMatrix = modelWorldMatrix;
+var modelPosition = (0, _ShaderNode.nodeImmutable)(_ModelNode.default, _ModelNode.default.POSITION);
+exports.modelPosition = modelPosition;
+var modelViewPosition = (0, _ShaderNode.nodeImmutable)(_ModelNode.default, _ModelNode.default.VIEW_POSITION);
+exports.modelViewPosition = modelViewPosition;
+var positionGeometry = (0, _ShaderNode.nodeImmutable)(_PositionNode.default, _PositionNode.default.GEOMETRY);
+exports.positionGeometry = positionGeometry;
+var positionLocal = (0, _ShaderNode.nodeImmutable)(_PositionNode.default, _PositionNode.default.LOCAL);
+exports.positionLocal = positionLocal;
+var positionWorld = (0, _ShaderNode.nodeImmutable)(_PositionNode.default, _PositionNode.default.WORLD);
+exports.positionWorld = positionWorld;
+var positionWorldDirection = (0, _ShaderNode.nodeImmutable)(_PositionNode.default, _PositionNode.default.WORLD_DIRECTION);
+exports.positionWorldDirection = positionWorldDirection;
+var positionView = (0, _ShaderNode.nodeImmutable)(_PositionNode.default, _PositionNode.default.VIEW);
+exports.positionView = positionView;
+var positionViewDirection = (0, _ShaderNode.nodeImmutable)(_PositionNode.default, _PositionNode.default.VIEW_DIRECTION);
+exports.positionViewDirection = positionViewDirection;
+var texture = (0, _ShaderNode.nodeProxy)(_TextureNode.default);
+exports.texture = texture;
+var sampler = function sampler(texture) {
+  return (0, _ShaderNode.nodeObject)(new _ConvertNode.default(texture.isNode === true ? texture : new _TextureNode.default(texture), 'sampler'));
+};
+exports.sampler = sampler;
+var uv = function uv(...params) {
+  return (0, _ShaderNode.nodeObject)(_construct(_UVNode.default, params));
+};
+exports.uv = uv;
+var pointUV = (0, _ShaderNode.nodeImmutable)(_PointUVNode.default);
+
+// gpgpu
+exports.pointUV = pointUV;
+var compute = function compute(node, count, workgroupSize) {
+  return (0, _ShaderNode.nodeObject)(new _ComputeNode.default((0, _ShaderNode.nodeObject)(node), count, workgroupSize));
+};
+
+// display
+exports.compute = compute;
+var frontFacing = (0, _ShaderNode.nodeImmutable)(_FrontFacingNode.default);
+exports.frontFacing = frontFacing;
+var faceDirection = sub(mul(float(frontFacing), 2), 1);
+
+// lighting
+
+// utils
+exports.faceDirection = faceDirection;
+var element = (0, _ShaderNode.nodeProxy)(_ArrayElementNode.default);
+
+// miscellaneous
+exports.element = element;
+var lumaCoeffs = vec3(0.2125, 0.7154, 0.0721);
+exports.lumaCoeffs = lumaCoeffs;
+var luminance = function luminance(color, luma = lumaCoeffs) {
+  return dot(color, luma);
+};
+exports.luminance = luminance;
+var difference = function difference(a, b) {
+  return abs(sub(a, b));
+};
+exports.difference = difference;
+var dotNV = clamp(dot(transformedNormalView, positionViewDirection));
+exports.dotNV = dotNV;
+var TBNViewMatrix = mat3(tangentView, bitangentView, normalView);
+exports.TBNViewMatrix = TBNViewMatrix;
+},{"../core/AttributeNode.js":"../node_modules/three/examples/jsm/nodes/core/AttributeNode.js","../core/BypassNode.js":"../node_modules/three/examples/jsm/nodes/core/BypassNode.js","../core/CodeNode.js":"../node_modules/three/examples/jsm/nodes/core/CodeNode.js","../core/ContextNode.js":"../node_modules/three/examples/jsm/nodes/core/ContextNode.js","../core/ExpressionNode.js":"../node_modules/three/examples/jsm/nodes/core/ExpressionNode.js","../core/FunctionCallNode.js":"../node_modules/three/examples/jsm/nodes/core/FunctionCallNode.js","../core/FunctionNode.js":"../node_modules/three/examples/jsm/nodes/core/FunctionNode.js","../core/InstanceIndexNode.js":"../node_modules/three/examples/jsm/nodes/core/InstanceIndexNode.js","../core/PropertyNode.js":"../node_modules/three/examples/jsm/nodes/core/PropertyNode.js","../core/UniformNode.js":"../node_modules/three/examples/jsm/nodes/core/UniformNode.js","../core/VarNode.js":"../node_modules/three/examples/jsm/nodes/core/VarNode.js","../core/VaryingNode.js":"../node_modules/three/examples/jsm/nodes/core/VaryingNode.js","../accessors/BitangentNode.js":"../node_modules/three/examples/jsm/nodes/accessors/BitangentNode.js","../accessors/BufferNode.js":"../node_modules/three/examples/jsm/nodes/accessors/BufferNode.js","../accessors/CameraNode.js":"../node_modules/three/examples/jsm/nodes/accessors/CameraNode.js","../accessors/MaterialNode.js":"../node_modules/three/examples/jsm/nodes/accessors/MaterialNode.js","../accessors/MaterialReferenceNode.js":"../node_modules/three/examples/jsm/nodes/accessors/MaterialReferenceNode.js","../accessors/ModelViewProjectionNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ModelViewProjectionNode.js","../accessors/NormalNode.js":"../node_modules/three/examples/jsm/nodes/accessors/NormalNode.js","../accessors/ModelNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ModelNode.js","../accessors/PointUVNode.js":"../node_modules/three/examples/jsm/nodes/accessors/PointUVNode.js","../accessors/PositionNode.js":"../node_modules/three/examples/jsm/nodes/accessors/PositionNode.js","../accessors/ReferenceNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ReferenceNode.js","../accessors/StorageBufferNode.js":"../node_modules/three/examples/jsm/nodes/accessors/StorageBufferNode.js","../accessors/TangentNode.js":"../node_modules/three/examples/jsm/nodes/accessors/TangentNode.js","../accessors/TextureNode.js":"../node_modules/three/examples/jsm/nodes/accessors/TextureNode.js","../accessors/UserDataNode.js":"../node_modules/three/examples/jsm/nodes/accessors/UserDataNode.js","../accessors/UVNode.js":"../node_modules/three/examples/jsm/nodes/accessors/UVNode.js","../display/FrontFacingNode.js":"../node_modules/three/examples/jsm/nodes/display/FrontFacingNode.js","../gpgpu/ComputeNode.js":"../node_modules/three/examples/jsm/nodes/gpgpu/ComputeNode.js","../math/MathNode.js":"../node_modules/three/examples/jsm/nodes/math/MathNode.js","../math/OperatorNode.js":"../node_modules/three/examples/jsm/nodes/math/OperatorNode.js","../math/CondNode.js":"../node_modules/three/examples/jsm/nodes/math/CondNode.js","../utils/ArrayElementNode.js":"../node_modules/three/examples/jsm/nodes/utils/ArrayElementNode.js","../utils/ConvertNode.js":"../node_modules/three/examples/jsm/nodes/utils/ConvertNode.js","./ShaderNode.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNode.js"}],"../node_modules/three/examples/jsm/nodes/accessors/ReflectVectorNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var ReflectVectorNode = /*#__PURE__*/function (_Node) {
+  _inherits(ReflectVectorNode, _Node);
+  var _super = _createSuper(ReflectVectorNode);
+  function ReflectVectorNode() {
+    _classCallCheck(this, ReflectVectorNode);
+    return _super.call(this, 'vec3');
+  }
+  _createClass(ReflectVectorNode, [{
+    key: "getHash",
+    value: function getHash( /*builder*/
+    ) {
+      return 'reflectVector';
+    }
+  }, {
+    key: "construct",
+    value: function construct() {
+      var reflectView = (0, _ShaderNodeBaseElements.reflect)((0, _ShaderNodeBaseElements.negate)(_ShaderNodeBaseElements.positionViewDirection), _ShaderNodeBaseElements.transformedNormalView);
+      return (0, _ShaderNodeBaseElements.transformDirection)(reflectView, _ShaderNodeBaseElements.cameraViewMatrix);
+    }
+  }]);
+  return ReflectVectorNode;
+}(_Node2.default);
+var _default = ReflectVectorNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/accessors/CubeTextureNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _TextureNode2 = _interopRequireDefault(require("./TextureNode.js"));
+var _UniformNode = _interopRequireDefault(require("../core/UniformNode.js"));
+var _ReflectVectorNode = _interopRequireDefault(require("./ReflectVectorNode.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var CubeTextureNode = /*#__PURE__*/function (_TextureNode) {
+  _inherits(CubeTextureNode, _TextureNode);
+  var _super = _createSuper(CubeTextureNode);
+  function CubeTextureNode(value, uvNode = null, levelNode = null) {
+    var _this;
+    _classCallCheck(this, CubeTextureNode);
+    _this = _super.call(this, value, uvNode, levelNode);
+    _this.isCubeTextureNode = true;
+    return _this;
+  }
+  _createClass(CubeTextureNode, [{
+    key: "getInputType",
+    value: function getInputType( /*builder*/
+    ) {
+      return 'cubeTexture';
+    }
+  }, {
+    key: "getConstructHash",
+    value: function getConstructHash(builder) {
+      return "".concat(this.uuid, " / ").concat(builder.context.environmentContext?.uuid || '');
+    }
+  }, {
+    key: "construct",
+    value: function construct(builder) {
+      var properties = builder.getNodeProperties(this);
+      var uvNode = this.uvNode || builder.context.uvNode || new _ReflectVectorNode.default();
+      var levelNode = this.levelNode || builder.context.levelNode;
+      if (levelNode?.isNode === true) {
+        var texture = this.value;
+        levelNode = builder.context.levelShaderNode ? builder.context.levelShaderNode.call({
+          texture: texture,
+          levelNode: levelNode
+        }, builder) : levelNode;
+      }
+      properties.uvNode = uvNode;
+      properties.levelNode = levelNode;
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder, output) {
+      var _builder$getNodePrope = builder.getNodeProperties(this),
+        uvNode = _builder$getNodePrope.uvNode,
+        levelNode = _builder$getNodePrope.levelNode;
+      var texture = this.value;
+      if (!texture || texture.isCubeTexture !== true) {
+        throw new Error('CubeTextureNode: Need a three.js cube texture.');
+      }
+      var textureProperty = _UniformNode.default.prototype.generate.call(this, builder, 'cubeTexture');
+      if (output === 'sampler') {
+        return textureProperty + '_sampler';
+      } else if (builder.isReference(output)) {
+        return textureProperty;
+      } else {
+        var nodeData = builder.getDataFromNode(this);
+        var snippet = nodeData.snippet;
+        if (snippet === undefined || builder.context.tempRead === false) {
+          var uvNodeObject = (0, _ShaderNodeBaseElements.nodeObject)(uvNode);
+          var cubeUV = (0, _ShaderNodeBaseElements.vec3)((0, _ShaderNodeBaseElements.negate)(uvNodeObject.x), uvNodeObject.yz);
+          var uvSnippet = cubeUV.build(builder, 'vec3');
+          if (levelNode) {
+            var levelSnippet = levelNode.build(builder, 'float');
+            snippet = builder.getCubeTextureLevel(textureProperty, uvSnippet, levelSnippet);
+          } else {
+            snippet = builder.getCubeTexture(textureProperty, uvSnippet);
+          }
+          nodeData.snippet = snippet;
+        }
+        return builder.format(snippet, 'vec4', output);
+      }
+    }
+  }]);
+  return CubeTextureNode;
+}(_TextureNode2.default);
+var _default = CubeTextureNode;
+exports.default = _default;
+},{"./TextureNode.js":"../node_modules/three/examples/jsm/nodes/accessors/TextureNode.js","../core/UniformNode.js":"../node_modules/three/examples/jsm/nodes/core/UniformNode.js","./ReflectVectorNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ReflectVectorNode.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/accessors/InstanceNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var InstanceNode = /*#__PURE__*/function (_Node) {
+  _inherits(InstanceNode, _Node);
+  var _super = _createSuper(InstanceNode);
+  function InstanceNode(instanceMesh) {
+    var _this;
+    _classCallCheck(this, InstanceNode);
+    _this = _super.call(this, 'void');
+    _this.instanceMesh = instanceMesh;
+
+    //
+
+    var instanceBufferNode = (0, _ShaderNodeBaseElements.buffer)(instanceMesh.instanceMatrix.array, 'mat4', instanceMesh.count);
+    _this.instanceMatrixNode = (0, _ShaderNodeBaseElements.temp)((0, _ShaderNodeBaseElements.element)(instanceBufferNode, _ShaderNodeBaseElements.instanceIndex)); // @TODO: a possible caching issue here?
+    return _this;
+  }
+  _createClass(InstanceNode, [{
+    key: "generate",
+    value: function generate(builder) {
+      var instanceMatrixNode = this.instanceMatrixNode;
+
+      // POSITION
+
+      var instancePosition = (0, _ShaderNodeBaseElements.mul)(instanceMatrixNode, _ShaderNodeBaseElements.positionLocal).xyz;
+
+      // NORMAL
+
+      var m = (0, _ShaderNodeBaseElements.mat3)(instanceMatrixNode[0].xyz, instanceMatrixNode[1].xyz, instanceMatrixNode[2].xyz);
+      var transformedNormal = (0, _ShaderNodeBaseElements.div)(_ShaderNodeBaseElements.normalLocal, (0, _ShaderNodeBaseElements.vec3)((0, _ShaderNodeBaseElements.dot)(m[0], m[0]), (0, _ShaderNodeBaseElements.dot)(m[1], m[1]), (0, _ShaderNodeBaseElements.dot)(m[2], m[2])));
+      var instanceNormal = (0, _ShaderNodeBaseElements.mul)(m, transformedNormal).xyz;
+
+      // ASSIGNS
+
+      (0, _ShaderNodeBaseElements.assign)(_ShaderNodeBaseElements.positionLocal, instancePosition).build(builder);
+      (0, _ShaderNodeBaseElements.assign)(_ShaderNodeBaseElements.normalLocal, instanceNormal).build(builder);
+    }
+  }]);
+  return InstanceNode;
+}(_Node2.default);
+var _default = InstanceNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/accessors/SkinningNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+var _constants = require("../core/constants.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var Skinning = new _ShaderNodeBaseElements.ShaderNode(function (inputs, builder) {
+  var index = inputs.index,
+    weight = inputs.weight,
+    bindMatrix = inputs.bindMatrix,
+    bindMatrixInverse = inputs.bindMatrixInverse,
+    boneMatrices = inputs.boneMatrices;
+  var boneMatX = (0, _ShaderNodeBaseElements.element)(boneMatrices, index.x);
+  var boneMatY = (0, _ShaderNodeBaseElements.element)(boneMatrices, index.y);
+  var boneMatZ = (0, _ShaderNodeBaseElements.element)(boneMatrices, index.z);
+  var boneMatW = (0, _ShaderNodeBaseElements.element)(boneMatrices, index.w);
+
+  // POSITION
+
+  var skinVertex = (0, _ShaderNodeBaseElements.mul)(bindMatrix, _ShaderNodeBaseElements.positionLocal);
+  var skinned = (0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.mul)(boneMatX, skinVertex), weight.x), (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.mul)(boneMatY, skinVertex), weight.y), (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.mul)(boneMatZ, skinVertex), weight.z), (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.mul)(boneMatW, skinVertex), weight.w));
+  var skinPosition = (0, _ShaderNodeBaseElements.mul)(bindMatrixInverse, skinned).xyz;
+
+  // NORMAL
+
+  var skinMatrix = (0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.mul)(weight.x, boneMatX), (0, _ShaderNodeBaseElements.mul)(weight.y, boneMatY), (0, _ShaderNodeBaseElements.mul)(weight.z, boneMatZ), (0, _ShaderNodeBaseElements.mul)(weight.w, boneMatW));
+  skinMatrix = (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.mul)(bindMatrixInverse, skinMatrix), bindMatrix);
+  var skinNormal = (0, _ShaderNodeBaseElements.transformDirection)(skinMatrix, _ShaderNodeBaseElements.normalLocal).xyz;
+
+  // ASSIGNS
+
+  (0, _ShaderNodeBaseElements.assign)(_ShaderNodeBaseElements.positionLocal, skinPosition).build(builder);
+  (0, _ShaderNodeBaseElements.assign)(_ShaderNodeBaseElements.normalLocal, skinNormal).build(builder);
+  if (builder.hasGeometryAttribute('tangent')) {
+    (0, _ShaderNodeBaseElements.assign)(_ShaderNodeBaseElements.tangentLocal, skinNormal).build(builder);
+  }
+});
+var SkinningNode = /*#__PURE__*/function (_Node) {
+  _inherits(SkinningNode, _Node);
+  var _super = _createSuper(SkinningNode);
+  function SkinningNode(skinnedMesh) {
+    var _this;
+    _classCallCheck(this, SkinningNode);
+    _this = _super.call(this, 'void');
+    _this.skinnedMesh = skinnedMesh;
+    _this.updateType = _constants.NodeUpdateType.OBJECT;
+
+    //
+
+    _this.skinIndexNode = (0, _ShaderNodeBaseElements.attribute)('skinIndex', 'uvec4');
+    _this.skinWeightNode = (0, _ShaderNodeBaseElements.attribute)('skinWeight', 'vec4');
+    _this.bindMatrixNode = (0, _ShaderNodeBaseElements.uniform)((0, _ShaderNodeBaseElements.mat4)(skinnedMesh.bindMatrix));
+    _this.bindMatrixInverseNode = (0, _ShaderNodeBaseElements.uniform)((0, _ShaderNodeBaseElements.mat4)(skinnedMesh.bindMatrixInverse));
+    _this.boneMatricesNode = (0, _ShaderNodeBaseElements.buffer)(skinnedMesh.skeleton.boneMatrices, 'mat4', skinnedMesh.skeleton.bones.length);
+    return _this;
+  }
+  _createClass(SkinningNode, [{
+    key: "generate",
+    value: function generate(builder) {
+      Skinning.call({
+        index: this.skinIndexNode,
+        weight: this.skinWeightNode,
+        bindMatrix: this.bindMatrixNode,
+        bindMatrixInverse: this.bindMatrixInverseNode,
+        boneMatrices: this.boneMatricesNode
+      }, builder);
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      this.skinnedMesh.skeleton.update();
+    }
+  }]);
+  return SkinningNode;
+}(_Node2.default);
+var _default = SkinningNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js","../core/constants.js":"../node_modules/three/examples/jsm/nodes/core/constants.js"}],"../node_modules/three/examples/jsm/nodes/geometry/RangeNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var RangeNode = /*#__PURE__*/function (_Node) {
+  _inherits(RangeNode, _Node);
+  var _super = _createSuper(RangeNode);
+  function RangeNode(min, max) {
+    var _this;
+    _classCallCheck(this, RangeNode);
+    _this = _super.call(this);
+    _this.min = min;
+    _this.max = max;
+    return _this;
+  }
+  _createClass(RangeNode, [{
+    key: "getVectorLength",
+    value: function getVectorLength() {
+      var min = this.min;
+      var length = 1;
+      if (min.isVector2) length = 2;else if (min.isVector3) length = 3;else if (min.isVector4) length = 4;else if (min.isColor) length = 3;
+      return length;
+    }
+  }, {
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      return builder.object.isInstancedMesh === true ? builder.getTypeFromLength(this.getVectorLength()) : 'float';
+    }
+  }, {
+    key: "construct",
+    value: function construct(builder) {
+      var min = this.min,
+        max = this.max;
+      var object = builder.object,
+        geometry = builder.geometry;
+      var output = null;
+      if (object.isInstancedMesh === true) {
+        var vectorLength = this.getVectorLength();
+        var attributeName = 'node' + this.id;
+        var length = vectorLength * object.count;
+        var array = new Float32Array(length);
+        var attributeGeometry = geometry.getAttribute(attributeName);
+        if (attributeGeometry === undefined || attributeGeometry.array.length < length) {
+          if (vectorLength === 1) {
+            for (var i = 0; i < length; i++) {
+              array[i] = _three.MathUtils.lerp(min, max, Math.random());
+            }
+          } else if (min.isColor) {
+            for (var _i = 0; _i < length; _i += 3) {
+              array[_i] = _three.MathUtils.lerp(min.r, max.r, Math.random());
+              array[_i + 1] = _three.MathUtils.lerp(min.g, max.g, Math.random());
+              array[_i + 2] = _three.MathUtils.lerp(min.b, max.b, Math.random());
+            }
+          } else {
+            for (var _i2 = 0; _i2 < length; _i2++) {
+              var index = _i2 % vectorLength;
+              var minValue = min.getComponent(index);
+              var maxValue = max.getComponent(index);
+              array[_i2] = _three.MathUtils.lerp(minValue, maxValue, Math.random());
+            }
+          }
+          geometry.setAttribute(attributeName, new _three.InstancedBufferAttribute(array, vectorLength));
+          geometry.dispose();
+        }
+        output = (0, _ShaderNodeBaseElements.attribute)(attributeName, builder.getTypeFromLength(vectorLength));
+      } else {
+        output = (0, _ShaderNodeBaseElements.float)(0);
+      }
+      return output;
+    }
+  }]);
+  return RangeNode;
+}(_Node2.default);
+var _default = RangeNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/display/BlendModeNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = exports.ScreenNode = exports.OverlayNode = exports.DodgeNode = exports.BurnNode = void 0;
+var _Node = _interopRequireDefault(require("../core/Node.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var BurnNode = new _ShaderNodeBaseElements.ShaderNode(function ({
+  base: base,
+  blend: blend
+}) {
+  var fn = function fn(c) {
+    return (0, _ShaderNodeBaseElements.cond)((0, _ShaderNodeBaseElements.lessThan)(blend[c], _ShaderNodeBaseElements.EPSILON), blend[c], (0, _ShaderNodeBaseElements.max)((0, _ShaderNodeBaseElements.sub)(1.0, (0, _ShaderNodeBaseElements.div)((0, _ShaderNodeBaseElements.sub)(1.0, base[c]), blend[c])), 0));
+  };
+  return (0, _ShaderNodeBaseElements.vec3)(fn('x'), fn('y'), fn('z'));
+});
+exports.BurnNode = BurnNode;
+var DodgeNode = new _ShaderNodeBaseElements.ShaderNode(function ({
+  base: base,
+  blend: blend
+}) {
+  var fn = function fn(c) {
+    return (0, _ShaderNodeBaseElements.cond)((0, _ShaderNodeBaseElements.equal)(blend[c], 1.0), blend[c], (0, _ShaderNodeBaseElements.max)((0, _ShaderNodeBaseElements.div)(base[c], (0, _ShaderNodeBaseElements.sub)(1.0, blend[c])), 0));
+  };
+  return (0, _ShaderNodeBaseElements.vec3)(fn('x'), fn('y'), fn('z'));
+});
+exports.DodgeNode = DodgeNode;
+var ScreenNode = new _ShaderNodeBaseElements.ShaderNode(function ({
+  base: base,
+  blend: blend
+}) {
+  var fn = function fn(c) {
+    return (0, _ShaderNodeBaseElements.sub)(1.0, (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.sub)(1.0, base[c]), (0, _ShaderNodeBaseElements.sub)(1.0, blend[c])));
+  };
+  return (0, _ShaderNodeBaseElements.vec3)(fn('x'), fn('y'), fn('z'));
+});
+exports.ScreenNode = ScreenNode;
+var OverlayNode = new _ShaderNodeBaseElements.ShaderNode(function ({
+  base: base,
+  blend: blend
+}) {
+  var fn = function fn(c) {
+    return (0, _ShaderNodeBaseElements.cond)((0, _ShaderNodeBaseElements.lessThan)(base[c], 0.5), (0, _ShaderNodeBaseElements.mul)(2.0, base[c], blend[c]), (0, _ShaderNodeBaseElements.sub)(1.0, (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.sub)(1.0, base[c]), (0, _ShaderNodeBaseElements.sub)(1.0, blend[c]))));
+  };
+  return (0, _ShaderNodeBaseElements.vec3)(fn('x'), fn('y'), fn('z'));
+});
+exports.OverlayNode = OverlayNode;
+var BlendModeNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(BlendModeNode, _TempNode);
+  var _super = _createSuper(BlendModeNode);
+  function BlendModeNode(blendMode, baseNode, blendNode) {
+    var _this;
+    _classCallCheck(this, BlendModeNode);
+    _this = _super.call(this);
+    _this.blendMode = blendMode;
+    _this.baseNode = baseNode;
+    _this.blendNode = blendNode;
+    return _this;
+  }
+  _createClass(BlendModeNode, [{
+    key: "construct",
+    value: function construct() {
+      var blendMode = this.blendMode,
+        baseNode = this.baseNode,
+        blendNode = this.blendNode;
+      var params = {
+        base: baseNode,
+        blend: blendNode
+      };
+      var outputNode = null;
+      if (blendMode === BlendModeNode.BURN) {
+        outputNode = BurnNode.call(params);
+      } else if (blendMode === BlendModeNode.DODGE) {
+        outputNode = DodgeNode.call(params);
+      } else if (blendMode === BlendModeNode.SCREEN) {
+        outputNode = ScreenNode.call(params);
+      } else if (blendMode === BlendModeNode.OVERLAY) {
+        outputNode = OverlayNode.call(params);
+      }
+      return outputNode;
+    }
+  }]);
+  return BlendModeNode;
+}(_Node.default);
+_defineProperty(BlendModeNode, "BURN", 'burn');
+_defineProperty(BlendModeNode, "DODGE", 'dodge');
+_defineProperty(BlendModeNode, "SCREEN", 'screen');
+_defineProperty(BlendModeNode, "OVERLAY", 'overlay');
+var _default = BlendModeNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/display/ColorAdjustmentNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _TempNode2 = _interopRequireDefault(require("../core/TempNode.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var saturationNode = new _ShaderNodeBaseElements.ShaderNode(function ({
+  color: color,
+  adjustment: adjustment
+}) {
+  return (0, _ShaderNodeBaseElements.mix)((0, _ShaderNodeBaseElements.luminance)(color), color, adjustment);
+});
+var vibranceNode = new _ShaderNodeBaseElements.ShaderNode(function ({
+  color: color,
+  adjustment: adjustment
+}) {
+  var average = (0, _ShaderNodeBaseElements.div)((0, _ShaderNodeBaseElements.add)(color.r, color.g, color.b), 3.0);
+  var mx = (0, _ShaderNodeBaseElements.max)(color.r, (0, _ShaderNodeBaseElements.max)(color.g, color.b));
+  var amt = (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.sub)(mx, average), (0, _ShaderNodeBaseElements.mul)(-3.0, adjustment));
+  return (0, _ShaderNodeBaseElements.mix)(color.rgb, (0, _ShaderNodeBaseElements.vec3)(mx), amt);
+});
+var hueNode = new _ShaderNodeBaseElements.ShaderNode(function ({
+  color: color,
+  adjustment: adjustment
+}) {
+  var RGBtoYIQ = (0, _ShaderNodeBaseElements.mat3)(0.299, 0.587, 0.114, 0.595716, -0.274453, -0.321263, 0.211456, -0.522591, 0.311135);
+  var YIQtoRGB = (0, _ShaderNodeBaseElements.mat3)(1.0, 0.9563, 0.6210, 1.0, -0.2721, -0.6474, 1.0, -1.107, 1.7046);
+  var yiq = (0, _ShaderNodeBaseElements.mul)(RGBtoYIQ, color);
+  var hue = (0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.atan2)(yiq.z, yiq.y), adjustment);
+  var chroma = (0, _ShaderNodeBaseElements.sqrt)((0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.mul)(yiq.z, yiq.z), (0, _ShaderNodeBaseElements.mul)(yiq.y, yiq.y)));
+  return (0, _ShaderNodeBaseElements.mul)(YIQtoRGB, (0, _ShaderNodeBaseElements.vec3)(yiq.x, (0, _ShaderNodeBaseElements.mul)(chroma, (0, _ShaderNodeBaseElements.cos)(hue)), (0, _ShaderNodeBaseElements.mul)(chroma, (0, _ShaderNodeBaseElements.sin)(hue))));
+});
+var ColorAdjustmentNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(ColorAdjustmentNode, _TempNode);
+  var _super = _createSuper(ColorAdjustmentNode);
+  function ColorAdjustmentNode(method, colorNode, adjustmentNode = (0, _ShaderNodeBaseElements.float)(1)) {
+    var _this;
+    _classCallCheck(this, ColorAdjustmentNode);
+    _this = _super.call(this, 'vec3');
+    _this.method = method;
+    _this.colorNode = colorNode;
+    _this.adjustmentNode = adjustmentNode;
+    return _this;
+  }
+  _createClass(ColorAdjustmentNode, [{
+    key: "construct",
+    value: function construct() {
+      var method = this.method,
+        colorNode = this.colorNode,
+        adjustmentNode = this.adjustmentNode;
+      var callParams = {
+        color: colorNode,
+        adjustment: adjustmentNode
+      };
+      var outputNode = null;
+      if (method === ColorAdjustmentNode.SATURATION) {
+        outputNode = saturationNode.call(callParams);
+      } else if (method === ColorAdjustmentNode.VIBRANCE) {
+        outputNode = vibranceNode.call(callParams);
+      } else if (method === ColorAdjustmentNode.HUE) {
+        outputNode = hueNode.call(callParams);
+      } else {
+        console.error("".concat(this.type, ": Method \"").concat(this.method, "\" not supported!"));
+      }
+      return outputNode;
+    }
+  }]);
+  return ColorAdjustmentNode;
+}(_TempNode2.default);
+_defineProperty(ColorAdjustmentNode, "SATURATION", 'saturation');
+_defineProperty(ColorAdjustmentNode, "VIBRANCE", 'vibrance');
+_defineProperty(ColorAdjustmentNode, "HUE", 'hue');
+var _default = ColorAdjustmentNode;
+exports.default = _default;
+},{"../core/TempNode.js":"../node_modules/three/examples/jsm/nodes/core/TempNode.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/display/ColorSpaceNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = exports.LinearTosRGB = exports.LinearToLinear = void 0;
+var _Node = _interopRequireDefault(require("../core/Node.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var LinearToLinear = new _ShaderNodeBaseElements.ShaderNode(function (inputs) {
+  return inputs.value;
+});
+exports.LinearToLinear = LinearToLinear;
+var LinearTosRGB = new _ShaderNodeBaseElements.ShaderNode(function (inputs) {
+  var value = inputs.value;
+  var rgb = value.rgb;
+  var a = (0, _ShaderNodeBaseElements.sub)((0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.pow)(value.rgb, (0, _ShaderNodeBaseElements.vec3)(0.41666)), 1.055), (0, _ShaderNodeBaseElements.vec3)(0.055));
+  var b = (0, _ShaderNodeBaseElements.mul)(rgb, 12.92);
+  var factor = (0, _ShaderNodeBaseElements.vec3)((0, _ShaderNodeBaseElements.lessThanEqual)(rgb, (0, _ShaderNodeBaseElements.vec3)(0.0031308)));
+  var rgbResult = (0, _ShaderNodeBaseElements.mix)(a, b, factor);
+  return (0, _ShaderNodeBaseElements.vec4)(rgbResult, value.a);
+});
+exports.LinearTosRGB = LinearTosRGB;
+var EncodingLib = {
+  LinearToLinear: LinearToLinear,
+  LinearTosRGB: LinearTosRGB
+};
+var ColorSpaceNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(ColorSpaceNode, _TempNode);
+  var _super = _createSuper(ColorSpaceNode);
+  function ColorSpaceNode(method, node) {
+    var _this;
+    _classCallCheck(this, ColorSpaceNode);
+    _this = _super.call(this, 'vec4');
+    _this.method = method;
+    _this.node = node;
+    return _this;
+  }
+  _createClass(ColorSpaceNode, [{
+    key: "fromEncoding",
+    value: function fromEncoding(encoding) {
+      var method = null;
+      if (encoding === _three.LinearEncoding) {
+        method = 'Linear';
+      } else if (encoding === _three.sRGBEncoding) {
+        method = 'sRGB';
+      }
+      this.method = 'LinearTo' + method;
+      return this;
+    }
+  }, {
+    key: "construct",
+    value: function construct() {
+      var method = this.method;
+      var node = this.node;
+      var outputNode = null;
+      if (method !== ColorSpaceNode.LINEAR_TO_LINEAR) {
+        var encodingFunctionNode = EncodingLib[method];
+        outputNode = encodingFunctionNode.call({
+          value: node
+        });
+      } else {
+        outputNode = node;
+      }
+      return outputNode;
+    }
+  }]);
+  return ColorSpaceNode;
+}(_Node.default);
+_defineProperty(ColorSpaceNode, "LINEAR_TO_LINEAR", 'LinearToLinear');
+_defineProperty(ColorSpaceNode, "LINEAR_TO_SRGB", 'LinearTosRGB');
+var _default = ColorSpaceNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/display/NormalMapNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _TempNode2 = _interopRequireDefault(require("../core/TempNode.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+// Normal Mapping Without Precomputed Tangents
+// http://www.thetenthplanet.de/archives/1180
+
+var perturbNormal2ArbNode = new _ShaderNodeBaseElements.ShaderNode(function (inputs) {
+  var eye_pos = inputs.eye_pos,
+    surf_norm = inputs.surf_norm,
+    mapN = inputs.mapN,
+    uv = inputs.uv;
+  var q0 = (0, _ShaderNodeBaseElements.dFdx)(eye_pos.xyz);
+  var q1 = (0, _ShaderNodeBaseElements.dFdy)(eye_pos.xyz);
+  var st0 = (0, _ShaderNodeBaseElements.dFdx)(uv.st);
+  var st1 = (0, _ShaderNodeBaseElements.dFdy)(uv.st);
+  var N = surf_norm; // normalized
+
+  var q1perp = (0, _ShaderNodeBaseElements.cross)(q1, N);
+  var q0perp = (0, _ShaderNodeBaseElements.cross)(N, q0);
+  var T = (0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.mul)(q1perp, st0.x), (0, _ShaderNodeBaseElements.mul)(q0perp, st1.x));
+  var B = (0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.mul)(q1perp, st0.y), (0, _ShaderNodeBaseElements.mul)(q0perp, st1.y));
+  var det = (0, _ShaderNodeBaseElements.max)((0, _ShaderNodeBaseElements.dot)(T, T), (0, _ShaderNodeBaseElements.dot)(B, B));
+  var scale = (0, _ShaderNodeBaseElements.mul)(_ShaderNodeBaseElements.faceDirection, (0, _ShaderNodeBaseElements.inversesqrt)(det));
+  return (0, _ShaderNodeBaseElements.normalize)((0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.mul)(T, (0, _ShaderNodeBaseElements.mul)(mapN.x, scale)), (0, _ShaderNodeBaseElements.mul)(B, (0, _ShaderNodeBaseElements.mul)(mapN.y, scale)), (0, _ShaderNodeBaseElements.mul)(N, mapN.z)));
+});
+var NormalMapNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(NormalMapNode, _TempNode);
+  var _super = _createSuper(NormalMapNode);
+  function NormalMapNode(node, scaleNode = null) {
+    var _this;
+    _classCallCheck(this, NormalMapNode);
+    _this = _super.call(this, 'vec3');
+    _this.node = node;
+    _this.scaleNode = scaleNode;
+    _this.normalMapType = _three.TangentSpaceNormalMap;
+    return _this;
+  }
+  _createClass(NormalMapNode, [{
+    key: "construct",
+    value: function construct(builder) {
+      var normalMapType = this.normalMapType,
+        scaleNode = this.scaleNode;
+      var normalOP = (0, _ShaderNodeBaseElements.mul)(this.node, 2.0);
+      var normalMap = (0, _ShaderNodeBaseElements.sub)(normalOP, 1.0);
+      if (scaleNode !== null) {
+        var normalMapScale = (0, _ShaderNodeBaseElements.mul)(normalMap.xy, scaleNode);
+        normalMap = (0, _ShaderNodeBaseElements.vec3)(normalMapScale, normalMap.z);
+      }
+      var outputNode = null;
+      if (normalMapType === _three.ObjectSpaceNormalMap) {
+        outputNode = (0, _ShaderNodeBaseElements.normalize)((0, _ShaderNodeBaseElements.mul)(_ShaderNodeBaseElements.modelNormalMatrix, normalMap));
+      } else if (normalMapType === _three.TangentSpaceNormalMap) {
+        var tangent = builder.hasGeometryAttribute('tangent');
+        if (tangent === true) {
+          outputNode = (0, _ShaderNodeBaseElements.normalize)((0, _ShaderNodeBaseElements.mul)(_ShaderNodeBaseElements.TBNViewMatrix, normalMap));
+        } else {
+          outputNode = perturbNormal2ArbNode.call({
+            eye_pos: _ShaderNodeBaseElements.positionView,
+            surf_norm: _ShaderNodeBaseElements.normalView,
+            mapN: normalMap,
+            uv: (0, _ShaderNodeBaseElements.uv)()
+          });
+        }
+      }
+      return outputNode;
+    }
+  }]);
+  return NormalMapNode;
+}(_TempNode2.default);
+var _default = NormalMapNode;
+exports.default = _default;
+},{"../core/TempNode.js":"../node_modules/three/examples/jsm/nodes/core/TempNode.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/display/PosterizeNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node = _interopRequireDefault(require("../core/Node.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var PosterizeNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(PosterizeNode, _TempNode);
+  var _super = _createSuper(PosterizeNode);
+  function PosterizeNode(sourceNode, stepsNode) {
+    var _this;
+    _classCallCheck(this, PosterizeNode);
+    _this = _super.call(this);
+    _this.sourceNode = sourceNode;
+    _this.stepsNode = stepsNode;
+    return _this;
+  }
+  _createClass(PosterizeNode, [{
+    key: "construct",
+    value: function construct() {
+      var sourceNode = this.sourceNode,
+        stepsNode = this.stepsNode;
+      return (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.floor)((0, _ShaderNodeBaseElements.mul)(sourceNode, stepsNode)), (0, _ShaderNodeBaseElements.reciprocal)(stepsNode));
+    }
+  }]);
+  return PosterizeNode;
+}(_Node.default);
+var _default = PosterizeNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/display/ToneMappingNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = exports.LinearToneMappingNode = void 0;
+var _Node = _interopRequireDefault(require("../core/Node.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+// exposure only
+var LinearToneMappingNode = new _ShaderNodeBaseElements.ShaderNode(function ({
+  color: color,
+  exposure: exposure
+}) {
+  return (0, _ShaderNodeBaseElements.mul)(color, exposure);
+});
+exports.LinearToneMappingNode = LinearToneMappingNode;
+var ToneMappingNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(ToneMappingNode, _TempNode);
+  var _super = _createSuper(ToneMappingNode);
+  function ToneMappingNode(toneMapping, exposureNode = (0, _ShaderNodeBaseElements.float)(1), colorNode = null) {
+    var _this;
+    _classCallCheck(this, ToneMappingNode);
+    _this = _super.call(this, 'vec3');
+    _this.toneMapping = toneMapping;
+    _this.exposureNode = exposureNode;
+    _this.colorNode = colorNode;
+    return _this;
+  }
+  _createClass(ToneMappingNode, [{
+    key: "construct",
+    value: function construct(builder) {
+      var colorNode = this.color || builder.context.color;
+      var toneMapping = this.toneMapping;
+      var toneMappingParams = {
+        exposure: this.exposureNode,
+        color: colorNode
+      };
+      var outputNode = null;
+      if (toneMapping === _three.LinearToneMapping) {
+        outputNode = LinearToneMappingNode.call(toneMappingParams);
+      } else {
+        outputNode = this.colorNode;
+      }
+      return outputNode;
+    }
+  }]);
+  return ToneMappingNode;
+}(_Node.default);
+var _default = ToneMappingNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/lighting/LightingNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var LightingNode = /*#__PURE__*/function (_Node) {
+  _inherits(LightingNode, _Node);
+  var _super = _createSuper(LightingNode);
+  function LightingNode() {
+    _classCallCheck(this, LightingNode);
+    return _super.call(this, 'vec3');
+  }
+  _createClass(LightingNode, [{
+    key: "generate",
+    value: function generate( /*builder*/
+    ) {
+      console.warn('Abstract function.');
+    }
+  }]);
+  return LightingNode;
+}(_Node2.default);
+var _default = LightingNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js"}],"../node_modules/three/examples/jsm/nodes/lighting/LightsNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _LightingNode = _interopRequireDefault(require("./LightingNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var references = new WeakMap();
+var sortLights = function sortLights(lights) {
+  return lights.sort(function (a, b) {
+    return a.id - b.id;
+  });
+};
+var LightsNode = /*#__PURE__*/function (_Node) {
+  _inherits(LightsNode, _Node);
+  var _super = _createSuper(LightsNode);
+  function LightsNode(lightNodes = []) {
+    var _this;
+    _classCallCheck(this, LightsNode);
+    _this = _super.call(this, 'vec3');
+    _this.lightNodes = lightNodes;
+    _this._hash = null;
+    return _this;
+  }
+  _createClass(LightsNode, [{
+    key: "hasLight",
+    get: function get() {
+      return this.lightNodes.length > 0;
+    }
+  }, {
+    key: "construct",
+    value: function construct(builder) {
+      var lightNodes = this.lightNodes;
+      var _iterator = _createForOfIteratorHelper(lightNodes),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var lightNode = _step.value;
+          lightNode.build(builder);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+    }
+  }, {
+    key: "getHash",
+    value: function getHash(builder) {
+      if (this._hash === null) {
+        var hash = '';
+        var lightNodes = this.lightNodes;
+        var _iterator2 = _createForOfIteratorHelper(lightNodes),
+          _step2;
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var lightNode = _step2.value;
+            hash += lightNode.getHash(builder) + ' ';
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+        this._hash = hash;
+      }
+      return this._hash;
+    }
+  }, {
+    key: "getLightNodeByHash",
+    value: function getLightNodeByHash(hash) {
+      var lightNodes = this.lightNodes;
+      var _iterator3 = _createForOfIteratorHelper(lightNodes),
+        _step3;
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var lightNode = _step3.value;
+          if (lightNode.light.uuid === hash) {
+            return lightNode;
+          }
+        }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+      }
+      return null;
+    }
+  }, {
+    key: "fromLights",
+    value: function fromLights(lights) {
+      var lightNodes = [];
+      lights = sortLights(lights);
+      var _iterator4 = _createForOfIteratorHelper(lights),
+        _step4;
+      try {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var light = _step4.value;
+          var lightNode = this.getLightNodeByHash(light.uuid);
+          if (lightNode === null) {
+            var lightClass = light.constructor;
+            var lightNodeClass = references.has(lightClass) ? references.get(lightClass) : _LightingNode.default;
+            lightNode = new lightNodeClass(light);
+          }
+          lightNodes.push(lightNode);
+        }
+      } catch (err) {
+        _iterator4.e(err);
+      } finally {
+        _iterator4.f();
+      }
+      this.lightNodes = lightNodes;
+      this._hash = null;
+      return this;
+    }
+  }], [{
+    key: "setReference",
+    value: function setReference(lightClass, lightNodeClass) {
+      references.set(lightClass, lightNodeClass);
+    }
+  }]);
+  return LightsNode;
+}(_Node2.default);
+var _default = LightsNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","./LightingNode.js":"../node_modules/three/examples/jsm/nodes/lighting/LightingNode.js"}],"../node_modules/three/examples/jsm/nodes/lighting/LightingContextNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _ContextNode2 = _interopRequireDefault(require("../core/ContextNode.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var LightingContextNode = /*#__PURE__*/function (_ContextNode) {
+  _inherits(LightingContextNode, _ContextNode);
+  var _super = _createSuper(LightingContextNode);
+  function LightingContextNode(node, lightingModelNode = null) {
+    var _this;
+    _classCallCheck(this, LightingContextNode);
+    _this = _super.call(this, node);
+    _this.lightingModelNode = lightingModelNode;
+    return _this;
+  }
+  _createClass(LightingContextNode, [{
+    key: "getNodeType",
+    value: function getNodeType( /*builder*/
+    ) {
+      return 'vec3';
+    }
+  }, {
+    key: "construct",
+    value: function construct(builder) {
+      var lightingModelNode = this.lightingModelNode;
+      var context = this.context = {}; // reset context
+      var properties = builder.getNodeProperties(this);
+      var directDiffuse = (0, _ShaderNodeBaseElements.temp)((0, _ShaderNodeBaseElements.vec3)()),
+        directSpecular = (0, _ShaderNodeBaseElements.temp)((0, _ShaderNodeBaseElements.vec3)()),
+        indirectDiffuse = (0, _ShaderNodeBaseElements.temp)((0, _ShaderNodeBaseElements.vec3)()),
+        indirectSpecular = (0, _ShaderNodeBaseElements.temp)((0, _ShaderNodeBaseElements.vec3)()),
+        total = (0, _ShaderNodeBaseElements.add)(directDiffuse, directSpecular, indirectDiffuse, indirectSpecular);
+      var reflectedLight = {
+        directDiffuse: directDiffuse,
+        directSpecular: directSpecular,
+        indirectDiffuse: indirectDiffuse,
+        indirectSpecular: indirectSpecular,
+        total: total
+      };
+      var lighting = {
+        radiance: (0, _ShaderNodeBaseElements.temp)((0, _ShaderNodeBaseElements.vec3)()),
+        irradiance: (0, _ShaderNodeBaseElements.temp)((0, _ShaderNodeBaseElements.vec3)()),
+        iblIrradiance: (0, _ShaderNodeBaseElements.temp)((0, _ShaderNodeBaseElements.vec3)()),
+        ambientOcclusion: (0, _ShaderNodeBaseElements.temp)((0, _ShaderNodeBaseElements.float)(1))
+      };
+      Object.assign(properties, reflectedLight, lighting);
+      Object.assign(context, lighting);
+      context.reflectedLight = reflectedLight;
+      context.lightingModelNode = lightingModelNode || context.lightingModelNode;
+      if (lightingModelNode?.indirectDiffuse) lightingModelNode.indirectDiffuse.call(context);
+      if (lightingModelNode?.indirectSpecular) lightingModelNode.indirectSpecular.call(context);
+      if (lightingModelNode?.ambientOcclusion) lightingModelNode.ambientOcclusion.call(context);
+      return _get(_getPrototypeOf(LightingContextNode.prototype), "construct", this).call(this, builder);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var context = this.context;
+      var type = this.getNodeType(builder);
+      _get(_getPrototypeOf(LightingContextNode.prototype), "generate", this).call(this, builder, type);
+      return context.reflectedLight.total.build(builder, type);
+    }
+  }]);
+  return LightingContextNode;
+}(_ContextNode2.default);
+var _default = LightingContextNode;
+exports.default = _default;
+},{"../core/ContextNode.js":"../node_modules/three/examples/jsm/nodes/core/ContextNode.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/utils/EquirectUVNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _TempNode2 = _interopRequireDefault(require("../core/TempNode.js"));
+var _ShaderNodeElements = require("../shadernode/ShaderNodeElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var EquirectUVNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(EquirectUVNode, _TempNode);
+  var _super = _createSuper(EquirectUVNode);
+  function EquirectUVNode(dirNode = _ShaderNodeElements.positionWorldDirection) {
+    var _this;
+    _classCallCheck(this, EquirectUVNode);
+    _this = _super.call(this, 'vec2');
+    _this.dirNode = dirNode;
+    return _this;
+  }
+  _createClass(EquirectUVNode, [{
+    key: "construct",
+    value: function construct() {
+      var dir = (0, _ShaderNodeElements.nodeObject)(this.dirNode);
+      var u = (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.atan2)(dir.z, dir.x), 1 / (Math.PI * 2)), 0.5);
+      var v = (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.asin)((0, _ShaderNodeElements.clamp)(dir.y, -1.0, 1.0)), 1 / Math.PI), 0.5);
+      return (0, _ShaderNodeElements.vec2)(u, v);
+    }
+  }]);
+  return EquirectUVNode;
+}(_TempNode2.default);
+var _default = EquirectUVNode;
+exports.default = _default;
+},{"../core/TempNode.js":"../node_modules/three/examples/jsm/nodes/core/TempNode.js","../shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js"}],"../node_modules/three/examples/jsm/nodes/utils/MatcapUVNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _TempNode2 = _interopRequireDefault(require("../core/TempNode.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var MatcapUVNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(MatcapUVNode, _TempNode);
+  var _super = _createSuper(MatcapUVNode);
+  function MatcapUVNode() {
+    _classCallCheck(this, MatcapUVNode);
+    return _super.call(this, 'vec2');
+  }
+  _createClass(MatcapUVNode, [{
+    key: "construct",
+    value: function construct() {
+      var x = (0, _ShaderNodeBaseElements.normalize)((0, _ShaderNodeBaseElements.vec3)(_ShaderNodeBaseElements.positionViewDirection.z, 0, (0, _ShaderNodeBaseElements.negate)(_ShaderNodeBaseElements.positionViewDirection.x)));
+      var y = (0, _ShaderNodeBaseElements.cross)(_ShaderNodeBaseElements.positionViewDirection, x);
+      return (0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.vec2)((0, _ShaderNodeBaseElements.dot)(x, _ShaderNodeBaseElements.transformedNormalView), (0, _ShaderNodeBaseElements.dot)(y, _ShaderNodeBaseElements.transformedNormalView)), 0.495), 0.5);
+    }
+  }]);
+  return MatcapUVNode;
+}(_TempNode2.default);
+var _default = MatcapUVNode;
+exports.default = _default;
+},{"../core/TempNode.js":"../node_modules/three/examples/jsm/nodes/core/TempNode.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/utils/MaxMipLevelNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _UniformNode2 = _interopRequireDefault(require("../core/UniformNode.js"));
+var _constants = require("../core/constants.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var MaxMipLevelNode = /*#__PURE__*/function (_UniformNode) {
+  _inherits(MaxMipLevelNode, _UniformNode);
+  var _super = _createSuper(MaxMipLevelNode);
+  function MaxMipLevelNode(texture) {
+    var _this;
+    _classCallCheck(this, MaxMipLevelNode);
+    _this = _super.call(this, 0);
+    _this.texture = texture;
+    _this.updateType = _constants.NodeUpdateType.FRAME;
+    return _this;
+  }
+  _createClass(MaxMipLevelNode, [{
+    key: "update",
+    value: function update() {
+      var images = this.texture.images;
+      var image = images && images.length > 0 ? images[0]?.image || images[0] : this.texture.image;
+      if (image?.width !== undefined) {
+        var width = image.width,
+          height = image.height;
+        this.value = Math.log2(Math.max(width, height));
+      }
+    }
+  }]);
+  return MaxMipLevelNode;
+}(_UniformNode2.default);
+var _default = MaxMipLevelNode;
+exports.default = _default;
+},{"../core/UniformNode.js":"../node_modules/three/examples/jsm/nodes/core/UniformNode.js","../core/constants.js":"../node_modules/three/examples/jsm/nodes/core/constants.js"}],"../node_modules/three/examples/jsm/nodes/utils/TimerNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _UniformNode2 = _interopRequireDefault(require("../core/UniformNode.js"));
+var _constants = require("../core/constants.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var TimerNode = /*#__PURE__*/function (_UniformNode) {
+  _inherits(TimerNode, _UniformNode);
+  var _super = _createSuper(TimerNode);
+  function TimerNode(scope = TimerNode.LOCAL, scale = 1, value = 0) {
+    var _this;
+    _classCallCheck(this, TimerNode);
+    _this = _super.call(this, value);
+    _this.scope = scope;
+    _this.scale = scale;
+    _this.updateType = _constants.NodeUpdateType.FRAME;
+    return _this;
+  }
+  /*
+  	@TODO:
+  	getNodeType( builder ) {
+  
+  		const scope = this.scope;
+  
+  		if ( scope === TimerNode.FRAME ) {
+  
+  			return 'uint';
+  
+  		}
+  
+  		return 'float';
+  
+  	}
+  */
+  _createClass(TimerNode, [{
+    key: "update",
+    value: function update(frame) {
+      var scope = this.scope;
+      var scale = this.scale;
+      if (scope === TimerNode.LOCAL) {
+        this.value += frame.deltaTime * scale;
+      } else if (scope === TimerNode.DELTA) {
+        this.value = frame.deltaTime * scale;
+      } else if (scope === TimerNode.FRAME) {
+        this.value = frame.frameId;
+      } else {
+        // global
+
+        this.value = frame.time * scale;
+      }
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(TimerNode.prototype), "serialize", this).call(this, data);
+      data.scope = this.scope;
+      data.scale = this.scale;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(TimerNode.prototype), "deserialize", this).call(this, data);
+      this.scope = data.scope;
+      this.scale = data.scale;
+    }
+  }]);
+  return TimerNode;
+}(_UniformNode2.default);
+_defineProperty(TimerNode, "LOCAL", 'local');
+_defineProperty(TimerNode, "GLOBAL", 'global');
+_defineProperty(TimerNode, "DELTA", 'delta');
+_defineProperty(TimerNode, "FRAME", 'frame');
+var _default = TimerNode;
+exports.default = _default;
+},{"../core/UniformNode.js":"../node_modules/three/examples/jsm/nodes/core/UniformNode.js","../core/constants.js":"../node_modules/three/examples/jsm/nodes/core/constants.js"}],"../node_modules/three/examples/jsm/nodes/utils/OscNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _TimerNode = _interopRequireDefault(require("./TimerNode.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var OscNode = /*#__PURE__*/function (_Node) {
+  _inherits(OscNode, _Node);
+  var _super = _createSuper(OscNode);
+  function OscNode(method = OscNode.SINE, timeNode = new _TimerNode.default()) {
+    var _this;
+    _classCallCheck(this, OscNode);
+    _this = _super.call(this);
+    _this.method = method;
+    _this.timeNode = timeNode;
+    return _this;
+  }
+  _createClass(OscNode, [{
+    key: "getNodeType",
+    value: function getNodeType(builder) {
+      return this.timeNode.getNodeType(builder);
+    }
+  }, {
+    key: "construct",
+    value: function construct() {
+      var method = this.method;
+      var timeNode = this.timeNode;
+      var outputNode = null;
+      if (method === OscNode.SINE) {
+        outputNode = (0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.sin)((0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.add)(timeNode, .75), Math.PI * 2)), .5), .5);
+      } else if (method === OscNode.SQUARE) {
+        outputNode = (0, _ShaderNodeBaseElements.round)((0, _ShaderNodeBaseElements.fract)(timeNode));
+      } else if (method === OscNode.TRIANGLE) {
+        outputNode = (0, _ShaderNodeBaseElements.abs)((0, _ShaderNodeBaseElements.sub)(1, (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.fract)((0, _ShaderNodeBaseElements.add)(timeNode, .5)), 2)));
+      } else if (method === OscNode.SAWTOOTH) {
+        outputNode = (0, _ShaderNodeBaseElements.fract)(timeNode);
+      }
+      return outputNode;
+    }
+  }, {
+    key: "serialize",
+    value: function serialize(data) {
+      _get(_getPrototypeOf(OscNode.prototype), "serialize", this).call(this, data);
+      data.method = this.method;
+    }
+  }, {
+    key: "deserialize",
+    value: function deserialize(data) {
+      _get(_getPrototypeOf(OscNode.prototype), "deserialize", this).call(this, data);
+      this.method = data.method;
+    }
+  }]);
+  return OscNode;
+}(_Node2.default);
+_defineProperty(OscNode, "SINE", 'sine');
+_defineProperty(OscNode, "SQUARE", 'square');
+_defineProperty(OscNode, "TRIANGLE", 'triangle');
+_defineProperty(OscNode, "SAWTOOTH", 'sawtooth');
+var _default = OscNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","./TimerNode.js":"../node_modules/three/examples/jsm/nodes/utils/TimerNode.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/utils/RemapNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var RemapNode = /*#__PURE__*/function (_Node) {
+  _inherits(RemapNode, _Node);
+  var _super = _createSuper(RemapNode);
+  function RemapNode(node, inLowNode, inHighNode, outLowNode, outHighNode) {
+    var _this;
+    _classCallCheck(this, RemapNode);
+    _this = _super.call(this);
+    _this.node = node;
+    _this.inLowNode = inLowNode;
+    _this.inHighNode = inHighNode;
+    _this.outLowNode = outLowNode;
+    _this.outHighNode = outHighNode;
+    _this.doClamp = true;
+    return _this;
+  }
+  _createClass(RemapNode, [{
+    key: "construct",
+    value: function construct() {
+      var node = this.node,
+        inLowNode = this.inLowNode,
+        inHighNode = this.inHighNode,
+        outLowNode = this.outLowNode,
+        outHighNode = this.outHighNode,
+        doClamp = this.doClamp;
+      var t = (0, _ShaderNodeBaseElements.div)((0, _ShaderNodeBaseElements.sub)(node, inLowNode), (0, _ShaderNodeBaseElements.sub)(inHighNode, inLowNode));
+      if (doClamp === true) t = (0, _ShaderNodeBaseElements.clamp)(t);
+      return (0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.sub)(outHighNode, outLowNode), t), outLowNode);
+    }
+  }]);
+  return RemapNode;
+}(_Node2.default);
+var _default = RemapNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/utils/RotateUVNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _TempNode2 = _interopRequireDefault(require("../core/TempNode.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var RotateUVNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(RotateUVNode, _TempNode);
+  var _super = _createSuper(RotateUVNode);
+  function RotateUVNode(uvNode, rotationNode, centerNode = (0, _ShaderNodeBaseElements.vec2)(.5)) {
+    var _this;
+    _classCallCheck(this, RotateUVNode);
+    _this = _super.call(this, 'vec2');
+    _this.uvNode = uvNode;
+    _this.rotationNode = rotationNode;
+    _this.centerNode = centerNode;
+    return _this;
+  }
+  _createClass(RotateUVNode, [{
+    key: "construct",
+    value: function construct() {
+      var uvNode = this.uvNode,
+        rotationNode = this.rotationNode,
+        centerNode = this.centerNode;
+      var cosAngle = (0, _ShaderNodeBaseElements.cos)(rotationNode);
+      var sinAngle = (0, _ShaderNodeBaseElements.sin)(rotationNode);
+      return (0, _ShaderNodeBaseElements.vec2)((0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.mul)(cosAngle, (0, _ShaderNodeBaseElements.sub)(uvNode.x, centerNode.x)), (0, _ShaderNodeBaseElements.mul)(sinAngle, (0, _ShaderNodeBaseElements.sub)(uvNode.y, centerNode.y))), centerNode.x), (0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.sub)((0, _ShaderNodeBaseElements.mul)(cosAngle, (0, _ShaderNodeBaseElements.sub)(uvNode.y, centerNode.y)), (0, _ShaderNodeBaseElements.mul)(sinAngle, (0, _ShaderNodeBaseElements.sub)(uvNode.x, centerNode.x))), centerNode.y));
+    }
+  }]);
+  return RotateUVNode;
+}(_TempNode2.default);
+var _default = RotateUVNode;
+exports.default = _default;
+},{"../core/TempNode.js":"../node_modules/three/examples/jsm/nodes/core/TempNode.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/utils/SpriteSheetUVNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _ConstNode = _interopRequireDefault(require("../core/ConstNode.js"));
+var _UVNode = _interopRequireDefault(require("../accessors/UVNode.js"));
+var _MathNode = _interopRequireDefault(require("../math/MathNode.js"));
+var _OperatorNode = _interopRequireDefault(require("../math/OperatorNode.js"));
+var _SplitNode = _interopRequireDefault(require("../utils/SplitNode.js"));
+var _JoinNode = _interopRequireDefault(require("../utils/JoinNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var SpriteSheetUVNode = /*#__PURE__*/function (_Node) {
+  _inherits(SpriteSheetUVNode, _Node);
+  var _super = _createSuper(SpriteSheetUVNode);
+  function SpriteSheetUVNode(countNode, uvNode = new _UVNode.default(), frameNode = new _ConstNode.default(0)) {
+    var _this;
+    _classCallCheck(this, SpriteSheetUVNode);
+    _this = _super.call(this, 'vec2');
+    _this.countNode = countNode;
+    _this.uvNode = uvNode;
+    _this.frameNode = frameNode;
+    return _this;
+  }
+  _createClass(SpriteSheetUVNode, [{
+    key: "construct",
+    value: function construct() {
+      var frameNode = this.frameNode,
+        uvNode = this.uvNode,
+        countNode = this.countNode;
+      var one = new _ConstNode.default(1);
+      var width = new _SplitNode.default(countNode, 'x');
+      var height = new _SplitNode.default(countNode, 'y');
+      var total = new _OperatorNode.default('*', width, height);
+      var roundFrame = new _MathNode.default(_MathNode.default.FLOOR, new _MathNode.default(_MathNode.default.MOD, frameNode, total));
+      var frameNum = new _OperatorNode.default('+', roundFrame, one);
+      var cell = new _MathNode.default(_MathNode.default.MOD, roundFrame, width);
+      var row = new _MathNode.default(_MathNode.default.CEIL, new _OperatorNode.default('/', frameNum, width));
+      var rowInv = new _OperatorNode.default('-', height, row);
+      var scale = new _OperatorNode.default('/', one, countNode);
+      var uvFrameOffset = new _JoinNode.default([new _OperatorNode.default('*', cell, new _SplitNode.default(scale, 'x')), new _OperatorNode.default('*', rowInv, new _SplitNode.default(scale, 'y'))]);
+      var uvScale = new _OperatorNode.default('*', uvNode, scale);
+      var uvFrame = new _OperatorNode.default('+', uvScale, uvFrameOffset);
+      return uvFrame;
+    }
+  }]);
+  return SpriteSheetUVNode;
+}(_Node2.default);
+var _default = SpriteSheetUVNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../core/ConstNode.js":"../node_modules/three/examples/jsm/nodes/core/ConstNode.js","../accessors/UVNode.js":"../node_modules/three/examples/jsm/nodes/accessors/UVNode.js","../math/MathNode.js":"../node_modules/three/examples/jsm/nodes/math/MathNode.js","../math/OperatorNode.js":"../node_modules/three/examples/jsm/nodes/math/OperatorNode.js","../utils/SplitNode.js":"../node_modules/three/examples/jsm/nodes/utils/SplitNode.js","../utils/JoinNode.js":"../node_modules/three/examples/jsm/nodes/utils/JoinNode.js"}],"../node_modules/three/examples/jsm/nodes/utils/TriplanarTexturesNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var TriplanarTexturesNode = /*#__PURE__*/function (_Node) {
+  _inherits(TriplanarTexturesNode, _Node);
+  var _super = _createSuper(TriplanarTexturesNode);
+  function TriplanarTexturesNode(textureXNode, textureYNode = null, textureZNode = null, scaleNode = (0, _ShaderNodeBaseElements.float)(1), positionNode = _ShaderNodeBaseElements.positionWorld, normalNode = _ShaderNodeBaseElements.normalWorld) {
+    var _this;
+    _classCallCheck(this, TriplanarTexturesNode);
+    _this = _super.call(this, 'vec4');
+    _this.textureXNode = textureXNode;
+    _this.textureYNode = textureYNode;
+    _this.textureZNode = textureZNode;
+    _this.scaleNode = scaleNode;
+    _this.positionNode = positionNode;
+    _this.normalNode = normalNode;
+    return _this;
+  }
+  _createClass(TriplanarTexturesNode, [{
+    key: "construct",
+    value: function construct() {
+      var textureXNode = this.textureXNode,
+        textureYNode = this.textureYNode,
+        textureZNode = this.textureZNode,
+        scaleNode = this.scaleNode,
+        positionNode = this.positionNode,
+        normalNode = this.normalNode;
+
+      // Ref: https://github.com/keijiro/StandardTriplanar
+
+      // Blending factor of triplanar mapping
+      var bf = (0, _ShaderNodeBaseElements.normalize)((0, _ShaderNodeBaseElements.abs)(normalNode));
+      bf = (0, _ShaderNodeBaseElements.div)(bf, (0, _ShaderNodeBaseElements.dot)(bf, (0, _ShaderNodeBaseElements.vec3)(1.0)));
+
+      // Triplanar mapping
+      var tx = (0, _ShaderNodeBaseElements.mul)(positionNode.yz, scaleNode);
+      var ty = (0, _ShaderNodeBaseElements.mul)(positionNode.zx, scaleNode);
+      var tz = (0, _ShaderNodeBaseElements.mul)(positionNode.xy, scaleNode);
+
+      // Base color
+      var textureX = textureXNode.value;
+      var textureY = textureYNode !== null ? textureYNode.value : textureX;
+      var textureZ = textureZNode !== null ? textureZNode.value : textureX;
+      var cx = (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.texture)(textureX, tx), bf.x);
+      var cy = (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.texture)(textureY, ty), bf.y);
+      var cz = (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.texture)(textureZ, tz), bf.z);
+      return (0, _ShaderNodeBaseElements.add)(cx, cy, cz);
+    }
+  }]);
+  return TriplanarTexturesNode;
+}(_Node2.default);
+var _default = TriplanarTexturesNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/procedural/CheckerNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _TempNode2 = _interopRequireDefault(require("../core/TempNode.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var checkerShaderNode = new _ShaderNodeBaseElements.ShaderNode(function (inputs) {
+  var uv = (0, _ShaderNodeBaseElements.mul)(inputs.uv, 2.0);
+  var cx = (0, _ShaderNodeBaseElements.floor)(uv.x);
+  var cy = (0, _ShaderNodeBaseElements.floor)(uv.y);
+  var result = (0, _ShaderNodeBaseElements.mod)((0, _ShaderNodeBaseElements.add)(cx, cy), 2.0);
+  return (0, _ShaderNodeBaseElements.sign)(result);
+});
+var CheckerNode = /*#__PURE__*/function (_TempNode) {
+  _inherits(CheckerNode, _TempNode);
+  var _super = _createSuper(CheckerNode);
+  function CheckerNode(uvNode = (0, _ShaderNodeBaseElements.uv)()) {
+    var _this;
+    _classCallCheck(this, CheckerNode);
+    _this = _super.call(this, 'float');
+    _this.uvNode = uvNode;
+    return _this;
+  }
+  _createClass(CheckerNode, [{
+    key: "generate",
+    value: function generate(builder) {
+      return checkerShaderNode.call({
+        uv: this.uvNode
+      }).build(builder);
+    }
+  }]);
+  return CheckerNode;
+}(_TempNode2.default);
+var _default = CheckerNode;
+exports.default = _default;
+},{"../core/TempNode.js":"../node_modules/three/examples/jsm/nodes/core/TempNode.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/fog/FogNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _Node2 = _interopRequireDefault(require("../core/Node.js"));
+var _MathNode = _interopRequireDefault(require("../math/MathNode.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var FogNode = /*#__PURE__*/function (_Node) {
+  _inherits(FogNode, _Node);
+  var _super = _createSuper(FogNode);
+  function FogNode(colorNode, factorNode) {
+    var _this;
+    _classCallCheck(this, FogNode);
+    _this = _super.call(this, 'float');
+    _this.isFogNode = true;
+    _this.colorNode = colorNode;
+    _this.factorNode = factorNode;
+    return _this;
+  }
+  _createClass(FogNode, [{
+    key: "mix",
+    value: function mix(outputNode) {
+      return new _MathNode.default(_MathNode.default.MIX, outputNode, this.colorNode, this);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      return this.factorNode.build(builder, 'float');
+    }
+  }]);
+  return FogNode;
+}(_Node2.default);
+var _default = FogNode;
+exports.default = _default;
+},{"../core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","../math/MathNode.js":"../node_modules/three/examples/jsm/nodes/math/MathNode.js"}],"../node_modules/three/examples/jsm/nodes/fog/FogRangeNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _FogNode2 = _interopRequireDefault(require("./FogNode.js"));
+var _ShaderNodeBaseElements = require("../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var FogRangeNode = /*#__PURE__*/function (_FogNode) {
+  _inherits(FogRangeNode, _FogNode);
+  var _super = _createSuper(FogRangeNode);
+  function FogRangeNode(colorNode, nearNode, farNode) {
+    var _this;
+    _classCallCheck(this, FogRangeNode);
+    _this = _super.call(this, colorNode);
+    _this.isFogRangeNode = true;
+    _this.nearNode = nearNode;
+    _this.farNode = farNode;
+    return _this;
+  }
+  _createClass(FogRangeNode, [{
+    key: "generate",
+    value: function generate(builder) {
+      this.factorNode = (0, _ShaderNodeBaseElements.smoothstep)(this.nearNode, this.farNode, (0, _ShaderNodeBaseElements.negate)(_ShaderNodeBaseElements.positionView.z));
+      return _get(_getPrototypeOf(FogRangeNode.prototype), "generate", this).call(this, builder);
+    }
+  }]);
+  return FogRangeNode;
+}(_FogNode2.default);
+var _default = FogRangeNode;
+exports.default = _default;
+},{"./FogNode.js":"../node_modules/three/examples/jsm/nodes/fog/FogNode.js","../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/functions/BSDF/F_Schlick.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _ShaderNodeBaseElements = require("../../shadernode/ShaderNodeBaseElements.js");
+var F_Schlick = new _ShaderNodeBaseElements.ShaderNode(function (inputs) {
+  var f0 = inputs.f0,
+    f90 = inputs.f90,
+    dotVH = inputs.dotVH;
+
+  // Original approximation by Christophe Schlick '94
+  // float fresnel = pow( 1.0 - dotVH, 5.0 );
+
+  // Optimized variant (presented by Epic at SIGGRAPH '13)
+  // https://cdn2.unrealengine.com/Resources/files/2013SiggraphPresentationsNotes-26915738.pdf
+  var fresnel = (0, _ShaderNodeBaseElements.exp2)((0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.sub)((0, _ShaderNodeBaseElements.mul)(-5.55473, dotVH), 6.98316), dotVH));
+  return (0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.mul)(f0, (0, _ShaderNodeBaseElements.sub)(1.0, fresnel)), (0, _ShaderNodeBaseElements.mul)(f90, fresnel));
+}); // validated
+var _default = F_Schlick;
+exports.default = _default;
+},{"../../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/functions/BSDF/V_GGX_SmithCorrelated.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _ShaderNodeBaseElements = require("../../shadernode/ShaderNodeBaseElements.js");
+// Moving Frostbite to Physically Based Rendering 3.0 - page 12, listing 2
+// https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
+var V_GGX_SmithCorrelated = new _ShaderNodeBaseElements.ShaderNode(function (inputs) {
+  var alpha = inputs.alpha,
+    dotNL = inputs.dotNL,
+    dotNV = inputs.dotNV;
+  var a2 = (0, _ShaderNodeBaseElements.pow2)(alpha);
+  var gv = (0, _ShaderNodeBaseElements.mul)(dotNL, (0, _ShaderNodeBaseElements.sqrt)((0, _ShaderNodeBaseElements.add)(a2, (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.sub)(1.0, a2), (0, _ShaderNodeBaseElements.pow2)(dotNV)))));
+  var gl = (0, _ShaderNodeBaseElements.mul)(dotNV, (0, _ShaderNodeBaseElements.sqrt)((0, _ShaderNodeBaseElements.add)(a2, (0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.sub)(1.0, a2), (0, _ShaderNodeBaseElements.pow2)(dotNL)))));
+  return (0, _ShaderNodeBaseElements.div)(0.5, (0, _ShaderNodeBaseElements.max)((0, _ShaderNodeBaseElements.add)(gv, gl), _ShaderNodeBaseElements.EPSILON));
+}); // validated
+var _default = V_GGX_SmithCorrelated;
+exports.default = _default;
+},{"../../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/functions/BSDF/D_GGX.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _ShaderNodeBaseElements = require("../../shadernode/ShaderNodeBaseElements.js");
+// Microfacet Models for Refraction through Rough Surfaces - equation (33)
+// http://graphicrants.blogspot.com/2013/08/specular-brdf-reference.html
+// alpha is "roughness squared" in Disney’s reparameterization
+var D_GGX = new _ShaderNodeBaseElements.ShaderNode(function (inputs) {
+  var alpha = inputs.alpha,
+    dotNH = inputs.dotNH;
+  var a2 = (0, _ShaderNodeBaseElements.pow2)(alpha);
+  var denom = (0, _ShaderNodeBaseElements.add)((0, _ShaderNodeBaseElements.mul)((0, _ShaderNodeBaseElements.pow2)(dotNH), (0, _ShaderNodeBaseElements.sub)(a2, 1.0)), 1.0); // avoid alpha = 0 with dotNH = 1
+
+  return (0, _ShaderNodeBaseElements.mul)(1 / Math.PI, (0, _ShaderNodeBaseElements.div)(a2, (0, _ShaderNodeBaseElements.pow2)(denom)));
+}); // validated
+var _default = D_GGX;
+exports.default = _default;
+},{"../../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/functions/BSDF/BRDF_GGX.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _F_Schlick = _interopRequireDefault(require("./F_Schlick.js"));
+var _V_GGX_SmithCorrelated = _interopRequireDefault(require("./V_GGX_SmithCorrelated.js"));
+var _D_GGX = _interopRequireDefault(require("./D_GGX.js"));
+var _ShaderNodeBaseElements = require("../../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+// GGX Distribution, Schlick Fresnel, GGX_SmithCorrelated Visibility
+var BRDF_GGX = new _ShaderNodeBaseElements.ShaderNode(function (inputs) {
+  var lightDirection = inputs.lightDirection,
+    f0 = inputs.f0,
+    f90 = inputs.f90,
+    roughness = inputs.roughness;
+  var alpha = (0, _ShaderNodeBaseElements.pow2)(roughness); // UE4's roughness
+
+  var halfDir = (0, _ShaderNodeBaseElements.normalize)((0, _ShaderNodeBaseElements.add)(lightDirection, _ShaderNodeBaseElements.positionViewDirection));
+  var dotNL = (0, _ShaderNodeBaseElements.clamp)((0, _ShaderNodeBaseElements.dot)(_ShaderNodeBaseElements.transformedNormalView, lightDirection));
+  //const dotNV = clamp( dot( transformedNormalView, positionViewDirection ) );
+  var dotNH = (0, _ShaderNodeBaseElements.clamp)((0, _ShaderNodeBaseElements.dot)(_ShaderNodeBaseElements.transformedNormalView, halfDir));
+  var dotVH = (0, _ShaderNodeBaseElements.clamp)((0, _ShaderNodeBaseElements.dot)(_ShaderNodeBaseElements.positionViewDirection, halfDir));
+  var F = _F_Schlick.default.call({
+    f0: f0,
+    f90: f90,
+    dotVH: dotVH
+  });
+  var V = _V_GGX_SmithCorrelated.default.call({
+    alpha: alpha,
+    dotNL: dotNL,
+    dotNV: _ShaderNodeBaseElements.dotNV
+  });
+  var D = _D_GGX.default.call({
+    alpha: alpha,
+    dotNH: dotNH
+  });
+  return (0, _ShaderNodeBaseElements.mul)(F, (0, _ShaderNodeBaseElements.mul)(V, D));
+}); // validated
+var _default = BRDF_GGX;
+exports.default = _default;
+},{"./F_Schlick.js":"../node_modules/three/examples/jsm/nodes/functions/BSDF/F_Schlick.js","./V_GGX_SmithCorrelated.js":"../node_modules/three/examples/jsm/nodes/functions/BSDF/V_GGX_SmithCorrelated.js","./D_GGX.js":"../node_modules/three/examples/jsm/nodes/functions/BSDF/D_GGX.js","../../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/functions/BSDF/BRDF_Lambert.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _ShaderNodeBaseElements = require("../../shadernode/ShaderNodeBaseElements.js");
+var BRDF_Lambert = new _ShaderNodeBaseElements.ShaderNode(function (inputs) {
+  return (0, _ShaderNodeBaseElements.mul)(1 / Math.PI, inputs.diffuseColor); // punctual light
+}); // validated
+var _default = BRDF_Lambert;
+exports.default = _default;
+},{"../../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/functions/BSDF/DFGApprox.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _ShaderNodeElements = require("../../shadernode/ShaderNodeElements.js");
+// Analytical approximation of the DFG LUT, one half of the
+// split-sum approximation used in indirect specular lighting.
+// via 'environmentBRDF' from "Physically Based Shading on Mobile"
+// https://www.unrealengine.com/blog/physically-based-shading-on-mobile
+var DFGApprox = new _ShaderNodeElements.ShaderNode(function (inputs) {
+  var roughness = inputs.roughness;
+  var c0 = (0, _ShaderNodeElements.vec4)(-1, -0.0275, -0.572, 0.022);
+  var c1 = (0, _ShaderNodeElements.vec4)(1, 0.0425, 1.04, -0.04);
+  var r = (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)(roughness, c0), c1);
+  var a004 = (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.min)((0, _ShaderNodeElements.mul)(r.x, r.x), (0, _ShaderNodeElements.exp2)((0, _ShaderNodeElements.mul)(-9.28, _ShaderNodeElements.dotNV))), r.x), r.y);
+  var fab = (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.vec2)(-1.04, 1.04), a004), r.zw);
+  return fab;
+});
+var _default = DFGApprox;
+exports.default = _default;
+},{"../../shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js"}],"../node_modules/three/examples/jsm/nodes/functions/light/getDistanceAttenuation.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _ShaderNodeBaseElements = require("../../shadernode/ShaderNodeBaseElements.js");
+var getDistanceAttenuation = new _ShaderNodeBaseElements.ShaderNode(function (inputs) {
+  var lightDistance = inputs.lightDistance,
+    cutoffDistance = inputs.cutoffDistance,
+    decayExponent = inputs.decayExponent;
+
+  // based upon Frostbite 3 Moving to Physically-based Rendering
+  // page 32, equation 26: E[window1]
+  // https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
+  var distanceFalloff = (0, _ShaderNodeBaseElements.div)(1.0, (0, _ShaderNodeBaseElements.max)((0, _ShaderNodeBaseElements.pow)(lightDistance, decayExponent), 0.01));
+  return (0, _ShaderNodeBaseElements.cond)((0, _ShaderNodeBaseElements.greaterThan)(cutoffDistance, 0), (0, _ShaderNodeBaseElements.mul)(distanceFalloff, (0, _ShaderNodeBaseElements.pow2)((0, _ShaderNodeBaseElements.clamp)((0, _ShaderNodeBaseElements.sub)(1.0, (0, _ShaderNodeBaseElements.pow4)((0, _ShaderNodeBaseElements.div)(lightDistance, cutoffDistance)))))), distanceFalloff);
+}); // validated
+var _default = getDistanceAttenuation;
+exports.default = _default;
+},{"../../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/functions/material/getGeometryRoughness.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _ShaderNodeBaseElements = require("../../shadernode/ShaderNodeBaseElements.js");
+var getGeometryRoughness = new _ShaderNodeBaseElements.ShaderNode(function () {
+  var dxy = (0, _ShaderNodeBaseElements.max)((0, _ShaderNodeBaseElements.abs)((0, _ShaderNodeBaseElements.dFdx)(_ShaderNodeBaseElements.normalGeometry)), (0, _ShaderNodeBaseElements.abs)((0, _ShaderNodeBaseElements.dFdy)(_ShaderNodeBaseElements.normalGeometry)));
+  var geometryRoughness = (0, _ShaderNodeBaseElements.max)((0, _ShaderNodeBaseElements.max)(dxy.x, dxy.y), dxy.z);
+  return geometryRoughness;
+});
+var _default = getGeometryRoughness;
+exports.default = _default;
+},{"../../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/functions/material/getRoughness.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _getGeometryRoughness = _interopRequireDefault(require("./getGeometryRoughness.js"));
+var _ShaderNodeBaseElements = require("../../shadernode/ShaderNodeBaseElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var getRoughness = new _ShaderNodeBaseElements.ShaderNode(function (inputs) {
+  var roughness = inputs.roughness;
+  var geometryRoughness = _getGeometryRoughness.default.call();
+  var roughnessFactor = (0, _ShaderNodeBaseElements.max)(roughness, 0.0525); // 0.0525 corresponds to the base mip of a 256 cubemap.
+  roughnessFactor = (0, _ShaderNodeBaseElements.add)(roughnessFactor, geometryRoughness);
+  roughnessFactor = (0, _ShaderNodeBaseElements.min)(roughnessFactor, 1.0);
+  return roughnessFactor;
+});
+var _default = getRoughness;
+exports.default = _default;
+},{"./getGeometryRoughness.js":"../node_modules/three/examples/jsm/nodes/functions/material/getGeometryRoughness.js","../../shadernode/ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js"}],"../node_modules/three/examples/jsm/nodes/functions/PhysicalLightingModel.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _BRDF_Lambert = _interopRequireDefault(require("./BSDF/BRDF_Lambert.js"));
+var _BRDF_GGX = _interopRequireDefault(require("./BSDF/BRDF_GGX.js"));
+var _DFGApprox = _interopRequireDefault(require("./BSDF/DFGApprox.js"));
+var _ShaderNodeElements = require("../shadernode/ShaderNodeElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+// Fdez-Agüera's "Multiple-Scattering Microfacet Model for Real-Time Image Based Lighting"
+// Approximates multiscattering in order to preserve energy.
+// http://www.jcgt.org/published/0008/01/03/
+var computeMultiscattering = function computeMultiscattering(singleScatter, multiScatter, specularF90 = 1) {
+  var fab = _DFGApprox.default.call({
+    roughness: _ShaderNodeElements.roughness
+  });
+  var FssEss = (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)(_ShaderNodeElements.specularColor, fab.x), (0, _ShaderNodeElements.mul)(specularF90, fab.y));
+  var Ess = (0, _ShaderNodeElements.add)(fab.x, fab.y);
+  var Ems = (0, _ShaderNodeElements.sub)(1.0, Ess);
+  var Favg = (0, _ShaderNodeElements.add)(_ShaderNodeElements.specularColor, (0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.sub)(1.0, _ShaderNodeElements.specularColor), 0.047619)); // 1/21
+  var Fms = (0, _ShaderNodeElements.div)((0, _ShaderNodeElements.mul)(FssEss, Favg), (0, _ShaderNodeElements.sub)(1.0, (0, _ShaderNodeElements.mul)(Ems, Favg)));
+  singleScatter.add(FssEss);
+  multiScatter.add((0, _ShaderNodeElements.mul)(Fms, Ems));
+};
+var RE_IndirectSpecular_Physical = new _ShaderNodeElements.ShaderNode(function (inputs) {
+  var radiance = inputs.radiance,
+    iblIrradiance = inputs.iblIrradiance,
+    reflectedLight = inputs.reflectedLight;
+
+  // Both indirect specular and indirect diffuse light accumulate here
+
+  var singleScattering = (0, _ShaderNodeElements.temp)((0, _ShaderNodeElements.vec3)());
+  var multiScattering = (0, _ShaderNodeElements.temp)((0, _ShaderNodeElements.vec3)());
+  var cosineWeightedIrradiance = (0, _ShaderNodeElements.mul)(iblIrradiance, 1 / Math.PI);
+  computeMultiscattering(singleScattering, multiScattering);
+  var diffuse = (0, _ShaderNodeElements.mul)(_ShaderNodeElements.diffuseColor, (0, _ShaderNodeElements.sub)(1.0, (0, _ShaderNodeElements.add)(singleScattering, multiScattering)));
+  reflectedLight.indirectSpecular.add((0, _ShaderNodeElements.mul)(radiance, singleScattering));
+  reflectedLight.indirectSpecular.add((0, _ShaderNodeElements.mul)(multiScattering, cosineWeightedIrradiance));
+  reflectedLight.indirectDiffuse.add((0, _ShaderNodeElements.mul)(diffuse, cosineWeightedIrradiance));
+});
+var RE_IndirectDiffuse_Physical = new _ShaderNodeElements.ShaderNode(function (inputs) {
+  var irradiance = inputs.irradiance,
+    reflectedLight = inputs.reflectedLight;
+  reflectedLight.indirectDiffuse.add((0, _ShaderNodeElements.mul)(irradiance, _BRDF_Lambert.default.call({
+    diffuseColor: _ShaderNodeElements.diffuseColor
+  })));
+});
+var RE_Direct_Physical = new _ShaderNodeElements.ShaderNode(function (inputs) {
+  var lightDirection = inputs.lightDirection,
+    lightColor = inputs.lightColor,
+    reflectedLight = inputs.reflectedLight;
+  var dotNL = (0, _ShaderNodeElements.clamp)((0, _ShaderNodeElements.dot)(_ShaderNodeElements.transformedNormalView, lightDirection));
+  var irradiance = (0, _ShaderNodeElements.mul)(dotNL, lightColor);
+  reflectedLight.directDiffuse.add((0, _ShaderNodeElements.mul)(irradiance, _BRDF_Lambert.default.call({
+    diffuseColor: _ShaderNodeElements.diffuseColor.rgb
+  })));
+  reflectedLight.directSpecular.add((0, _ShaderNodeElements.mul)(irradiance, _BRDF_GGX.default.call({
+    lightDirection: lightDirection,
+    f0: _ShaderNodeElements.specularColor,
+    f90: 1,
+    roughness: _ShaderNodeElements.roughness
+  })));
+});
+var RE_AmbientOcclusion_Physical = new _ShaderNodeElements.ShaderNode(function ({
+  ambientOcclusion: ambientOcclusion,
+  reflectedLight: reflectedLight
+}) {
+  var aoNV = (0, _ShaderNodeElements.add)(_ShaderNodeElements.dotNV, ambientOcclusion);
+  var aoExp = (0, _ShaderNodeElements.exp2)((0, _ShaderNodeElements.sub)((0, _ShaderNodeElements.mul)(-16.0, _ShaderNodeElements.roughness), 1.0));
+  var aoNode = (0, _ShaderNodeElements.clamp)((0, _ShaderNodeElements.add)((0, _ShaderNodeElements.sub)((0, _ShaderNodeElements.pow)(aoNV, aoExp), 1.0), ambientOcclusion));
+  reflectedLight.indirectDiffuse.mul(ambientOcclusion);
+  reflectedLight.indirectSpecular.mul(aoNode);
+});
+var PhysicalLightingModel = {
+  direct: RE_Direct_Physical,
+  indirectDiffuse: RE_IndirectDiffuse_Physical,
+  indirectSpecular: RE_IndirectSpecular_Physical,
+  ambientOcclusion: RE_AmbientOcclusion_Physical
+};
+var _default = PhysicalLightingModel;
+exports.default = _default;
+},{"./BSDF/BRDF_Lambert.js":"../node_modules/three/examples/jsm/nodes/functions/BSDF/BRDF_Lambert.js","./BSDF/BRDF_GGX.js":"../node_modules/three/examples/jsm/nodes/functions/BSDF/BRDF_GGX.js","./BSDF/DFGApprox.js":"../node_modules/three/examples/jsm/nodes/functions/BSDF/DFGApprox.js","../shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js"}],"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var _exportNames = {
+  cubeTexture: true,
+  instance: true,
+  reflectVector: true,
+  skinning: true,
+  burn: true,
+  dodge: true,
+  overlay: true,
+  screen: true,
+  saturation: true,
+  vibrance: true,
+  hue: true,
+  colorSpace: true,
+  normalMap: true,
+  toneMapping: true,
+  posterize: true,
+  lights: true,
+  lightingContext: true,
+  matcapUV: true,
+  equirectUV: true,
+  maxMipLevel: true,
+  oscSine: true,
+  oscSquare: true,
+  oscTriangle: true,
+  oscSawtooth: true,
+  remap: true,
+  remapClamp: true,
+  rotateUV: true,
+  spritesheetUV: true,
+  timerLocal: true,
+  timerGlobal: true,
+  timerDelta: true,
+  frameId: true,
+  triplanarTextures: true,
+  triplanarTexture: true,
+  range: true,
+  checker: true,
+  fog: true,
+  rangeFog: true,
+  BRDF_GGX: true,
+  BRDF_Lambert: true,
+  D_GGX: true,
+  DFGApprox: true,
+  F_Schlick: true,
+  V_GGX_SmithCorrelated: true,
+  getDistanceAttenuation: true,
+  getGeometryRoughness: true,
+  getRoughness: true,
+  PhysicalLightingModel: true
+};
+Object.defineProperty(exports, "BRDF_GGX", {
+  enumerable: true,
+  get: function () {
+    return _BRDF_GGX.default;
+  }
+});
+Object.defineProperty(exports, "BRDF_Lambert", {
+  enumerable: true,
+  get: function () {
+    return _BRDF_Lambert.default;
+  }
+});
+Object.defineProperty(exports, "DFGApprox", {
+  enumerable: true,
+  get: function () {
+    return _DFGApprox.default;
+  }
+});
+Object.defineProperty(exports, "D_GGX", {
+  enumerable: true,
+  get: function () {
+    return _D_GGX.default;
+  }
+});
+Object.defineProperty(exports, "F_Schlick", {
+  enumerable: true,
+  get: function () {
+    return _F_Schlick.default;
+  }
+});
+Object.defineProperty(exports, "PhysicalLightingModel", {
+  enumerable: true,
+  get: function () {
+    return _PhysicalLightingModel.default;
+  }
+});
+Object.defineProperty(exports, "V_GGX_SmithCorrelated", {
+  enumerable: true,
+  get: function () {
+    return _V_GGX_SmithCorrelated.default;
+  }
+});
+exports.frameId = exports.fog = exports.equirectUV = exports.dodge = exports.cubeTexture = exports.colorSpace = exports.checker = exports.burn = void 0;
+Object.defineProperty(exports, "getDistanceAttenuation", {
+  enumerable: true,
+  get: function () {
+    return _getDistanceAttenuation.default;
+  }
+});
+Object.defineProperty(exports, "getGeometryRoughness", {
+  enumerable: true,
+  get: function () {
+    return _getGeometryRoughness.default;
+  }
+});
+Object.defineProperty(exports, "getRoughness", {
+  enumerable: true,
+  get: function () {
+    return _getRoughness.default;
+  }
+});
+exports.vibrance = exports.triplanarTextures = exports.triplanarTexture = exports.toneMapping = exports.timerLocal = exports.timerGlobal = exports.timerDelta = exports.spritesheetUV = exports.skinning = exports.screen = exports.saturation = exports.rotateUV = exports.remapClamp = exports.remap = exports.reflectVector = exports.rangeFog = exports.range = exports.posterize = exports.overlay = exports.oscTriangle = exports.oscSquare = exports.oscSine = exports.oscSawtooth = exports.normalMap = exports.maxMipLevel = exports.matcapUV = exports.lights = exports.lightingContext = exports.instance = exports.hue = void 0;
+var _CubeTextureNode = _interopRequireDefault(require("../accessors/CubeTextureNode.js"));
+var _InstanceNode = _interopRequireDefault(require("../accessors/InstanceNode.js"));
+var _ReflectVectorNode = _interopRequireDefault(require("../accessors/ReflectVectorNode.js"));
+var _SkinningNode = _interopRequireDefault(require("../accessors/SkinningNode.js"));
+var _BlendModeNode = _interopRequireDefault(require("../display/BlendModeNode.js"));
+var _ColorAdjustmentNode = _interopRequireDefault(require("../display/ColorAdjustmentNode.js"));
+var _ColorSpaceNode = _interopRequireDefault(require("../display/ColorSpaceNode.js"));
+var _NormalMapNode = _interopRequireDefault(require("../display/NormalMapNode.js"));
+var _PosterizeNode = _interopRequireDefault(require("../display/PosterizeNode.js"));
+var _ToneMappingNode = _interopRequireDefault(require("../display/ToneMappingNode.js"));
+var _LightsNode = _interopRequireDefault(require("../lighting/LightsNode.js"));
+var _LightingContextNode = _interopRequireDefault(require("../lighting/LightingContextNode.js"));
+var _EquirectUVNode = _interopRequireDefault(require("../utils/EquirectUVNode.js"));
+var _MatcapUVNode = _interopRequireDefault(require("../utils/MatcapUVNode.js"));
+var _MaxMipLevelNode = _interopRequireDefault(require("../utils/MaxMipLevelNode.js"));
+var _OscNode = _interopRequireDefault(require("../utils/OscNode.js"));
+var _RemapNode = _interopRequireDefault(require("../utils/RemapNode.js"));
+var _RotateUVNode = _interopRequireDefault(require("../utils/RotateUVNode.js"));
+var _SpriteSheetUVNode = _interopRequireDefault(require("../utils/SpriteSheetUVNode.js"));
+var _TimerNode = _interopRequireDefault(require("../utils/TimerNode.js"));
+var _TriplanarTexturesNode = _interopRequireDefault(require("../utils/TriplanarTexturesNode.js"));
+var _RangeNode = _interopRequireDefault(require("../geometry/RangeNode.js"));
+var _CheckerNode = _interopRequireDefault(require("../procedural/CheckerNode.js"));
+var _FogNode = _interopRequireDefault(require("../fog/FogNode.js"));
+var _FogRangeNode = _interopRequireDefault(require("../fog/FogRangeNode.js"));
+var _ShaderNode = require("./ShaderNode.js");
+var _ShaderNodeBaseElements = require("./ShaderNodeBaseElements.js");
+Object.keys(_ShaderNodeBaseElements).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _ShaderNodeBaseElements[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _ShaderNodeBaseElements[key];
+    }
+  });
+});
+var _BRDF_GGX = _interopRequireDefault(require("../functions/BSDF/BRDF_GGX.js"));
+var _BRDF_Lambert = _interopRequireDefault(require("../functions/BSDF/BRDF_Lambert.js"));
+var _D_GGX = _interopRequireDefault(require("../functions/BSDF/D_GGX.js"));
+var _DFGApprox = _interopRequireDefault(require("../functions/BSDF/DFGApprox.js"));
+var _F_Schlick = _interopRequireDefault(require("../functions/BSDF/F_Schlick.js"));
+var _V_GGX_SmithCorrelated = _interopRequireDefault(require("../functions/BSDF/V_GGX_SmithCorrelated.js"));
+var _getDistanceAttenuation = _interopRequireDefault(require("../functions/light/getDistanceAttenuation.js"));
+var _getGeometryRoughness = _interopRequireDefault(require("../functions/material/getGeometryRoughness.js"));
+var _getRoughness = _interopRequireDefault(require("../functions/material/getRoughness.js"));
+var _PhysicalLightingModel = _interopRequireDefault(require("../functions/PhysicalLightingModel.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+// accessors
+
+// display
+
+// lighting
+
+//import LightingNode from '../lighting/LightingNode.js';
+
+// utils
+
+// geometry
+
+// procedural
+
+// fog
+
+// shader node utils
+
+//
+// Node Material Shader Syntax
+//
+
+// shader node base
+
+// functions
+
+// see https://github.com/tc39/proposal-export-default-from
+
+// accessors
+
+var cubeTexture = (0, _ShaderNode.nodeProxy)(_CubeTextureNode.default);
+exports.cubeTexture = cubeTexture;
+var instance = (0, _ShaderNode.nodeProxy)(_InstanceNode.default);
+exports.instance = instance;
+var reflectVector = (0, _ShaderNode.nodeImmutable)(_ReflectVectorNode.default);
+exports.reflectVector = reflectVector;
+var skinning = (0, _ShaderNode.nodeProxy)(_SkinningNode.default);
+
+// display
+exports.skinning = skinning;
+var burn = (0, _ShaderNode.nodeProxy)(_BlendModeNode.default, _BlendModeNode.default.BURN);
+exports.burn = burn;
+var dodge = (0, _ShaderNode.nodeProxy)(_BlendModeNode.default, _BlendModeNode.default.DODGE);
+exports.dodge = dodge;
+var overlay = (0, _ShaderNode.nodeProxy)(_BlendModeNode.default, _BlendModeNode.default.OVERLAY);
+exports.overlay = overlay;
+var screen = (0, _ShaderNode.nodeProxy)(_BlendModeNode.default, _BlendModeNode.default.SCREEN);
+exports.screen = screen;
+var saturation = (0, _ShaderNode.nodeProxy)(_ColorAdjustmentNode.default, _ColorAdjustmentNode.default.SATURATION);
+exports.saturation = saturation;
+var vibrance = (0, _ShaderNode.nodeProxy)(_ColorAdjustmentNode.default, _ColorAdjustmentNode.default.VIBRANCE);
+exports.vibrance = vibrance;
+var hue = (0, _ShaderNode.nodeProxy)(_ColorAdjustmentNode.default, _ColorAdjustmentNode.default.HUE);
+exports.hue = hue;
+var colorSpace = function colorSpace(node, encoding) {
+  return (0, _ShaderNode.nodeObject)(new _ColorSpaceNode.default(null, (0, _ShaderNode.nodeObject)(node)).fromEncoding(encoding));
+};
+exports.colorSpace = colorSpace;
+var normalMap = (0, _ShaderNode.nodeProxy)(_NormalMapNode.default);
+exports.normalMap = normalMap;
+var toneMapping = function toneMapping(mapping, exposure, color) {
+  return (0, _ShaderNode.nodeObject)(new _ToneMappingNode.default(mapping, (0, _ShaderNode.nodeObject)(exposure), (0, _ShaderNode.nodeObject)(color)));
+};
+exports.toneMapping = toneMapping;
+var posterize = (0, _ShaderNode.nodeProxy)(_PosterizeNode.default);
+
+// lighting
+
+//export const lighting = nodeProxy( LightingNode ); // abstract
+//export const light; // still needs to be added
+exports.posterize = posterize;
+var lights = function lights(_lights) {
+  return (0, _ShaderNode.nodeObject)(new _LightsNode.default().fromLights(_lights));
+};
+exports.lights = lights;
+var lightingContext = (0, _ShaderNode.nodeProxy)(_LightingContextNode.default);
+
+// utils
+exports.lightingContext = lightingContext;
+var matcapUV = (0, _ShaderNode.nodeImmutable)(_MatcapUVNode.default);
+exports.matcapUV = matcapUV;
+var equirectUV = (0, _ShaderNode.nodeProxy)(_EquirectUVNode.default);
+exports.equirectUV = equirectUV;
+var maxMipLevel = (0, _ShaderNode.nodeProxy)(_MaxMipLevelNode.default);
+exports.maxMipLevel = maxMipLevel;
+var oscSine = (0, _ShaderNode.nodeProxy)(_OscNode.default, _OscNode.default.SINE);
+exports.oscSine = oscSine;
+var oscSquare = (0, _ShaderNode.nodeProxy)(_OscNode.default, _OscNode.default.SQUARE);
+exports.oscSquare = oscSquare;
+var oscTriangle = (0, _ShaderNode.nodeProxy)(_OscNode.default, _OscNode.default.TRIANGLE);
+exports.oscTriangle = oscTriangle;
+var oscSawtooth = (0, _ShaderNode.nodeProxy)(_OscNode.default, _OscNode.default.SAWTOOTH);
+exports.oscSawtooth = oscSawtooth;
+var remap = (0, _ShaderNode.nodeProxy)(_RemapNode.default, null, null, {
+  doClamp: false
+});
+exports.remap = remap;
+var remapClamp = (0, _ShaderNode.nodeProxy)(_RemapNode.default);
+exports.remapClamp = remapClamp;
+var rotateUV = (0, _ShaderNode.nodeProxy)(_RotateUVNode.default);
+exports.rotateUV = rotateUV;
+var spritesheetUV = (0, _ShaderNode.nodeProxy)(_SpriteSheetUVNode.default);
+
+// @TODO: add supports to use node in timeScale
+exports.spritesheetUV = spritesheetUV;
+var timerLocal = function timerLocal(timeScale, value = 0) {
+  return (0, _ShaderNode.nodeObject)(new _TimerNode.default(_TimerNode.default.LOCAL, timeScale, value));
+};
+exports.timerLocal = timerLocal;
+var timerGlobal = function timerGlobal(timeScale, value = 0) {
+  return (0, _ShaderNode.nodeObject)(new _TimerNode.default(_TimerNode.default.GLOBAL, timeScale, value));
+};
+exports.timerGlobal = timerGlobal;
+var timerDelta = function timerDelta(timeScale, value = 0) {
+  return (0, _ShaderNode.nodeObject)(new _TimerNode.default(_TimerNode.default.DELTA, timeScale, value));
+};
+exports.timerDelta = timerDelta;
+var frameId = (0, _ShaderNode.nodeImmutable)(_TimerNode.default, _TimerNode.default.FRAME);
+exports.frameId = frameId;
+var triplanarTextures = (0, _ShaderNode.nodeProxy)(_TriplanarTexturesNode.default);
+exports.triplanarTextures = triplanarTextures;
+var triplanarTexture = function triplanarTexture(texture, ...params) {
+  return triplanarTextures.apply(void 0, [texture, texture, texture].concat(params));
+};
+
+// geometry
+exports.triplanarTexture = triplanarTexture;
+var range = function range(min, max) {
+  return (0, _ShaderNode.nodeObject)(new _RangeNode.default(min, max));
+};
+
+// procedural
+exports.range = range;
+var checker = (0, _ShaderNode.nodeProxy)(_CheckerNode.default);
+
+// fog
+exports.checker = checker;
+var fog = (0, _ShaderNode.nodeProxy)(_FogNode.default);
+exports.fog = fog;
+var rangeFog = (0, _ShaderNode.nodeProxy)(_FogRangeNode.default);
+exports.rangeFog = rangeFog;
+},{"../accessors/CubeTextureNode.js":"../node_modules/three/examples/jsm/nodes/accessors/CubeTextureNode.js","../accessors/InstanceNode.js":"../node_modules/three/examples/jsm/nodes/accessors/InstanceNode.js","../accessors/ReflectVectorNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ReflectVectorNode.js","../accessors/SkinningNode.js":"../node_modules/three/examples/jsm/nodes/accessors/SkinningNode.js","../display/BlendModeNode.js":"../node_modules/three/examples/jsm/nodes/display/BlendModeNode.js","../display/ColorAdjustmentNode.js":"../node_modules/three/examples/jsm/nodes/display/ColorAdjustmentNode.js","../display/ColorSpaceNode.js":"../node_modules/three/examples/jsm/nodes/display/ColorSpaceNode.js","../display/NormalMapNode.js":"../node_modules/three/examples/jsm/nodes/display/NormalMapNode.js","../display/PosterizeNode.js":"../node_modules/three/examples/jsm/nodes/display/PosterizeNode.js","../display/ToneMappingNode.js":"../node_modules/three/examples/jsm/nodes/display/ToneMappingNode.js","../lighting/LightsNode.js":"../node_modules/three/examples/jsm/nodes/lighting/LightsNode.js","../lighting/LightingContextNode.js":"../node_modules/three/examples/jsm/nodes/lighting/LightingContextNode.js","../utils/EquirectUVNode.js":"../node_modules/three/examples/jsm/nodes/utils/EquirectUVNode.js","../utils/MatcapUVNode.js":"../node_modules/three/examples/jsm/nodes/utils/MatcapUVNode.js","../utils/MaxMipLevelNode.js":"../node_modules/three/examples/jsm/nodes/utils/MaxMipLevelNode.js","../utils/OscNode.js":"../node_modules/three/examples/jsm/nodes/utils/OscNode.js","../utils/RemapNode.js":"../node_modules/three/examples/jsm/nodes/utils/RemapNode.js","../utils/RotateUVNode.js":"../node_modules/three/examples/jsm/nodes/utils/RotateUVNode.js","../utils/SpriteSheetUVNode.js":"../node_modules/three/examples/jsm/nodes/utils/SpriteSheetUVNode.js","../utils/TimerNode.js":"../node_modules/three/examples/jsm/nodes/utils/TimerNode.js","../utils/TriplanarTexturesNode.js":"../node_modules/three/examples/jsm/nodes/utils/TriplanarTexturesNode.js","../geometry/RangeNode.js":"../node_modules/three/examples/jsm/nodes/geometry/RangeNode.js","../procedural/CheckerNode.js":"../node_modules/three/examples/jsm/nodes/procedural/CheckerNode.js","../fog/FogNode.js":"../node_modules/three/examples/jsm/nodes/fog/FogNode.js","../fog/FogRangeNode.js":"../node_modules/three/examples/jsm/nodes/fog/FogRangeNode.js","./ShaderNode.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNode.js","./ShaderNodeBaseElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements.js","../functions/BSDF/BRDF_GGX.js":"../node_modules/three/examples/jsm/nodes/functions/BSDF/BRDF_GGX.js","../functions/BSDF/BRDF_Lambert.js":"../node_modules/three/examples/jsm/nodes/functions/BSDF/BRDF_Lambert.js","../functions/BSDF/D_GGX.js":"../node_modules/three/examples/jsm/nodes/functions/BSDF/D_GGX.js","../functions/BSDF/DFGApprox.js":"../node_modules/three/examples/jsm/nodes/functions/BSDF/DFGApprox.js","../functions/BSDF/F_Schlick.js":"../node_modules/three/examples/jsm/nodes/functions/BSDF/F_Schlick.js","../functions/BSDF/V_GGX_SmithCorrelated.js":"../node_modules/three/examples/jsm/nodes/functions/BSDF/V_GGX_SmithCorrelated.js","../functions/light/getDistanceAttenuation.js":"../node_modules/three/examples/jsm/nodes/functions/light/getDistanceAttenuation.js","../functions/material/getGeometryRoughness.js":"../node_modules/three/examples/jsm/nodes/functions/material/getGeometryRoughness.js","../functions/material/getRoughness.js":"../node_modules/three/examples/jsm/nodes/functions/material/getRoughness.js","../functions/PhysicalLightingModel.js":"../node_modules/three/examples/jsm/nodes/functions/PhysicalLightingModel.js"}],"../node_modules/three/examples/jsm/nodes/lighting/AnalyticLightNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _LightingNode2 = _interopRequireDefault(require("./LightingNode.js"));
+var _constants = require("../core/constants.js");
+var _ShaderNodeElements = require("../shadernode/ShaderNodeElements.js");
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var AnalyticLightNode = /*#__PURE__*/function (_LightingNode) {
+  _inherits(AnalyticLightNode, _LightingNode);
+  var _super = _createSuper(AnalyticLightNode);
+  function AnalyticLightNode(light = null) {
+    var _this;
+    _classCallCheck(this, AnalyticLightNode);
+    _this = _super.call(this);
+    _this.updateType = _constants.NodeUpdateType.OBJECT;
+    _this.light = light;
+    _this.colorNode = (0, _ShaderNodeElements.uniform)(new _three.Color());
+    return _this;
+  }
+  _createClass(AnalyticLightNode, [{
+    key: "getHash",
+    value: function getHash( /*builder*/
+    ) {
+      return this.light.uuid;
+    }
+  }, {
+    key: "update",
+    value: function update( /*frame*/
+    ) {
+      var light = this.light;
+      this.colorNode.value.copy(light.color).multiplyScalar(light.intensity);
+    }
+  }]);
+  return AnalyticLightNode;
+}(_LightingNode2.default);
+var _default = AnalyticLightNode;
+exports.default = _default;
+},{"./LightingNode.js":"../node_modules/three/examples/jsm/nodes/lighting/LightingNode.js","../core/constants.js":"../node_modules/three/examples/jsm/nodes/core/constants.js","../shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/lighting/PunctualLightNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _AnalyticLightNode2 = _interopRequireDefault(require("./AnalyticLightNode.js"));
+var _LightsNode = _interopRequireDefault(require("./LightsNode.js"));
+var _Object3DNode = _interopRequireDefault(require("../accessors/Object3DNode.js"));
+var _getDistanceAttenuation = _interopRequireDefault(require("../functions/light/getDistanceAttenuation.js"));
+var _ShaderNodeElements = require("../shadernode/ShaderNodeElements.js");
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var PunctualLightNode = /*#__PURE__*/function (_AnalyticLightNode) {
+  _inherits(PunctualLightNode, _AnalyticLightNode);
+  var _super = _createSuper(PunctualLightNode);
+  function PunctualLightNode(light = null) {
+    var _this;
+    _classCallCheck(this, PunctualLightNode);
+    _this = _super.call(this, light);
+    _this.cutoffDistanceNode = (0, _ShaderNodeElements.uniform)(0);
+    _this.decayExponentNode = (0, _ShaderNodeElements.uniform)(0);
+    return _this;
+  }
+  _createClass(PunctualLightNode, [{
+    key: "update",
+    value: function update(frame) {
+      var light = this.light;
+      _get(_getPrototypeOf(PunctualLightNode.prototype), "update", this).call(this, frame);
+      this.cutoffDistanceNode.value = light.distance;
+      this.decayExponentNode.value = light.decay;
+    }
+  }, {
+    key: "construct",
+    value: function construct(builder) {
+      var colorNode = this.colorNode,
+        cutoffDistanceNode = this.cutoffDistanceNode,
+        decayExponentNode = this.decayExponentNode;
+      var lightPositionViewNode = new _Object3DNode.default(_Object3DNode.default.VIEW_POSITION, this.light);
+      var lVector = (0, _ShaderNodeElements.sub)(lightPositionViewNode, _ShaderNodeElements.positionView);
+      var lightDirection = (0, _ShaderNodeElements.normalize)(lVector);
+      var lightDistance = (0, _ShaderNodeElements.length)(lVector);
+      var lightAttenuation = _getDistanceAttenuation.default.call({
+        lightDistance: lightDistance,
+        cutoffDistance: cutoffDistanceNode,
+        decayExponent: decayExponentNode
+      });
+      var lightColor = (0, _ShaderNodeElements.mul)(colorNode, lightAttenuation);
+      var lightingModelFunctionNode = builder.context.lightingModelNode;
+      var reflectedLight = builder.context.reflectedLight;
+      if (lightingModelFunctionNode?.direct) {
+        lightingModelFunctionNode.direct.call({
+          lightDirection: lightDirection,
+          lightColor: lightColor,
+          reflectedLight: reflectedLight
+        }, builder);
+      }
+    }
+  }]);
+  return PunctualLightNode;
+}(_AnalyticLightNode2.default);
+_LightsNode.default.setReference(_three.PointLight, PunctualLightNode);
+var _default = PunctualLightNode;
+exports.default = _default;
+},{"./AnalyticLightNode.js":"../node_modules/three/examples/jsm/nodes/lighting/AnalyticLightNode.js","./LightsNode.js":"../node_modules/three/examples/jsm/nodes/lighting/LightsNode.js","../accessors/Object3DNode.js":"../node_modules/three/examples/jsm/nodes/accessors/Object3DNode.js","../functions/light/getDistanceAttenuation.js":"../node_modules/three/examples/jsm/nodes/functions/light/getDistanceAttenuation.js","../shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/lighting/HemisphereLightNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _AnalyticLightNode2 = _interopRequireDefault(require("./AnalyticLightNode.js"));
+var _LightsNode = _interopRequireDefault(require("./LightsNode.js"));
+var _Object3DNode = _interopRequireDefault(require("../accessors/Object3DNode.js"));
+var _ShaderNodeElements = require("../shadernode/ShaderNodeElements.js");
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var HemisphereLightNode = /*#__PURE__*/function (_AnalyticLightNode) {
+  _inherits(HemisphereLightNode, _AnalyticLightNode);
+  var _super = _createSuper(HemisphereLightNode);
+  function HemisphereLightNode(light = null) {
+    var _this;
+    _classCallCheck(this, HemisphereLightNode);
+    _this = _super.call(this, light);
+    _this.lightPositionNode = new _Object3DNode.default(_Object3DNode.default.POSITION);
+    _this.lightDirectionNode = (0, _ShaderNodeElements.normalize)(_this.lightPositionNode);
+    _this.groundColorNode = (0, _ShaderNodeElements.uniform)(new _three.Color());
+    return _this;
+  }
+  _createClass(HemisphereLightNode, [{
+    key: "update",
+    value: function update(frame) {
+      var light = this.light;
+      _get(_getPrototypeOf(HemisphereLightNode.prototype), "update", this).call(this, frame);
+      this.lightPositionNode.object3d = light;
+      this.groundColorNode.value.copy(light.groundColor).multiplyScalar(light.intensity);
+    }
+  }, {
+    key: "generate",
+    value: function generate(builder) {
+      var colorNode = this.colorNode,
+        groundColorNode = this.groundColorNode,
+        lightDirectionNode = this.lightDirectionNode;
+      var dotNL = (0, _ShaderNodeElements.dot)(_ShaderNodeElements.normalView, lightDirectionNode);
+      var hemiDiffuseWeight = (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)(0.5, dotNL), 0.5);
+      var irradiance = (0, _ShaderNodeElements.mix)(groundColorNode, colorNode, hemiDiffuseWeight);
+      builder.context.irradiance.add(irradiance);
+    }
+  }]);
+  return HemisphereLightNode;
+}(_AnalyticLightNode2.default);
+_LightsNode.default.setReference(_three.HemisphereLight, HemisphereLightNode);
+var _default = HemisphereLightNode;
+exports.default = _default;
+},{"./AnalyticLightNode.js":"../node_modules/three/examples/jsm/nodes/lighting/AnalyticLightNode.js","./LightsNode.js":"../node_modules/three/examples/jsm/nodes/lighting/LightsNode.js","../accessors/Object3DNode.js":"../node_modules/three/examples/jsm/nodes/accessors/Object3DNode.js","../shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/lighting/EnvironmentNode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _LightingNode2 = _interopRequireDefault(require("./LightingNode.js"));
+var _ContextNode = _interopRequireDefault(require("../core/ContextNode.js"));
+var _MaxMipLevelNode = _interopRequireDefault(require("../utils/MaxMipLevelNode.js"));
+var _ShaderNodeElements = require("../shadernode/ShaderNodeElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+// taken from here: http://casual-effects.blogspot.ca/2011/08/plausible-environment-lighting-in-two.html
+var getSpecularMIPLevel = new _ShaderNodeElements.ShaderNode(function ({
+  texture: texture,
+  levelNode: levelNode
+}) {
+  var maxMIPLevelScalar = new _MaxMipLevelNode.default(texture);
+  var sigma = (0, _ShaderNodeElements.div)((0, _ShaderNodeElements.mul)(Math.PI, (0, _ShaderNodeElements.mul)(levelNode, levelNode)), (0, _ShaderNodeElements.add)(1.0, levelNode));
+  var desiredMIPLevel = (0, _ShaderNodeElements.add)(maxMIPLevelScalar, (0, _ShaderNodeElements.log2)(sigma));
+  return (0, _ShaderNodeElements.clamp)(desiredMIPLevel, 0.0, maxMIPLevelScalar);
+});
+var EnvironmentNode = /*#__PURE__*/function (_LightingNode) {
+  _inherits(EnvironmentNode, _LightingNode);
+  var _super = _createSuper(EnvironmentNode);
+  function EnvironmentNode(envNode = null) {
+    var _this;
+    _classCallCheck(this, EnvironmentNode);
+    _this = _super.call(this);
+    _this.envNode = envNode;
+    return _this;
+  }
+  _createClass(EnvironmentNode, [{
+    key: "construct",
+    value: function construct(builder) {
+      var envNode = this.envNode;
+      var properties = builder.getNodeProperties(this);
+      var reflectVec = (0, _ShaderNodeElements.reflect)((0, _ShaderNodeElements.negate)(_ShaderNodeElements.positionViewDirection), _ShaderNodeElements.transformedNormalView);
+      reflectVec = (0, _ShaderNodeElements.normalize)((0, _ShaderNodeElements.mix)(reflectVec, _ShaderNodeElements.transformedNormalView, (0, _ShaderNodeElements.mul)(_ShaderNodeElements.roughness, _ShaderNodeElements.roughness)));
+      reflectVec = (0, _ShaderNodeElements.transformDirection)(reflectVec, _ShaderNodeElements.cameraViewMatrix);
+      var radianceContext = new _ContextNode.default(envNode, {
+        tempRead: false,
+        uvNode: reflectVec,
+        levelNode: _ShaderNodeElements.roughness,
+        levelShaderNode: getSpecularMIPLevel
+      });
+      var irradianceContext = new _ContextNode.default(envNode, {
+        tempRead: false,
+        uvNode: _ShaderNodeElements.transformedNormalWorld,
+        levelNode: (0, _ShaderNodeElements.float)(1),
+        levelShaderNode: getSpecularMIPLevel
+      });
+
+      // it's used to cache the construct only if necessary: See `CubeTextureNode.getConstructReference()`
+      radianceContext.context.environmentContext = radianceContext;
+      irradianceContext.context.environmentContext = irradianceContext;
+      builder.context.radiance.add(radianceContext);
+      builder.context.iblIrradiance.add((0, _ShaderNodeElements.mul)(Math.PI, irradianceContext));
+      properties.radianceContext = radianceContext;
+      properties.irradianceContext = irradianceContext;
+    }
+  }]);
+  return EnvironmentNode;
+}(_LightingNode2.default);
+var _default = EnvironmentNode;
+exports.default = _default;
+},{"./LightingNode.js":"../node_modules/three/examples/jsm/nodes/lighting/LightingNode.js","../core/ContextNode.js":"../node_modules/three/examples/jsm/nodes/core/ContextNode.js","../utils/MaxMipLevelNode.js":"../node_modules/three/examples/jsm/nodes/utils/MaxMipLevelNode.js","../shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js"}],"../node_modules/three/examples/jsm/nodes/lighting/AONode.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _LightingNode2 = _interopRequireDefault(require("./LightingNode.js"));
+var _ShaderNodeElements = require("../shadernode/ShaderNodeElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var AONode = /*#__PURE__*/function (_LightingNode) {
+  _inherits(AONode, _LightingNode);
+  var _super = _createSuper(AONode);
+  function AONode(aoNode = null) {
+    var _this;
+    _classCallCheck(this, AONode);
+    _this = _super.call(this);
+    _this.aoNode = aoNode;
+    return _this;
+  }
+  _createClass(AONode, [{
+    key: "construct",
+    value: function construct(builder) {
+      var aoIntensity = 1;
+      var aoNode = (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.sub)((0, _ShaderNodeElements.float)(this.aoNode), 1.0), aoIntensity), 1.0);
+      builder.context.ambientOcclusion.mul(aoNode);
+    }
+  }]);
+  return AONode;
+}(_LightingNode2.default);
+var _default = AONode;
+exports.default = _default;
+},{"./LightingNode.js":"../node_modules/three/examples/jsm/nodes/lighting/LightingNode.js","../shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js"}],"../node_modules/three/examples/jsm/nodes/loaders/NodeLoader.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var Nodes = _interopRequireWildcard(require("../Nodes.js"));
+var _three = require("three");
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var NodeLoader = /*#__PURE__*/function (_Loader) {
+  _inherits(NodeLoader, _Loader);
+  var _super = _createSuper(NodeLoader);
+  function NodeLoader(manager) {
+    var _this;
+    _classCallCheck(this, NodeLoader);
+    _this = _super.call(this, manager);
+    _this.textures = {};
+    return _this;
+  }
+  _createClass(NodeLoader, [{
+    key: "load",
+    value: function load(url, onLoad, onProgress, onError) {
+      var _this2 = this;
+      var loader = new _three.FileLoader(this.manager);
+      loader.setPath(this.path);
+      loader.setRequestHeader(this.requestHeader);
+      loader.setWithCredentials(this.withCredentials);
+      loader.load(url, function (text) {
+        try {
+          onLoad(_this2.parse(JSON.parse(text)));
+        } catch (e) {
+          if (onError) {
+            onError(e);
+          } else {
+            console.error(e);
+          }
+          _this2.manager.itemError(url);
+        }
+      }, onProgress, onError);
+    }
+  }, {
+    key: "parseNodes",
+    value: function parseNodes(json) {
+      var nodes = {};
+      if (json !== undefined) {
+        var _iterator = _createForOfIteratorHelper(json),
+          _step;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var nodeJSON = _step.value;
+            var uuid = nodeJSON.uuid,
+              type = nodeJSON.type;
+            nodes[uuid] = Nodes.fromType(type);
+            nodes[uuid].uuid = uuid;
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+        var meta = {
+          nodes: nodes,
+          textures: this.textures
+        };
+        var _iterator2 = _createForOfIteratorHelper(json),
+          _step2;
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var _nodeJSON = _step2.value;
+            _nodeJSON.meta = meta;
+            var node = nodes[_nodeJSON.uuid];
+            node.deserialize(_nodeJSON);
+            delete _nodeJSON.meta;
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+      }
+      return nodes;
+    }
+  }, {
+    key: "parse",
+    value: function parse(json) {
+      var node = Nodes.fromType(json.type);
+      node.uuid = json.uuid;
+      var nodes = this.parseNodes(json.inputNodes);
+      var meta = {
+        nodes: nodes,
+        textures: this.textures
+      };
+      json.meta = meta;
+      node.deserialize(json);
+      delete json.meta;
+      return node;
+    }
+  }, {
+    key: "setTextures",
+    value: function setTextures(value) {
+      this.textures = value;
+      return this;
+    }
+  }]);
+  return NodeLoader;
+}(_three.Loader);
+var _default = NodeLoader;
+exports.default = _default;
+},{"../Nodes.js":"../node_modules/three/examples/jsm/nodes/Nodes.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/materials/NodeMaterial.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _three = require("three");
+var _NodeUtils = require("../core/NodeUtils.js");
+var _ExpressionNode = _interopRequireDefault(require("../core/ExpressionNode.js"));
+var _ShaderNodeElements = require("../shadernode/ShaderNodeElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var NodeMaterial = /*#__PURE__*/function (_ShaderMaterial) {
+  _inherits(NodeMaterial, _ShaderMaterial);
+  var _super = _createSuper(NodeMaterial);
+  function NodeMaterial() {
+    var _this;
+    _classCallCheck(this, NodeMaterial);
+    _this = _super.call(this);
+    _this.isNodeMaterial = true;
+    _this.type = _this.constructor.name;
+    _this.lights = true;
+    return _this;
+  }
+  _createClass(NodeMaterial, [{
+    key: "build",
+    value: function build(builder) {
+      this.generatePosition(builder);
+      var lightsNode = this.lightsNode;
+      var _this$generateDiffuse = this.generateDiffuseColor(builder),
+        diffuseColorNode = _this$generateDiffuse.diffuseColorNode;
+      var outgoingLightNode = this.generateLight(builder, {
+        diffuseColorNode: diffuseColorNode,
+        lightsNode: lightsNode
+      });
+      this.generateOutput(builder, {
+        diffuseColorNode: diffuseColorNode,
+        outgoingLightNode: outgoingLightNode
+      });
+    }
+  }, {
+    key: "customProgramCacheKey",
+    value: function customProgramCacheKey() {
+      return (0, _NodeUtils.getCacheKey)(this);
+    }
+  }, {
+    key: "generatePosition",
+    value: function generatePosition(builder) {
+      var object = builder.object;
+
+      // < VERTEX STAGE >
+
+      var vertex = _ShaderNodeElements.positionLocal;
+      if (this.positionNode !== null) {
+        vertex = (0, _ShaderNodeElements.bypass)(vertex, (0, _ShaderNodeElements.assign)(_ShaderNodeElements.positionLocal, this.positionNode));
+      }
+      if (object.instanceMatrix?.isInstancedBufferAttribute === true && builder.isAvailable('instance') === true) {
+        vertex = (0, _ShaderNodeElements.bypass)(vertex, (0, _ShaderNodeElements.instance)(object));
+      }
+      if (object.isSkinnedMesh === true) {
+        vertex = (0, _ShaderNodeElements.bypass)(vertex, (0, _ShaderNodeElements.skinning)(object));
+      }
+      builder.context.vertex = vertex;
+      builder.addFlow('vertex', (0, _ShaderNodeElements.modelViewProjection)());
+    }
+  }, {
+    key: "generateDiffuseColor",
+    value: function generateDiffuseColor(builder) {
+      // < FRAGMENT STAGE >
+
+      var colorNode = (0, _ShaderNodeElements.vec4)(this.colorNode || _ShaderNodeElements.materialColor);
+      var opacityNode = this.opacityNode ? (0, _ShaderNodeElements.float)(this.opacityNode) : _ShaderNodeElements.materialOpacity;
+
+      // COLOR
+
+      colorNode = builder.addFlow('fragment', (0, _ShaderNodeElements.label)(colorNode, 'Color'));
+      var diffuseColorNode = builder.addFlow('fragment', (0, _ShaderNodeElements.label)(colorNode, 'DiffuseColor'));
+
+      // OPACITY
+
+      opacityNode = builder.addFlow('fragment', (0, _ShaderNodeElements.label)(opacityNode, 'OPACITY'));
+      builder.addFlow('fragment', (0, _ShaderNodeElements.assign)(diffuseColorNode.a, (0, _ShaderNodeElements.mul)(diffuseColorNode.a, opacityNode)));
+
+      // ALPHA TEST
+
+      if (this.alphaTestNode || this.alphaTest > 0) {
+        var alphaTestNode = this.alphaTestNode ? (0, _ShaderNodeElements.float)(this.alphaTestNode) : _ShaderNodeElements.materialAlphaTest;
+        builder.addFlow('fragment', (0, _ShaderNodeElements.label)(alphaTestNode, 'AlphaTest'));
+
+        // @TODO: remove ExpressionNode here and then possibly remove it completely
+        builder.addFlow('fragment', new _ExpressionNode.default('if ( DiffuseColor.a <= AlphaTest ) { discard; }'));
+      }
+      return {
+        colorNode: colorNode,
+        diffuseColorNode: diffuseColorNode
+      };
+    }
+  }, {
+    key: "generateLight",
+    value: function generateLight(builder, {
+      diffuseColorNode: diffuseColorNode,
+      lightingModelNode: lightingModelNode,
+      lightsNode = builder.lightsNode
+    }) {
+      // < ANALYTIC LIGHTS >
+
+      // OUTGOING LIGHT
+
+      var outgoingLightNode = diffuseColorNode.xyz;
+      if (lightsNode && lightsNode.hasLight !== false) outgoingLightNode = builder.addFlow('fragment', (0, _ShaderNodeElements.label)((0, _ShaderNodeElements.lightingContext)(lightsNode, lightingModelNode), 'Light'));
+      return outgoingLightNode;
+    }
+  }, {
+    key: "generateOutput",
+    value: function generateOutput(builder, {
+      diffuseColorNode: diffuseColorNode,
+      outgoingLightNode: outgoingLightNode
+    }) {
+      // OUTPUT
+
+      var outputNode = (0, _ShaderNodeElements.vec4)(outgoingLightNode, diffuseColorNode.a);
+
+      // ENCODING
+
+      outputNode = (0, _ShaderNodeElements.colorSpace)(outputNode, builder.renderer.outputEncoding);
+
+      // FOG
+
+      if (builder.fogNode) outputNode = (0, _ShaderNodeElements.vec4)((0, _ShaderNodeElements.vec3)(builder.fogNode.mix(outputNode)), outputNode.w);
+
+      // RESULT
+
+      builder.addFlow('fragment', (0, _ShaderNodeElements.label)(outputNode, 'Output'));
+      return outputNode;
+    }
+  }, {
+    key: "setDefaultValues",
+    value: function setDefaultValues(values) {
+      // This approach is to reuse the native refreshUniforms*
+      // and turn available the use of features like transmission and environment in core
+
+      for (var property in values) {
+        var value = values[property];
+        if (this[property] === undefined) {
+          this[property] = value?.clone?.() || value;
+        }
+      }
+      Object.assign(this.defines, values.defines);
+    }
+  }, {
+    key: "toJSON",
+    value: function toJSON(meta) {
+      var isRoot = meta === undefined || typeof meta === 'string';
+      if (isRoot) {
+        meta = {
+          textures: {},
+          images: {},
+          nodes: {}
+        };
+      }
+      var data = _three.Material.prototype.toJSON.call(this, meta);
+      var nodeKeys = (0, _NodeUtils.getNodesKeys)(this);
+      data.inputNodes = {};
+      var _iterator = _createForOfIteratorHelper(nodeKeys),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var name = _step.value;
+          data.inputNodes[name] = this[name].toJSON(meta).uuid;
+        }
+
+        // TODO: Copied from Object3D.toJSON
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+      function extractFromCache(cache) {
+        var values = [];
+        for (var key in cache) {
+          var _data = cache[key];
+          delete _data.metadata;
+          values.push(_data);
+        }
+        return values;
+      }
+      if (isRoot) {
+        var textures = extractFromCache(meta.textures);
+        var images = extractFromCache(meta.images);
+        var nodes = extractFromCache(meta.nodes);
+        if (textures.length > 0) data.textures = textures;
+        if (images.length > 0) data.images = images;
+        if (nodes.length > 0) data.nodes = nodes;
+      }
+      return data;
+    }
+  }], [{
+    key: "fromMaterial",
+    value: function fromMaterial( /*material*/) {}
+  }]);
+  return NodeMaterial;
+}(_three.ShaderMaterial);
+var _default = NodeMaterial;
+exports.default = _default;
+},{"three":"../node_modules/three/build/three.module.js","../core/NodeUtils.js":"../node_modules/three/examples/jsm/nodes/core/NodeUtils.js","../core/ExpressionNode.js":"../node_modules/three/examples/jsm/nodes/core/ExpressionNode.js","../shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js"}],"../node_modules/three/examples/jsm/nodes/materials/LineBasicNodeMaterial.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _NodeMaterial2 = _interopRequireDefault(require("./NodeMaterial.js"));
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var defaultValues = new _three.LineBasicMaterial();
+var LineBasicNodeMaterial = /*#__PURE__*/function (_NodeMaterial) {
+  _inherits(LineBasicNodeMaterial, _NodeMaterial);
+  var _super = _createSuper(LineBasicNodeMaterial);
+  function LineBasicNodeMaterial(parameters) {
+    var _this;
+    _classCallCheck(this, LineBasicNodeMaterial);
+    _this = _super.call(this);
+    _this.isLineBasicNodeMaterial = true;
+    _this.colorNode = null;
+    _this.opacityNode = null;
+    _this.alphaTestNode = null;
+    _this.lightNode = null;
+    _this.positionNode = null;
+    _this.setDefaultValues(defaultValues);
+    _this.setValues(parameters);
+    return _this;
+  }
+  _createClass(LineBasicNodeMaterial, [{
+    key: "copy",
+    value: function copy(source) {
+      this.colorNode = source.colorNode;
+      this.opacityNode = source.opacityNode;
+      this.alphaTestNode = source.alphaTestNode;
+      this.lightNode = source.lightNode;
+      this.positionNode = source.positionNode;
+      return _get(_getPrototypeOf(LineBasicNodeMaterial.prototype), "copy", this).call(this, source);
+    }
+  }]);
+  return LineBasicNodeMaterial;
+}(_NodeMaterial2.default);
+var _default = LineBasicNodeMaterial;
+exports.default = _default;
+},{"./NodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/NodeMaterial.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/materials/MeshBasicNodeMaterial.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _NodeMaterial2 = _interopRequireDefault(require("./NodeMaterial.js"));
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var defaultValues = new _three.MeshBasicMaterial();
+var MeshBasicNodeMaterial = /*#__PURE__*/function (_NodeMaterial) {
+  _inherits(MeshBasicNodeMaterial, _NodeMaterial);
+  var _super = _createSuper(MeshBasicNodeMaterial);
+  function MeshBasicNodeMaterial(parameters) {
+    var _this;
+    _classCallCheck(this, MeshBasicNodeMaterial);
+    _this = _super.call(this);
+    _this.isMeshBasicNodeMaterial = true;
+    _this.lights = true;
+    _this.colorNode = null;
+    _this.opacityNode = null;
+    _this.alphaTestNode = null;
+    _this.lightNode = null;
+    _this.positionNode = null;
+    _this.setDefaultValues(defaultValues);
+    _this.setValues(parameters);
+    return _this;
+  }
+  _createClass(MeshBasicNodeMaterial, [{
+    key: "copy",
+    value: function copy(source) {
+      this.colorNode = source.colorNode;
+      this.opacityNode = source.opacityNode;
+      this.alphaTestNode = source.alphaTestNode;
+      this.lightNode = source.lightNode;
+      this.positionNode = source.positionNode;
+      return _get(_getPrototypeOf(MeshBasicNodeMaterial.prototype), "copy", this).call(this, source);
+    }
+  }]);
+  return MeshBasicNodeMaterial;
+}(_NodeMaterial2.default);
+var _default = MeshBasicNodeMaterial;
+exports.default = _default;
+},{"./NodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/NodeMaterial.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/materials/MeshStandardNodeMaterial.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _NodeMaterial2 = _interopRequireDefault(require("./NodeMaterial.js"));
+var _ShaderNodeElements = require("../shadernode/ShaderNodeElements.js");
+var _LightsNode = _interopRequireDefault(require("../lighting/LightsNode.js"));
+var _EnvironmentNode = _interopRequireDefault(require("../lighting/EnvironmentNode.js"));
+var _AONode = _interopRequireDefault(require("../lighting/AONode.js"));
+var _getRoughness = _interopRequireDefault(require("../functions/material/getRoughness.js"));
+var _PhysicalLightingModel = _interopRequireDefault(require("../functions/PhysicalLightingModel.js"));
+var _NormalMapNode = _interopRequireDefault(require("../display/NormalMapNode.js"));
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var defaultValues = new _three.MeshStandardMaterial();
+var MeshStandardNodeMaterial = /*#__PURE__*/function (_NodeMaterial) {
+  _inherits(MeshStandardNodeMaterial, _NodeMaterial);
+  var _super = _createSuper(MeshStandardNodeMaterial);
+  function MeshStandardNodeMaterial(parameters) {
+    var _this;
+    _classCallCheck(this, MeshStandardNodeMaterial);
+    _this = _super.call(this);
+    _this.isMeshStandardNodeMaterial = true;
+    _this.colorNode = null;
+    _this.opacityNode = null;
+    _this.alphaTestNode = null;
+    _this.normalNode = null;
+    _this.emissiveNode = null;
+    _this.metalnessNode = null;
+    _this.roughnessNode = null;
+    _this.envNode = null;
+    _this.lightsNode = null;
+    _this.positionNode = null;
+    _this.setDefaultValues(defaultValues);
+    _this.setValues(parameters);
+    return _this;
+  }
+  _createClass(MeshStandardNodeMaterial, [{
+    key: "build",
+    value: function build(builder) {
+      this.generatePosition(builder);
+      var colorNodes = this.generateDiffuseColor(builder);
+      var colorNode = colorNodes.colorNode;
+      var diffuseColorNode = colorNodes.diffuseColorNode;
+      var envNode = this.envNode || builder.scene.environmentNode;
+      diffuseColorNode = this.generateStandardMaterial(builder, {
+        colorNode: colorNode,
+        diffuseColorNode: diffuseColorNode
+      });
+      if (this.lightsNode) builder.lightsNode = this.lightsNode;
+      var materialLightsNode = [];
+      if (envNode) {
+        materialLightsNode.push(new _EnvironmentNode.default(envNode));
+      }
+      if (builder.material.aoMap) {
+        materialLightsNode.push(new _AONode.default((0, _ShaderNodeElements.texture)(builder.material.aoMap)));
+      }
+      if (materialLightsNode.length > 0) {
+        builder.lightsNode = new _LightsNode.default([].concat(_toConsumableArray(builder.lightsNode.lightNodes), materialLightsNode));
+      }
+      var outgoingLightNode = this.generateLight(builder, {
+        diffuseColorNode: diffuseColorNode,
+        lightingModelNode: _PhysicalLightingModel.default
+      });
+      this.generateOutput(builder, {
+        diffuseColorNode: diffuseColorNode,
+        outgoingLightNode: outgoingLightNode
+      });
+    }
+  }, {
+    key: "generateStandardMaterial",
+    value: function generateStandardMaterial(builder, {
+      colorNode: colorNode,
+      diffuseColorNode: diffuseColorNode
+    }) {
+      var material = builder.material;
+
+      // METALNESS
+
+      var metalnessNode = this.metalnessNode ? (0, _ShaderNodeElements.float)(this.metalnessNode) : _ShaderNodeElements.materialMetalness;
+      metalnessNode = builder.addFlow('fragment', (0, _ShaderNodeElements.label)(metalnessNode, 'Metalness'));
+      builder.addFlow('fragment', (0, _ShaderNodeElements.assign)(diffuseColorNode, (0, _ShaderNodeElements.vec4)((0, _ShaderNodeElements.mul)(diffuseColorNode.rgb, (0, _ShaderNodeElements.invert)(metalnessNode)), diffuseColorNode.a)));
+
+      // ROUGHNESS
+
+      var roughnessNode = this.roughnessNode ? (0, _ShaderNodeElements.float)(this.roughnessNode) : _ShaderNodeElements.materialRoughness;
+      roughnessNode = _getRoughness.default.call({
+        roughness: roughnessNode
+      });
+      builder.addFlow('fragment', (0, _ShaderNodeElements.label)(roughnessNode, 'Roughness'));
+
+      // SPECULAR COLOR
+
+      var specularColorNode = (0, _ShaderNodeElements.mix)((0, _ShaderNodeElements.vec3)(0.04), colorNode.rgb, metalnessNode);
+      builder.addFlow('fragment', (0, _ShaderNodeElements.label)(specularColorNode, 'SpecularColor'));
+
+      // NORMAL VIEW
+
+      var normalNode = this.normalNode ? (0, _ShaderNodeElements.vec3)(this.normalNode) : material.normalMap ? new _NormalMapNode.default((0, _ShaderNodeElements.texture)(material.normalMap), (0, _ShaderNodeElements.uniform)(material.normalScale)) : _ShaderNodeElements.normalView;
+      builder.addFlow('fragment', (0, _ShaderNodeElements.label)(normalNode, 'TransformedNormalView'));
+      return diffuseColorNode;
+    }
+  }, {
+    key: "generateLight",
+    value: function generateLight(builder, {
+      diffuseColorNode: diffuseColorNode,
+      lightingModelNode: lightingModelNode,
+      lightsNode = builder.lightsNode
+    }) {
+      var renderer = builder.renderer;
+
+      // OUTGOING LIGHT
+
+      var outgoingLightNode = _get(_getPrototypeOf(MeshStandardNodeMaterial.prototype), "generateLight", this).call(this, builder, {
+        diffuseColorNode: diffuseColorNode,
+        lightingModelNode: lightingModelNode,
+        lightsNode: lightsNode
+      });
+
+      // EMISSIVE
+
+      outgoingLightNode = (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.vec3)(this.emissiveNode || _ShaderNodeElements.materialEmissive), outgoingLightNode);
+
+      // TONE MAPPING
+
+      if (renderer.toneMappingNode) outgoingLightNode = (0, _ShaderNodeElements.context)(renderer.toneMappingNode, {
+        color: outgoingLightNode
+      });
+      return outgoingLightNode;
+    }
+  }, {
+    key: "copy",
+    value: function copy(source) {
+      this.colorNode = source.colorNode;
+      this.opacityNode = source.opacityNode;
+      this.alphaTestNode = source.alphaTestNode;
+      this.normalNode = source.normalNode;
+      this.emissiveNode = source.emissiveNode;
+      this.metalnessNode = source.metalnessNode;
+      this.roughnessNode = source.roughnessNode;
+      this.envNode = source.envNode;
+      this.lightsNode = source.lightsNode;
+      this.positionNode = source.positionNode;
+      return _get(_getPrototypeOf(MeshStandardNodeMaterial.prototype), "copy", this).call(this, source);
+    }
+  }]);
+  return MeshStandardNodeMaterial;
+}(_NodeMaterial2.default);
+exports.default = MeshStandardNodeMaterial;
+},{"./NodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/NodeMaterial.js","../shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js","../lighting/LightsNode.js":"../node_modules/three/examples/jsm/nodes/lighting/LightsNode.js","../lighting/EnvironmentNode.js":"../node_modules/three/examples/jsm/nodes/lighting/EnvironmentNode.js","../lighting/AONode.js":"../node_modules/three/examples/jsm/nodes/lighting/AONode.js","../functions/material/getRoughness.js":"../node_modules/three/examples/jsm/nodes/functions/material/getRoughness.js","../functions/PhysicalLightingModel.js":"../node_modules/three/examples/jsm/nodes/functions/PhysicalLightingModel.js","../display/NormalMapNode.js":"../node_modules/three/examples/jsm/nodes/display/NormalMapNode.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/materials/MeshPhysicalNodeMaterial.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _MeshStandardNodeMaterial = _interopRequireDefault(require("./MeshStandardNodeMaterial.js"));
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var defaultValues = new _three.MeshPhysicalMaterial();
+var MeshPhysicalNodeMaterial = /*#__PURE__*/function (_MeshStandardNodeMate) {
+  _inherits(MeshPhysicalNodeMaterial, _MeshStandardNodeMate);
+  var _super = _createSuper(MeshPhysicalNodeMaterial);
+  function MeshPhysicalNodeMaterial(parameters) {
+    var _this;
+    _classCallCheck(this, MeshPhysicalNodeMaterial);
+    _this = _super.call(this);
+    _this.isMeshPhysicalNodeMaterial = true;
+    _this.clearcoatNode = null;
+    _this.clearcoatRoughnessNode = null;
+    _this.clearcoatNormalNode = null;
+    _this.sheenNode = null;
+    _this.sheenRoughnessNode = null;
+    _this.iridescenceNode = null;
+    _this.iridescenceIORNode = null;
+    _this.iridescenceThicknessNode = null;
+    _this.specularIntensityNode = null;
+    _this.specularColorNode = null;
+    _this.transmissionNode = null;
+    _this.thicknessNode = null;
+    _this.attenuationDistanceNode = null;
+    _this.attenuationColorNode = null;
+    _this.sheen = 0;
+    _this.clearcoat = 0;
+    _this.iridescence = 0;
+    _this.transmission = 0;
+    _this.setDefaultValues(defaultValues);
+    _this.setValues(parameters);
+    return _this;
+  }
+  _createClass(MeshPhysicalNodeMaterial, [{
+    key: "copy",
+    value: function copy(source) {
+      this.clearcoatNode = source.clearcoatNode;
+      this.clearcoatRoughnessNode = source.clearcoatRoughnessNode;
+      this.clearcoatNormalNode = source.clearcoatNormalNode;
+      this.sheenNode = source.sheenNode;
+      this.sheenRoughnessNode = source.sheenRoughnessNode;
+      this.iridescenceNode = source.iridescenceNode;
+      this.iridescenceIORNode = source.iridescenceIORNode;
+      this.iridescenceThicknessNode = source.iridescenceThicknessNode;
+      this.specularIntensityNode = source.specularIntensityNode;
+      this.specularColorNode = source.specularColorNode;
+      this.transmissionNode = source.transmissionNode;
+      this.thicknessNode = source.thicknessNode;
+      this.attenuationDistanceNode = source.attenuationDistanceNode;
+      this.attenuationColorNode = source.attenuationColorNode;
+      return _get(_getPrototypeOf(MeshPhysicalNodeMaterial.prototype), "copy", this).call(this, source);
+    }
+  }]);
+  return MeshPhysicalNodeMaterial;
+}(_MeshStandardNodeMaterial.default);
+exports.default = MeshPhysicalNodeMaterial;
+},{"./MeshStandardNodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/MeshStandardNodeMaterial.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/materials/PointsNodeMaterial.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _NodeMaterial2 = _interopRequireDefault(require("./NodeMaterial.js"));
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var defaultValues = new _three.PointsMaterial();
+var PointsNodeMaterial = /*#__PURE__*/function (_NodeMaterial) {
+  _inherits(PointsNodeMaterial, _NodeMaterial);
+  var _super = _createSuper(PointsNodeMaterial);
+  function PointsNodeMaterial(parameters) {
+    var _this;
+    _classCallCheck(this, PointsNodeMaterial);
+    _this = _super.call(this);
+    _this.isPointsNodeMaterial = true;
+    _this.transparent = true;
+    _this.colorNode = null;
+    _this.opacityNode = null;
+    _this.alphaTestNode = null;
+    _this.lightNode = null;
+    _this.sizeNode = null;
+    _this.positionNode = null;
+    _this.setDefaultValues(defaultValues);
+    _this.setValues(parameters);
+    return _this;
+  }
+  _createClass(PointsNodeMaterial, [{
+    key: "copy",
+    value: function copy(source) {
+      this.colorNode = source.colorNode;
+      this.opacityNode = source.opacityNode;
+      this.alphaTestNode = source.alphaTestNode;
+      this.lightNode = source.lightNode;
+      this.sizeNode = source.sizeNode;
+      this.positionNode = source.positionNode;
+      return _get(_getPrototypeOf(PointsNodeMaterial.prototype), "copy", this).call(this, source);
+    }
+  }]);
+  return PointsNodeMaterial;
+}(_NodeMaterial2.default);
+var _default = PointsNodeMaterial;
+exports.default = _default;
+},{"./NodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/NodeMaterial.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/materials/SpriteNodeMaterial.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _NodeMaterial2 = _interopRequireDefault(require("./NodeMaterial.js"));
+var _three = require("three");
+var _ShaderNodeElements = require("../shadernode/ShaderNodeElements.js");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var defaultValues = new _three.SpriteMaterial();
+var SpriteNodeMaterial = /*#__PURE__*/function (_NodeMaterial) {
+  _inherits(SpriteNodeMaterial, _NodeMaterial);
+  var _super = _createSuper(SpriteNodeMaterial);
+  function SpriteNodeMaterial(parameters) {
+    var _this;
+    _classCallCheck(this, SpriteNodeMaterial);
+    _this = _super.call(this);
+    _this.isSpriteNodeMaterial = true;
+    _this.lights = true;
+    _this.colorNode = null;
+    _this.opacityNode = null;
+    _this.alphaTestNode = null;
+    _this.lightNode = null;
+    _this.positionNode = null;
+    _this.rotationNode = null;
+    _this.scaleNode = null;
+    _this.setDefaultValues(defaultValues);
+    _this.setValues(parameters);
+    return _this;
+  }
+  _createClass(SpriteNodeMaterial, [{
+    key: "generatePosition",
+    value: function generatePosition(builder) {
+      // < VERTEX STAGE >
+
+      var positionNode = this.positionNode,
+        rotationNode = this.rotationNode,
+        scaleNode = this.scaleNode;
+      var vertex = _ShaderNodeElements.positionLocal;
+      var mvPosition = (0, _ShaderNodeElements.mul)(_ShaderNodeElements.modelViewMatrix, positionNode ? (0, _ShaderNodeElements.vec4)(positionNode.xyz, 1) : (0, _ShaderNodeElements.vec4)(0, 0, 0, 1));
+      var scale = (0, _ShaderNodeElements.vec2)((0, _ShaderNodeElements.length)((0, _ShaderNodeElements.vec3)(_ShaderNodeElements.modelWorldMatrix[0].x, _ShaderNodeElements.modelWorldMatrix[0].y, _ShaderNodeElements.modelWorldMatrix[0].z)), (0, _ShaderNodeElements.length)((0, _ShaderNodeElements.vec3)(_ShaderNodeElements.modelWorldMatrix[1].x, _ShaderNodeElements.modelWorldMatrix[1].y, _ShaderNodeElements.modelWorldMatrix[1].z)));
+      if (scaleNode !== null) {
+        scale = (0, _ShaderNodeElements.mul)(scale, scaleNode);
+      }
+      var alignedPosition = vertex.xy;
+      if (builder.object.center?.isVector2 === true) {
+        alignedPosition = (0, _ShaderNodeElements.sub)(alignedPosition, (0, _ShaderNodeElements.sub)((0, _ShaderNodeElements.uniform)(builder.object.center), (0, _ShaderNodeElements.vec2)(0.5)));
+      }
+      alignedPosition = (0, _ShaderNodeElements.mul)(alignedPosition, scale);
+      var rotation = rotationNode || _ShaderNodeElements.materialRotation;
+      var rotatedPosition = (0, _ShaderNodeElements.vec2)((0, _ShaderNodeElements.sub)((0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.cos)(rotation), alignedPosition.x), (0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.sin)(rotation), alignedPosition.y)), (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.sin)(rotation), alignedPosition.x), (0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.cos)(rotation), alignedPosition.y)));
+      mvPosition = (0, _ShaderNodeElements.vec4)((0, _ShaderNodeElements.add)(mvPosition.xy, rotatedPosition.xy), mvPosition.z, mvPosition.w);
+      var modelViewProjection = (0, _ShaderNodeElements.mul)(_ShaderNodeElements.cameraProjectionMatrix, mvPosition);
+      builder.context.vertex = vertex;
+      builder.addFlow('vertex', modelViewProjection);
+    }
+  }, {
+    key: "copy",
+    value: function copy(source) {
+      this.colorNode = source.colorNode;
+      this.opacityNode = source.opacityNode;
+      this.alphaTestNode = source.alphaTestNode;
+      this.lightNode = source.lightNode;
+      this.positionNode = source.positionNode;
+      this.rotationNode = source.rotationNode;
+      this.scaleNode = source.scaleNode;
+      return _get(_getPrototypeOf(SpriteNodeMaterial.prototype), "copy", this).call(this, source);
+    }
+  }]);
+  return SpriteNodeMaterial;
+}(_NodeMaterial2.default);
+var _default = SpriteNodeMaterial;
+exports.default = _default;
+},{"./NodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/NodeMaterial.js","three":"../node_modules/three/build/three.module.js","../shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js"}],"../node_modules/three/examples/jsm/nodes/materials/Materials.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "LineBasicNodeMaterial", {
+  enumerable: true,
+  get: function () {
+    return _LineBasicNodeMaterial.default;
+  }
+});
+Object.defineProperty(exports, "MeshBasicNodeMaterial", {
+  enumerable: true,
+  get: function () {
+    return _MeshBasicNodeMaterial.default;
+  }
+});
+Object.defineProperty(exports, "MeshPhysicalNodeMaterial", {
+  enumerable: true,
+  get: function () {
+    return _MeshPhysicalNodeMaterial.default;
+  }
+});
+Object.defineProperty(exports, "MeshStandardNodeMaterial", {
+  enumerable: true,
+  get: function () {
+    return _MeshStandardNodeMaterial.default;
+  }
+});
+Object.defineProperty(exports, "NodeMaterial", {
+  enumerable: true,
+  get: function () {
+    return _NodeMaterial.default;
+  }
+});
+Object.defineProperty(exports, "PointsNodeMaterial", {
+  enumerable: true,
+  get: function () {
+    return _PointsNodeMaterial.default;
+  }
+});
+Object.defineProperty(exports, "SpriteNodeMaterial", {
+  enumerable: true,
+  get: function () {
+    return _SpriteNodeMaterial.default;
+  }
+});
+var _NodeMaterial = _interopRequireDefault(require("./NodeMaterial.js"));
+var _LineBasicNodeMaterial = _interopRequireDefault(require("./LineBasicNodeMaterial.js"));
+var _MeshBasicNodeMaterial = _interopRequireDefault(require("./MeshBasicNodeMaterial.js"));
+var _MeshStandardNodeMaterial = _interopRequireDefault(require("./MeshStandardNodeMaterial.js"));
+var _MeshPhysicalNodeMaterial = _interopRequireDefault(require("./MeshPhysicalNodeMaterial.js"));
+var _PointsNodeMaterial = _interopRequireDefault(require("./PointsNodeMaterial.js"));
+var _SpriteNodeMaterial = _interopRequireDefault(require("./SpriteNodeMaterial.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+_NodeMaterial.default.fromMaterial = function (material) {
+  var materialLib = {
+    NodeMaterial: _NodeMaterial.default,
+    LineBasicNodeMaterial: _LineBasicNodeMaterial.default,
+    MeshBasicNodeMaterial: _MeshBasicNodeMaterial.default,
+    MeshStandardNodeMaterial: _MeshStandardNodeMaterial.default,
+    MeshPhysicalNodeMaterial: _MeshPhysicalNodeMaterial.default,
+    PointsNodeMaterial: _PointsNodeMaterial.default,
+    SpriteNodeMaterial: _SpriteNodeMaterial.default
+  };
+  var type = material.type.replace('Material', 'NodeMaterial');
+  if (materialLib[type] === undefined) {
+    return material; // is already a node material or cannot be converted
+  }
+
+  var nodeMaterial = new materialLib[type](material);
+  for (var key in material) {
+    if (nodeMaterial[key] === undefined) {
+      nodeMaterial[key] = material[key]; // currently this is needed only for material.alphaTest
+    }
+  }
+
+  return nodeMaterial;
+};
+},{"./NodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/NodeMaterial.js","./LineBasicNodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/LineBasicNodeMaterial.js","./MeshBasicNodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/MeshBasicNodeMaterial.js","./MeshStandardNodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/MeshStandardNodeMaterial.js","./MeshPhysicalNodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/MeshPhysicalNodeMaterial.js","./PointsNodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/PointsNodeMaterial.js","./SpriteNodeMaterial.js":"../node_modules/three/examples/jsm/nodes/materials/SpriteNodeMaterial.js"}],"../node_modules/three/examples/jsm/nodes/loaders/NodeMaterialLoader.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _three = require("three");
+var _Materials = require("../materials/Materials.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var superFromTypeFunction = _three.MaterialLoader.createMaterialFromType;
+_three.MaterialLoader.createMaterialFromType = function (type) {
+  var materialLib = {
+    NodeMaterial: _Materials.NodeMaterial,
+    LineBasicNodeMaterial: _Materials.LineBasicNodeMaterial,
+    MeshBasicNodeMaterial: _Materials.MeshBasicNodeMaterial,
+    MeshStandardNodeMaterial: _Materials.MeshStandardNodeMaterial,
+    MeshPhysicalNodeMaterial: _Materials.MeshPhysicalNodeMaterial,
+    PointsNodeMaterial: _Materials.PointsNodeMaterial,
+    SpriteNodeMaterial: _Materials.SpriteNodeMaterial
+  };
+  if (materialLib[type] !== undefined) {
+    return new materialLib[type]();
+  }
+  return superFromTypeFunction.call(this, type);
+};
+var NodeMaterialLoader = /*#__PURE__*/function (_MaterialLoader) {
+  _inherits(NodeMaterialLoader, _MaterialLoader);
+  var _super = _createSuper(NodeMaterialLoader);
+  function NodeMaterialLoader(manager) {
+    var _this;
+    _classCallCheck(this, NodeMaterialLoader);
+    _this = _super.call(this, manager);
+    _this.nodes = {};
+    return _this;
+  }
+  _createClass(NodeMaterialLoader, [{
+    key: "parse",
+    value: function parse(json) {
+      var material = _get(_getPrototypeOf(NodeMaterialLoader.prototype), "parse", this).call(this, json);
+      var nodes = this.nodes;
+      var inputNodes = json.inputNodes;
+      for (var property in inputNodes) {
+        var uuid = inputNodes[property];
+        material[property] = nodes[uuid];
+      }
+      return material;
+    }
+  }, {
+    key: "setNodes",
+    value: function setNodes(value) {
+      this.nodes = value;
+      return this;
+    }
+  }]);
+  return NodeMaterialLoader;
+}(_three.MaterialLoader);
+var _default = NodeMaterialLoader;
+exports.default = _default;
+},{"three":"../node_modules/three/build/three.module.js","../materials/Materials.js":"../node_modules/three/examples/jsm/nodes/materials/Materials.js"}],"../node_modules/three/examples/jsm/nodes/loaders/NodeObjectLoader.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _NodeLoader = _interopRequireDefault(require("./NodeLoader.js"));
+var _NodeMaterialLoader = _interopRequireDefault(require("./NodeMaterialLoader.js"));
+var _three = require("three");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var NodeObjectLoader = /*#__PURE__*/function (_ObjectLoader) {
+  _inherits(NodeObjectLoader, _ObjectLoader);
+  var _super = _createSuper(NodeObjectLoader);
+  function NodeObjectLoader(manager) {
+    var _this;
+    _classCallCheck(this, NodeObjectLoader);
+    _this = _super.call(this, manager);
+    _this._nodesJSON = null;
+    return _this;
+  }
+  _createClass(NodeObjectLoader, [{
+    key: "parse",
+    value: function parse(json, onLoad) {
+      this._nodesJSON = json.nodes;
+      var data = _get(_getPrototypeOf(NodeObjectLoader.prototype), "parse", this).call(this, json, onLoad);
+      this._nodesJSON = null; // dispose
+
+      return data;
+    }
+  }, {
+    key: "parseNodes",
+    value: function parseNodes(json, textures) {
+      if (json !== undefined) {
+        var loader = new _NodeLoader.default();
+        loader.setTextures(textures);
+        return loader.parseNodes(json);
+      }
+      return {};
+    }
+  }, {
+    key: "parseMaterials",
+    value: function parseMaterials(json, textures) {
+      var materials = {};
+      if (json !== undefined) {
+        var nodes = this.parseNodes(this._nodesJSON, textures);
+        var loader = new _NodeMaterialLoader.default();
+        loader.setTextures(textures);
+        loader.setNodes(nodes);
+        for (var i = 0, l = json.length; i < l; i++) {
+          var data = json[i];
+          materials[data.uuid] = loader.parse(data);
+        }
+      }
+      return materials;
+    }
+  }]);
+  return NodeObjectLoader;
+}(_three.ObjectLoader);
+var _default = NodeObjectLoader;
+exports.default = _default;
+},{"./NodeLoader.js":"../node_modules/three/examples/jsm/nodes/loaders/NodeLoader.js","./NodeMaterialLoader.js":"../node_modules/three/examples/jsm/nodes/loaders/NodeMaterialLoader.js","three":"../node_modules/three/build/three.module.js"}],"../node_modules/three/examples/jsm/nodes/core/NodeParser.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+var NodeParser = /*#__PURE__*/function () {
+  function NodeParser() {
+    _classCallCheck(this, NodeParser);
+  }
+  _createClass(NodeParser, [{
+    key: "parseFunction",
+    value: function parseFunction( /*source*/
+    ) {
+      console.warn('Abstract function.');
+    }
+  }]);
+  return NodeParser;
+}();
+var _default = NodeParser;
+exports.default = _default;
+},{}],"../node_modules/three/examples/jsm/nodes/core/NodeFunction.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+var NodeFunction = /*#__PURE__*/function () {
+  function NodeFunction(type, inputs, name = '', presicion = '') {
+    _classCallCheck(this, NodeFunction);
+    this.type = type;
+    this.inputs = inputs;
+    this.name = name;
+    this.presicion = presicion;
+  }
+  _createClass(NodeFunction, [{
+    key: "getCode",
+    value: function getCode( /*name = this.name*/
+    ) {
+      console.warn('Abstract function.');
+    }
+  }]);
+  return NodeFunction;
+}();
+NodeFunction.isNodeFunction = true;
+var _default = NodeFunction;
+exports.default = _default;
+},{}],"../node_modules/three/examples/jsm/nodes/parsers/WGSLNodeFunction.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _NodeFunction2 = _interopRequireDefault(require("../core/NodeFunction.js"));
+var _NodeFunctionInput = _interopRequireDefault(require("../core/NodeFunctionInput.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var declarationRegexp = /^[fn]*\s*([a-z_0-9]+)?\s*\(([\s\S]*?)\)\s*[\-\>]*\s*([a-z_0-9]+)?/i;
+var propertiesRegexp = /[a-z_0-9]+/ig;
+var wgslTypeLib = {
+  f32: 'float'
+};
+var parse = function parse(source) {
+  source = source.trim();
+  var declaration = source.match(declarationRegexp);
+  if (declaration !== null && declaration.length === 4) {
+    // tokenizer
+
+    var inputsCode = declaration[2];
+    var propsMatches = [];
+    var nameMatch = null;
+    while ((nameMatch = propertiesRegexp.exec(inputsCode)) !== null) {
+      propsMatches.push(nameMatch);
+    }
+
+    // parser
+
+    var inputs = [];
+    var i = 0;
+    while (i < propsMatches.length) {
+      // default
+
+      var _name = propsMatches[i++][0];
+      var _type = propsMatches[i++][0];
+      _type = wgslTypeLib[_type] || _type;
+
+      // precision
+
+      if (i < propsMatches.length && /^[fui]\d{2}$/.test(propsMatches[i][0]) === true) i++;
+
+      // add input
+
+      inputs.push(new _NodeFunctionInput.default(_type, _name));
+    }
+
+    //
+
+    var blockCode = source.substring(declaration[0].length);
+    var name = declaration[1] !== undefined ? declaration[1] : '';
+    var type = declaration[3] || 'void';
+    return {
+      type: type,
+      inputs: inputs,
+      name: name,
+      inputsCode: inputsCode,
+      blockCode: blockCode
+    };
+  } else {
+    throw new Error('FunctionNode: Function is not a WGSL code.');
+  }
+};
+var WGSLNodeFunction = /*#__PURE__*/function (_NodeFunction) {
+  _inherits(WGSLNodeFunction, _NodeFunction);
+  var _super = _createSuper(WGSLNodeFunction);
+  function WGSLNodeFunction(source) {
+    var _this;
+    _classCallCheck(this, WGSLNodeFunction);
+    var _parse = parse(source),
+      type = _parse.type,
+      inputs = _parse.inputs,
+      name = _parse.name,
+      inputsCode = _parse.inputsCode,
+      blockCode = _parse.blockCode;
+    _this = _super.call(this, type, inputs, name);
+    _this.inputsCode = inputsCode;
+    _this.blockCode = blockCode;
+    return _this;
+  }
+  _createClass(WGSLNodeFunction, [{
+    key: "getCode",
+    value: function getCode(name = this.name) {
+      var type = this.type !== 'void' ? '-> ' + this.type : '';
+      return "fn ".concat(name, " ( ").concat(this.inputsCode.trim(), " ) ").concat(type) + this.blockCode;
+    }
+  }]);
+  return WGSLNodeFunction;
+}(_NodeFunction2.default);
+var _default = WGSLNodeFunction;
+exports.default = _default;
+},{"../core/NodeFunction.js":"../node_modules/three/examples/jsm/nodes/core/NodeFunction.js","../core/NodeFunctionInput.js":"../node_modules/three/examples/jsm/nodes/core/NodeFunctionInput.js"}],"../node_modules/three/examples/jsm/nodes/parsers/WGSLNodeParser.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _NodeParser2 = _interopRequireDefault(require("../core/NodeParser.js"));
+var _WGSLNodeFunction = _interopRequireDefault(require("./WGSLNodeFunction.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var WGSLNodeParser = /*#__PURE__*/function (_NodeParser) {
+  _inherits(WGSLNodeParser, _NodeParser);
+  var _super = _createSuper(WGSLNodeParser);
+  function WGSLNodeParser() {
+    _classCallCheck(this, WGSLNodeParser);
+    return _super.apply(this, arguments);
+  }
+  _createClass(WGSLNodeParser, [{
+    key: "parseFunction",
+    value: function parseFunction(source) {
+      return new _WGSLNodeFunction.default(source);
+    }
+  }]);
+  return WGSLNodeParser;
+}(_NodeParser2.default);
+var _default = WGSLNodeParser;
+exports.default = _default;
+},{"../core/NodeParser.js":"../node_modules/three/examples/jsm/nodes/core/NodeParser.js","./WGSLNodeFunction.js":"../node_modules/three/examples/jsm/nodes/parsers/WGSLNodeFunction.js"}],"../node_modules/three/examples/jsm/nodes/parsers/GLSLNodeFunction.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _NodeFunction2 = _interopRequireDefault(require("../core/NodeFunction.js"));
+var _NodeFunctionInput = _interopRequireDefault(require("../core/NodeFunctionInput.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var declarationRegexp = /^\s*(highp|mediump|lowp)?\s*([a-z_0-9]+)\s*([a-z_0-9]+)?\s*\(([\s\S]*?)\)/i;
+var propertiesRegexp = /[a-z_0-9]+/ig;
+var pragmaMain = '#pragma main';
+var parse = function parse(source) {
+  source = source.trim();
+  var pragmaMainIndex = source.indexOf(pragmaMain);
+  var mainCode = pragmaMainIndex !== -1 ? source.slice(pragmaMainIndex + pragmaMain.length) : source;
+  var declaration = mainCode.match(declarationRegexp);
+  if (declaration !== null && declaration.length === 5) {
+    // tokenizer
+
+    var inputsCode = declaration[4];
+    var propsMatches = [];
+    var nameMatch = null;
+    while ((nameMatch = propertiesRegexp.exec(inputsCode)) !== null) {
+      propsMatches.push(nameMatch);
+    }
+
+    // parser
+
+    var inputs = [];
+    var i = 0;
+    while (i < propsMatches.length) {
+      var isConst = propsMatches[i][0] === 'const';
+      if (isConst === true) {
+        i++;
+      }
+      var qualifier = propsMatches[i][0];
+      if (qualifier === 'in' || qualifier === 'out' || qualifier === 'inout') {
+        i++;
+      } else {
+        qualifier = '';
+      }
+      var _type = propsMatches[i++][0];
+      var count = Number.parseInt(propsMatches[i][0]);
+      if (Number.isNaN(count) === false) i++;else count = null;
+      var _name = propsMatches[i++][0];
+      inputs.push(new _NodeFunctionInput.default(_type, _name, count, qualifier, isConst));
+    }
+
+    //
+
+    var blockCode = mainCode.substring(declaration[0].length);
+    var name = declaration[3] !== undefined ? declaration[3] : '';
+    var type = declaration[2];
+    var presicion = declaration[1] !== undefined ? declaration[1] : '';
+    var headerCode = pragmaMainIndex !== -1 ? source.slice(0, pragmaMainIndex) : '';
+    return {
+      type: type,
+      inputs: inputs,
+      name: name,
+      presicion: presicion,
+      inputsCode: inputsCode,
+      blockCode: blockCode,
+      headerCode: headerCode
+    };
+  } else {
+    throw new Error('FunctionNode: Function is not a GLSL code.');
+  }
+};
+var GLSLNodeFunction = /*#__PURE__*/function (_NodeFunction) {
+  _inherits(GLSLNodeFunction, _NodeFunction);
+  var _super = _createSuper(GLSLNodeFunction);
+  function GLSLNodeFunction(source) {
+    var _this;
+    _classCallCheck(this, GLSLNodeFunction);
+    var _parse = parse(source),
+      type = _parse.type,
+      inputs = _parse.inputs,
+      name = _parse.name,
+      presicion = _parse.presicion,
+      inputsCode = _parse.inputsCode,
+      blockCode = _parse.blockCode,
+      headerCode = _parse.headerCode;
+    _this = _super.call(this, type, inputs, name, presicion);
+    _this.inputsCode = inputsCode;
+    _this.blockCode = blockCode;
+    _this.headerCode = headerCode;
+    return _this;
+  }
+  _createClass(GLSLNodeFunction, [{
+    key: "getCode",
+    value: function getCode(name = this.name) {
+      var code;
+      var blockCode = this.blockCode;
+      if (blockCode !== '') {
+        var type = this.type,
+          inputsCode = this.inputsCode,
+          headerCode = this.headerCode,
+          presicion = this.presicion;
+        var declarationCode = "".concat(type, " ").concat(name, " ( ").concat(inputsCode.trim(), " )");
+        if (presicion !== '') {
+          declarationCode = "".concat(presicion, " ").concat(declarationCode);
+        }
+        code = headerCode + declarationCode + blockCode;
+      } else {
+        // interface function
+
+        code = '';
+      }
+      return code;
+    }
+  }]);
+  return GLSLNodeFunction;
+}(_NodeFunction2.default);
+var _default = GLSLNodeFunction;
+exports.default = _default;
+},{"../core/NodeFunction.js":"../node_modules/three/examples/jsm/nodes/core/NodeFunction.js","../core/NodeFunctionInput.js":"../node_modules/three/examples/jsm/nodes/core/NodeFunctionInput.js"}],"../node_modules/three/examples/jsm/nodes/parsers/GLSLNodeParser.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _NodeParser2 = _interopRequireDefault(require("../core/NodeParser.js"));
+var _GLSLNodeFunction = _interopRequireDefault(require("./GLSLNodeFunction.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+var GLSLNodeParser = /*#__PURE__*/function (_NodeParser) {
+  _inherits(GLSLNodeParser, _NodeParser);
+  var _super = _createSuper(GLSLNodeParser);
+  function GLSLNodeParser() {
+    _classCallCheck(this, GLSLNodeParser);
+    return _super.apply(this, arguments);
+  }
+  _createClass(GLSLNodeParser, [{
+    key: "parseFunction",
+    value: function parseFunction(source) {
+      return new _GLSLNodeFunction.default(source);
+    }
+  }]);
+  return GLSLNodeParser;
+}(_NodeParser2.default);
+var _default = GLSLNodeParser;
+exports.default = _default;
+},{"../core/NodeParser.js":"../node_modules/three/examples/jsm/nodes/core/NodeParser.js","./GLSLNodeFunction.js":"../node_modules/three/examples/jsm/nodes/parsers/GLSLNodeFunction.js"}],"../node_modules/three/examples/jsm/nodes/materialx/lib/mx_noise.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.mx_worley_noise_vec3 = exports.mx_worley_noise_vec2 = exports.mx_worley_noise_float = exports.mx_perlin_noise_vec3 = exports.mx_perlin_noise_vec2 = exports.mx_perlin_noise_float = exports.mx_noise = exports.mx_fractal_noise_vec4 = exports.mx_fractal_noise_vec3 = exports.mx_fractal_noise_vec2 = exports.mx_fractal_noise_float = exports.mx_cell_noise_float = void 0;
+var _Nodes = require("../../Nodes.js");
+// Original shader code from:
+// https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/libraries/stdlib/genglsl/lib/mx_noise.glsl
+
+var mx_noise = (0, _Nodes.code)("float mx_select(bool b, float t, float f)\n{\n    return b ? t : f;\n}\n\nfloat mx_negate_if(float val, bool b)\n{\n    return b ? -val : val;\n}\n\nint mx_floor(float x)\n{\n    return int(floor(x));\n}\n\n// return mx_floor as well as the fractional remainder\nfloat mx_floorfrac(float x, out int i)\n{\n    i = mx_floor(x);\n    return x - float(i);\n}\n\nfloat mx_bilerp(float v0, float v1, float v2, float v3, float s, float t)\n{\n    float s1 = 1.0 - s;\n    return (1.0 - t) * (v0*s1 + v1*s) + t * (v2*s1 + v3*s);\n}\nvec3 mx_bilerp(vec3 v0, vec3 v1, vec3 v2, vec3 v3, float s, float t)\n{\n    float s1 = 1.0 - s;\n    return (1.0 - t) * (v0*s1 + v1*s) + t * (v2*s1 + v3*s);\n}\nfloat mx_trilerp(float v0, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float s, float t, float r)\n{\n    float s1 = 1.0 - s;\n    float t1 = 1.0 - t;\n    float r1 = 1.0 - r;\n    return (r1*(t1*(v0*s1 + v1*s) + t*(v2*s1 + v3*s)) +\n            r*(t1*(v4*s1 + v5*s) + t*(v6*s1 + v7*s)));\n}\nvec3 mx_trilerp(vec3 v0, vec3 v1, vec3 v2, vec3 v3, vec3 v4, vec3 v5, vec3 v6, vec3 v7, float s, float t, float r)\n{\n    float s1 = 1.0 - s;\n    float t1 = 1.0 - t;\n    float r1 = 1.0 - r;\n    return (r1*(t1*(v0*s1 + v1*s) + t*(v2*s1 + v3*s)) +\n            r*(t1*(v4*s1 + v5*s) + t*(v6*s1 + v7*s)));\n}\n\n// 2 and 3 dimensional gradient functions - perform a dot product against a\n// randomly chosen vector. Note that the gradient vector is not normalized, but\n// this only affects the overal \"scale\" of the result, so we simply account for\n// the scale by multiplying in the corresponding \"perlin\" function.\nfloat mx_gradient_float(uint hash, float x, float y)\n{\n    // 8 possible directions (+-1,+-2) and (+-2,+-1)\n    uint h = hash & 7u;\n    float u = mx_select(h<4u, x, y);\n    float v = 2.0 * mx_select(h<4u, y, x);\n    // compute the dot product with (x,y).\n    return mx_negate_if(u, bool(h&1u)) + mx_negate_if(v, bool(h&2u));\n}\nfloat mx_gradient_float(uint hash, float x, float y, float z)\n{\n    // use vectors pointing to the edges of the cube\n    uint h = hash & 15u;\n    float u = mx_select(h<8u, x, y);\n    float v = mx_select(h<4u, y, mx_select((h==12u)||(h==14u), x, z));\n    return mx_negate_if(u, bool(h&1u)) + mx_negate_if(v, bool(h&2u));\n}\nvec3 mx_gradient_vec3(uvec3 hash, float x, float y)\n{\n    return vec3(mx_gradient_float(hash.x, x, y), mx_gradient_float(hash.y, x, y), mx_gradient_float(hash.z, x, y));\n}\nvec3 mx_gradient_vec3(uvec3 hash, float x, float y, float z)\n{\n    return vec3(mx_gradient_float(hash.x, x, y, z), mx_gradient_float(hash.y, x, y, z), mx_gradient_float(hash.z, x, y, z));\n}\n// Scaling factors to normalize the result of gradients above.\n// These factors were experimentally calculated to be:\n//    2D:   0.6616\n//    3D:   0.9820\nfloat mx_gradient_scale2d(float v) { return 0.6616 * v; }\nfloat mx_gradient_scale3d(float v) { return 0.9820 * v; }\nvec3 mx_gradient_scale2d(vec3 v) { return 0.6616 * v; }\nvec3 mx_gradient_scale3d(vec3 v) { return 0.9820 * v; }\n\n/// Bitwise circular rotation left by k bits (for 32 bit unsigned integers)\nuint mx_rotl32(uint x, int k)\n{\n    return (x<<k) | (x>>(32-k));\n}\n\nvoid mx_bjmix(inout uint a, inout uint b, inout uint c)\n{\n    a -= c; a ^= mx_rotl32(c, 4); c += b;\n    b -= a; b ^= mx_rotl32(a, 6); a += c;\n    c -= b; c ^= mx_rotl32(b, 8); b += a;\n    a -= c; a ^= mx_rotl32(c,16); c += b;\n    b -= a; b ^= mx_rotl32(a,19); a += c;\n    c -= b; c ^= mx_rotl32(b, 4); b += a;\n}\n\n// Mix up and combine the bits of a, b, and c (doesn't change them, but\n// returns a hash of those three original values).\nuint mx_bjfinal(uint a, uint b, uint c)\n{\n    c ^= b; c -= mx_rotl32(b,14);\n    a ^= c; a -= mx_rotl32(c,11);\n    b ^= a; b -= mx_rotl32(a,25);\n    c ^= b; c -= mx_rotl32(b,16);\n    a ^= c; a -= mx_rotl32(c,4);\n    b ^= a; b -= mx_rotl32(a,14);\n    c ^= b; c -= mx_rotl32(b,24);\n    return c;\n}\n\n// Convert a 32 bit integer into a floating point number in [0,1]\nfloat mx_bits_to_01(uint bits)\n{\n    return float(bits) / float(uint(0xffffffff));\n}\n\nfloat mx_fade(float t)\n{\n   return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);\n}\n\nuint mx_hash_int(int x)\n{\n    uint len = 1u;\n    uint seed = uint(0xdeadbeef) + (len << 2u) + 13u;\n    return mx_bjfinal(seed+uint(x), seed, seed);\n}\n\nuint mx_hash_int(int x, int y)\n{\n    uint len = 2u;\n    uint a, b, c;\n    a = b = c = uint(0xdeadbeef) + (len << 2u) + 13u;\n    a += uint(x);\n    b += uint(y);\n    return mx_bjfinal(a, b, c);\n}\n\nuint mx_hash_int(int x, int y, int z)\n{\n    uint len = 3u;\n    uint a, b, c;\n    a = b = c = uint(0xdeadbeef) + (len << 2u) + 13u;\n    a += uint(x);\n    b += uint(y);\n    c += uint(z);\n    return mx_bjfinal(a, b, c);\n}\n\nuint mx_hash_int(int x, int y, int z, int xx)\n{\n    uint len = 4u;\n    uint a, b, c;\n    a = b = c = uint(0xdeadbeef) + (len << 2u) + 13u;\n    a += uint(x);\n    b += uint(y);\n    c += uint(z);\n    mx_bjmix(a, b, c);\n    a += uint(xx);\n    return mx_bjfinal(a, b, c);\n}\n\nuint mx_hash_int(int x, int y, int z, int xx, int yy)\n{\n    uint len = 5u;\n    uint a, b, c;\n    a = b = c = uint(0xdeadbeef) + (len << 2u) + 13u;\n    a += uint(x);\n    b += uint(y);\n    c += uint(z);\n    mx_bjmix(a, b, c);\n    a += uint(xx);\n    b += uint(yy);\n    return mx_bjfinal(a, b, c);\n}\n\nuvec3 mx_hash_vec3(int x, int y)\n{\n    uint h = mx_hash_int(x, y);\n    // we only need the low-order bits to be random, so split out\n    // the 32 bit result into 3 parts for each channel\n    uvec3 result;\n    result.x = (h      ) & 0xFFu;\n    result.y = (h >> 8 ) & 0xFFu;\n    result.z = (h >> 16) & 0xFFu;\n    return result;\n}\n\nuvec3 mx_hash_vec3(int x, int y, int z)\n{\n    uint h = mx_hash_int(x, y, z);\n    // we only need the low-order bits to be random, so split out\n    // the 32 bit result into 3 parts for each channel\n    uvec3 result;\n    result.x = (h      ) & 0xFFu;\n    result.y = (h >> 8 ) & 0xFFu;\n    result.z = (h >> 16) & 0xFFu;\n    return result;\n}\n\nfloat mx_perlin_noise_float(vec2 p)\n{\n    int X, Y;\n    float fx = mx_floorfrac(p.x, X);\n    float fy = mx_floorfrac(p.y, Y);\n    float u = mx_fade(fx);\n    float v = mx_fade(fy);\n    float result = mx_bilerp(\n        mx_gradient_float(mx_hash_int(X  , Y  ), fx    , fy     ),\n        mx_gradient_float(mx_hash_int(X+1, Y  ), fx-1.0, fy     ),\n        mx_gradient_float(mx_hash_int(X  , Y+1), fx    , fy-1.0),\n        mx_gradient_float(mx_hash_int(X+1, Y+1), fx-1.0, fy-1.0),\n        u, v);\n    return mx_gradient_scale2d(result);\n}\n\nfloat mx_perlin_noise_float(vec3 p)\n{\n    int X, Y, Z;\n    float fx = mx_floorfrac(p.x, X);\n    float fy = mx_floorfrac(p.y, Y);\n    float fz = mx_floorfrac(p.z, Z);\n    float u = mx_fade(fx);\n    float v = mx_fade(fy);\n    float w = mx_fade(fz);\n    float result = mx_trilerp(\n        mx_gradient_float(mx_hash_int(X  , Y  , Z  ), fx    , fy    , fz     ),\n        mx_gradient_float(mx_hash_int(X+1, Y  , Z  ), fx-1.0, fy    , fz     ),\n        mx_gradient_float(mx_hash_int(X  , Y+1, Z  ), fx    , fy-1.0, fz     ),\n        mx_gradient_float(mx_hash_int(X+1, Y+1, Z  ), fx-1.0, fy-1.0, fz     ),\n        mx_gradient_float(mx_hash_int(X  , Y  , Z+1), fx    , fy    , fz-1.0),\n        mx_gradient_float(mx_hash_int(X+1, Y  , Z+1), fx-1.0, fy    , fz-1.0),\n        mx_gradient_float(mx_hash_int(X  , Y+1, Z+1), fx    , fy-1.0, fz-1.0),\n        mx_gradient_float(mx_hash_int(X+1, Y+1, Z+1), fx-1.0, fy-1.0, fz-1.0),\n        u, v, w);\n    return mx_gradient_scale3d(result);\n}\n\nvec3 mx_perlin_noise_vec3(vec2 p)\n{\n    int X, Y;\n    float fx = mx_floorfrac(p.x, X);\n    float fy = mx_floorfrac(p.y, Y);\n    float u = mx_fade(fx);\n    float v = mx_fade(fy);\n    vec3 result = mx_bilerp(\n        mx_gradient_vec3(mx_hash_vec3(X  , Y  ), fx    , fy     ),\n        mx_gradient_vec3(mx_hash_vec3(X+1, Y  ), fx-1.0, fy     ),\n        mx_gradient_vec3(mx_hash_vec3(X  , Y+1), fx    , fy-1.0),\n        mx_gradient_vec3(mx_hash_vec3(X+1, Y+1), fx-1.0, fy-1.0),\n        u, v);\n    return mx_gradient_scale2d(result);\n}\n\nvec3 mx_perlin_noise_vec3(vec3 p)\n{\n    int X, Y, Z;\n    float fx = mx_floorfrac(p.x, X);\n    float fy = mx_floorfrac(p.y, Y);\n    float fz = mx_floorfrac(p.z, Z);\n    float u = mx_fade(fx);\n    float v = mx_fade(fy);\n    float w = mx_fade(fz);\n    vec3 result = mx_trilerp(\n        mx_gradient_vec3(mx_hash_vec3(X  , Y  , Z  ), fx    , fy    , fz     ),\n        mx_gradient_vec3(mx_hash_vec3(X+1, Y  , Z  ), fx-1.0, fy    , fz     ),\n        mx_gradient_vec3(mx_hash_vec3(X  , Y+1, Z  ), fx    , fy-1.0, fz     ),\n        mx_gradient_vec3(mx_hash_vec3(X+1, Y+1, Z  ), fx-1.0, fy-1.0, fz     ),\n        mx_gradient_vec3(mx_hash_vec3(X  , Y  , Z+1), fx    , fy    , fz-1.0),\n        mx_gradient_vec3(mx_hash_vec3(X+1, Y  , Z+1), fx-1.0, fy    , fz-1.0),\n        mx_gradient_vec3(mx_hash_vec3(X  , Y+1, Z+1), fx    , fy-1.0, fz-1.0),\n        mx_gradient_vec3(mx_hash_vec3(X+1, Y+1, Z+1), fx-1.0, fy-1.0, fz-1.0),\n        u, v, w);\n    return mx_gradient_scale3d(result);\n}\n\nfloat mx_cell_noise_float(float p)\n{\n    int ix = mx_floor(p);\n    return mx_bits_to_01(mx_hash_int(ix));\n}\n\nfloat mx_cell_noise_float(vec2 p)\n{\n    int ix = mx_floor(p.x);\n    int iy = mx_floor(p.y);\n    return mx_bits_to_01(mx_hash_int(ix, iy));\n}\n\nfloat mx_cell_noise_float(vec3 p)\n{\n    int ix = mx_floor(p.x);\n    int iy = mx_floor(p.y);\n    int iz = mx_floor(p.z);\n    return mx_bits_to_01(mx_hash_int(ix, iy, iz));\n}\n\nfloat mx_cell_noise_float(vec4 p)\n{\n    int ix = mx_floor(p.x);\n    int iy = mx_floor(p.y);\n    int iz = mx_floor(p.z);\n    int iw = mx_floor(p.w);\n    return mx_bits_to_01(mx_hash_int(ix, iy, iz, iw));\n}\n\nvec3 mx_cell_noise_vec3(float p)\n{\n    int ix = mx_floor(p);\n    return vec3(\n            mx_bits_to_01(mx_hash_int(ix, 0)),\n            mx_bits_to_01(mx_hash_int(ix, 1)),\n            mx_bits_to_01(mx_hash_int(ix, 2))\n    );\n}\n\nvec3 mx_cell_noise_vec3(vec2 p)\n{\n    int ix = mx_floor(p.x);\n    int iy = mx_floor(p.y);\n    return vec3(\n            mx_bits_to_01(mx_hash_int(ix, iy, 0)),\n            mx_bits_to_01(mx_hash_int(ix, iy, 1)),\n            mx_bits_to_01(mx_hash_int(ix, iy, 2))\n    );\n}\n\nvec3 mx_cell_noise_vec3(vec3 p)\n{\n    int ix = mx_floor(p.x);\n    int iy = mx_floor(p.y);\n    int iz = mx_floor(p.z);\n    return vec3(\n            mx_bits_to_01(mx_hash_int(ix, iy, iz, 0)),\n            mx_bits_to_01(mx_hash_int(ix, iy, iz, 1)),\n            mx_bits_to_01(mx_hash_int(ix, iy, iz, 2))\n    );\n}\n\nvec3 mx_cell_noise_vec3(vec4 p)\n{\n    int ix = mx_floor(p.x);\n    int iy = mx_floor(p.y);\n    int iz = mx_floor(p.z);\n    int iw = mx_floor(p.w);\n    return vec3(\n            mx_bits_to_01(mx_hash_int(ix, iy, iz, iw, 0)),\n            mx_bits_to_01(mx_hash_int(ix, iy, iz, iw, 1)),\n            mx_bits_to_01(mx_hash_int(ix, iy, iz, iw, 2))\n    );\n}\n\nfloat mx_fractal_noise_float(vec3 p, int octaves, float lacunarity, float diminish)\n{\n    float result = 0.0;\n    float amplitude = 1.0;\n    for (int i = 0;  i < octaves; ++i)\n    {\n        result += amplitude * mx_perlin_noise_float(p);\n        amplitude *= diminish;\n        p *= lacunarity;\n    }\n    return result;\n}\n\nvec3 mx_fractal_noise_vec3(vec3 p, int octaves, float lacunarity, float diminish)\n{\n    vec3 result = vec3(0.0);\n    float amplitude = 1.0;\n    for (int i = 0;  i < octaves; ++i)\n    {\n        result += amplitude * mx_perlin_noise_vec3(p);\n        amplitude *= diminish;\n        p *= lacunarity;\n    }\n    return result;\n}\n\nvec2 mx_fractal_noise_vec2(vec3 p, int octaves, float lacunarity, float diminish)\n{\n    return vec2(mx_fractal_noise_float(p, octaves, lacunarity, diminish),\n                mx_fractal_noise_float(p+vec3(19, 193, 17), octaves, lacunarity, diminish));\n}\n\nvec4 mx_fractal_noise_vec4(vec3 p, int octaves, float lacunarity, float diminish)\n{\n    vec3  c = mx_fractal_noise_vec3(p, octaves, lacunarity, diminish);\n    float f = mx_fractal_noise_float(p+vec3(19, 193, 17), octaves, lacunarity, diminish);\n    return vec4(c, f);\n}\n\nfloat mx_worley_distance(vec2 p, int x, int y, int xoff, int yoff, float jitter, int metric)\n{\n    vec3  tmp = mx_cell_noise_vec3(vec2(x+xoff, y+yoff));\n    vec2  off = vec2(tmp.x, tmp.y);\n\n    off -= 0.5f;\n    off *= jitter;\n    off += 0.5f;\n\n    vec2 cellpos = vec2(float(x), float(y)) + off;\n    vec2 diff = cellpos - p;\n    if (metric == 2)\n        return abs(diff.x) + abs(diff.y);       // Manhattan distance\n    if (metric == 3)\n        return max(abs(diff.x), abs(diff.y));   // Chebyshev distance\n    // Either Euclidian or Distance^2\n    return dot(diff, diff);\n}\n\nfloat mx_worley_distance(vec3 p, int x, int y, int z, int xoff, int yoff, int zoff, float jitter, int metric)\n{\n    vec3  off = mx_cell_noise_vec3(vec3(x+xoff, y+yoff, z+zoff));\n\n    off -= 0.5f;\n    off *= jitter;\n    off += 0.5f;\n\n    vec3 cellpos = vec3(float(x), float(y), float(z)) + off;\n    vec3 diff = cellpos - p;\n    if (metric == 2)\n        return abs(diff.x) + abs(diff.y) + abs(diff.z); // Manhattan distance\n    if (metric == 3)\n        return max(max(abs(diff.x), abs(diff.y)), abs(diff.z)); // Chebyshev distance\n    // Either Euclidian or Distance^2\n    return dot(diff, diff);\n}\n\nfloat mx_worley_noise_float(vec2 p, float jitter, int metric)\n{\n    int X, Y;\n    vec2 localpos = vec2(mx_floorfrac(p.x, X), mx_floorfrac(p.y, Y));\n    float sqdist = 1e6f;        // Some big number for jitter > 1 (not all GPUs may be IEEE)\n    for (int x = -1; x <= 1; ++x)\n    {\n        for (int y = -1; y <= 1; ++y)\n        {\n            float dist = mx_worley_distance(localpos, x, y, X, Y, jitter, metric);\n            sqdist = min(sqdist, dist);\n        }\n    }\n    if (metric == 0)\n        sqdist = sqrt(sqdist);\n    return sqdist;\n}\n\nvec2 mx_worley_noise_vec2(vec2 p, float jitter, int metric)\n{\n    int X, Y;\n    vec2 localpos = vec2(mx_floorfrac(p.x, X), mx_floorfrac(p.y, Y));\n    vec2 sqdist = vec2(1e6f, 1e6f);\n    for (int x = -1; x <= 1; ++x)\n    {\n        for (int y = -1; y <= 1; ++y)\n        {\n            float dist = mx_worley_distance(localpos, x, y, X, Y, jitter, metric);\n            if (dist < sqdist.x)\n            {\n                sqdist.y = sqdist.x;\n                sqdist.x = dist;\n            }\n            else if (dist < sqdist.y)\n            {\n                sqdist.y = dist;\n            }\n        }\n    }\n    if (metric == 0)\n        sqdist = sqrt(sqdist);\n    return sqdist;\n}\n\nvec3 mx_worley_noise_vec3(vec2 p, float jitter, int metric)\n{\n    int X, Y;\n    vec2 localpos = vec2(mx_floorfrac(p.x, X), mx_floorfrac(p.y, Y));\n    vec3 sqdist = vec3(1e6f, 1e6f, 1e6f);\n    for (int x = -1; x <= 1; ++x)\n    {\n        for (int y = -1; y <= 1; ++y)\n        {\n            float dist = mx_worley_distance(localpos, x, y, X, Y, jitter, metric);\n            if (dist < sqdist.x)\n            {\n                sqdist.z = sqdist.y;\n                sqdist.y = sqdist.x;\n                sqdist.x = dist;\n            }\n            else if (dist < sqdist.y)\n            {\n                sqdist.z = sqdist.y;\n                sqdist.y = dist;\n            }\n            else if (dist < sqdist.z)\n            {\n                sqdist.z = dist;\n            }\n        }\n    }\n    if (metric == 0)\n        sqdist = sqrt(sqdist);\n    return sqdist;\n}\n\nfloat mx_worley_noise_float(vec3 p, float jitter, int metric)\n{\n    int X, Y, Z;\n    vec3 localpos = vec3(mx_floorfrac(p.x, X), mx_floorfrac(p.y, Y), mx_floorfrac(p.z, Z));\n    float sqdist = 1e6f;\n    for (int x = -1; x <= 1; ++x)\n    {\n        for (int y = -1; y <= 1; ++y)\n        {\n            for (int z = -1; z <= 1; ++z)\n            {\n                float dist = mx_worley_distance(localpos, x, y, z, X, Y, Z, jitter, metric);\n                sqdist = min(sqdist, dist);\n            }\n        }\n    }\n    if (metric == 0)\n        sqdist = sqrt(sqdist);\n    return sqdist;\n}\n\nvec2 mx_worley_noise_vec2(vec3 p, float jitter, int metric)\n{\n    int X, Y, Z;\n    vec3 localpos = vec3(mx_floorfrac(p.x, X), mx_floorfrac(p.y, Y), mx_floorfrac(p.z, Z));\n    vec2 sqdist = vec2(1e6f, 1e6f);\n    for (int x = -1; x <= 1; ++x)\n    {\n        for (int y = -1; y <= 1; ++y)\n        {\n            for (int z = -1; z <= 1; ++z)\n            {\n                float dist = mx_worley_distance(localpos, x, y, z, X, Y, Z, jitter, metric);\n                if (dist < sqdist.x)\n                {\n                    sqdist.y = sqdist.x;\n                    sqdist.x = dist;\n                }\n                else if (dist < sqdist.y)\n                {\n                    sqdist.y = dist;\n                }\n            }\n        }\n    }\n    if (metric == 0)\n        sqdist = sqrt(sqdist);\n    return sqdist;\n}\n\nvec3 mx_worley_noise_vec3(vec3 p, float jitter, int metric)\n{\n    int X, Y, Z;\n    vec3 localpos = vec3(mx_floorfrac(p.x, X), mx_floorfrac(p.y, Y), mx_floorfrac(p.z, Z));\n    vec3 sqdist = vec3(1e6f, 1e6f, 1e6f);\n    for (int x = -1; x <= 1; ++x)\n    {\n        for (int y = -1; y <= 1; ++y)\n        {\n            for (int z = -1; z <= 1; ++z)\n            {\n                float dist = mx_worley_distance(localpos, x, y, z, X, Y, Z, jitter, metric);\n                if (dist < sqdist.x)\n                {\n                    sqdist.z = sqdist.y;\n                    sqdist.y = sqdist.x;\n                    sqdist.x = dist;\n                }\n                else if (dist < sqdist.y)\n                {\n                    sqdist.z = sqdist.y;\n                    sqdist.y = dist;\n                }\n                else if (dist < sqdist.z)\n                {\n                    sqdist.z = dist;\n                }\n            }\n        }\n    }\n    if (metric == 0)\n        sqdist = sqrt(sqdist);\n    return sqdist;\n}");
+exports.mx_noise = mx_noise;
+var includes = [mx_noise];
+var mx_perlin_noise_float = (0, _Nodes.fn)('float mx_perlin_noise_float( any p )', includes);
+exports.mx_perlin_noise_float = mx_perlin_noise_float;
+var mx_perlin_noise_vec2 = (0, _Nodes.fn)('vec2 mx_perlin_noise_vec2( any p )', includes);
+exports.mx_perlin_noise_vec2 = mx_perlin_noise_vec2;
+var mx_perlin_noise_vec3 = (0, _Nodes.fn)('vec3 mx_perlin_noise_vec3( any p )', includes);
+exports.mx_perlin_noise_vec3 = mx_perlin_noise_vec3;
+var mx_cell_noise_float = (0, _Nodes.fn)('float mx_cell_noise_float( vec3 p )', includes);
+exports.mx_cell_noise_float = mx_cell_noise_float;
+var mx_worley_noise_float = (0, _Nodes.fn)('float mx_worley_noise_float( any p, float jitter, int metric )', includes);
+exports.mx_worley_noise_float = mx_worley_noise_float;
+var mx_worley_noise_vec2 = (0, _Nodes.fn)('float mx_worley_noise_vec2( any p, float jitter, int metric )', includes);
+exports.mx_worley_noise_vec2 = mx_worley_noise_vec2;
+var mx_worley_noise_vec3 = (0, _Nodes.fn)('float mx_worley_noise_vec3( any p, float jitter, int metric )', includes);
+exports.mx_worley_noise_vec3 = mx_worley_noise_vec3;
+var mx_fractal_noise_float = (0, _Nodes.fn)('float mx_fractal_noise_float( vec3 p, int octaves, float lacunarity, float diminish )', includes);
+exports.mx_fractal_noise_float = mx_fractal_noise_float;
+var mx_fractal_noise_vec2 = (0, _Nodes.fn)('float mx_fractal_noise_vec2( vec3 p, int octaves, float lacunarity, float diminish )', includes);
+exports.mx_fractal_noise_vec2 = mx_fractal_noise_vec2;
+var mx_fractal_noise_vec3 = (0, _Nodes.fn)('float mx_fractal_noise_vec3( vec3 p, int octaves, float lacunarity, float diminish )', includes);
+exports.mx_fractal_noise_vec3 = mx_fractal_noise_vec3;
+var mx_fractal_noise_vec4 = (0, _Nodes.fn)('float mx_fractal_noise_vec4( vec3 p, int octaves, float lacunarity, float diminish )', includes);
+exports.mx_fractal_noise_vec4 = mx_fractal_noise_vec4;
+},{"../../Nodes.js":"../node_modules/three/examples/jsm/nodes/Nodes.js"}],"../node_modules/three/examples/jsm/nodes/materialx/lib/mx_hsv.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.mx_rgbtohsv = exports.mx_hsvtorgb = void 0;
+var _Nodes = require("../../Nodes.js");
+// Original shader code from:
+// https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/libraries/stdlib/genglsl/lib/mx_hsv.glsl
+
+var mx_hsvtorgb = (0, _Nodes.fn)("vec3 mx_hsvtorgb(vec3 hsv)\n{\n    // Reference for this technique: Foley & van Dam\n    float h = hsv.x; float s = hsv.y; float v = hsv.z;\n    if (s < 0.0001f) {\n      return vec3 (v, v, v);\n    } else {\n        h = 6.0f * (h - floor(h));  // expand to [0..6)\n        int hi = int(trunc(h));\n        float f = h - float(hi);\n        float p = v * (1.0f-s);\n        float q = v * (1.0f-s*f);\n        float t = v * (1.0f-s*(1.0f-f));\n        if (hi == 0)\n            return vec3 (v, t, p);\n        else if (hi == 1)\n            return vec3 (q, v, p);\n        else if (hi == 2)\n            return vec3 (p, v, t);\n        else if (hi == 3)\n            return vec3 (p, q, v);\n        else if (hi == 4)\n            return vec3 (t, p, v);\n        return vec3 (v, p, q);\n    }\n}");
+exports.mx_hsvtorgb = mx_hsvtorgb;
+var mx_rgbtohsv = (0, _Nodes.fn)("vec3 mx_rgbtohsv(vec3 c)\n{\n    // See Foley & van Dam\n    float r = c.x; float g = c.y; float b = c.z;\n    float mincomp = min (r, min(g, b));\n    float maxcomp = max (r, max(g, b));\n    float delta = maxcomp - mincomp;  // chroma\n    float h, s, v;\n    v = maxcomp;\n    if (maxcomp > 0.0f)\n        s = delta / maxcomp;\n    else s = 0.0f;\n    if (s <= 0.0f)\n        h = 0.0f;\n    else {\n        if      (r >= maxcomp) h = (g-b) / delta;\n        else if (g >= maxcomp) h = 2.0f + (b-r) / delta;\n        else                   h = 4.0f + (r-g) / delta;\n        h *= (1.0f/6.0f);\n        if (h < 0.0f)\n            h += 1.0f;\n    }\n    return vec3(h, s, v);\n}");
+exports.mx_rgbtohsv = mx_rgbtohsv;
+},{"../../Nodes.js":"../node_modules/three/examples/jsm/nodes/Nodes.js"}],"../node_modules/three/examples/jsm/nodes/materialx/lib/mx_transform_color.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.mx_transform_color = exports.mx_srgb_texture_to_lin_rec709 = void 0;
+var _Nodes = require("../../Nodes.js");
+// Original shader code from:
+// https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/libraries/stdlib/genglsl/lib/mx_transform_color.glsl
+
+var mx_transform_color = (0, _Nodes.code)("#define M_AP1_TO_REC709 mat3(1.705079555511475, -0.1297005265951157, -0.02416634373366833, -0.6242334842681885, 1.138468623161316, -0.1246141716837883, -0.0808461606502533, -0.008768022060394287, 1.148780584335327)\n\nvec3 mx_srgb_texture_to_lin_rec709(vec3 color)\n{\n    bvec3 isAbove = greaterThan(color, vec3(0.04045));\n    vec3 linSeg = color / 12.92;\n    vec3 powSeg = pow(max(color + vec3(0.055), vec3(0.0)) / 1.055, vec3(2.4));\n    return mix(linSeg, powSeg, isAbove);\n}");
+exports.mx_transform_color = mx_transform_color;
+var includes = [mx_transform_color];
+var mx_srgb_texture_to_lin_rec709 = (0, _Nodes.fn)('vec3 mx_srgb_texture_to_lin_rec709( vec3 color )', includes);
+exports.mx_srgb_texture_to_lin_rec709 = mx_srgb_texture_to_lin_rec709;
+},{"../../Nodes.js":"../node_modules/three/examples/jsm/nodes/Nodes.js"}],"../node_modules/three/examples/jsm/nodes/materialx/MaterialXNodes.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.mx_fractal_noise_vec4 = exports.mx_fractal_noise_vec3 = exports.mx_fractal_noise_vec2 = exports.mx_fractal_noise_float = exports.mx_contrast = exports.mx_cell_noise_float = exports.mx_aastep = void 0;
+Object.defineProperty(exports, "mx_hsvtorgb", {
+  enumerable: true,
+  get: function () {
+    return _mx_hsv.mx_hsvtorgb;
+  }
+});
+exports.mx_ramptb = exports.mx_ramplr = exports.mx_noise_vec4 = exports.mx_noise_vec3 = exports.mx_noise_vec2 = exports.mx_noise_float = void 0;
+Object.defineProperty(exports, "mx_rgbtohsv", {
+  enumerable: true,
+  get: function () {
+    return _mx_hsv.mx_rgbtohsv;
+  }
+});
+exports.mx_splittb = exports.mx_splitlr = exports.mx_safepower = void 0;
+Object.defineProperty(exports, "mx_srgb_texture_to_lin_rec709", {
+  enumerable: true,
+  get: function () {
+    return _mx_transform_color.mx_srgb_texture_to_lin_rec709;
+  }
+});
+exports.mx_worley_noise_vec3 = exports.mx_worley_noise_vec2 = exports.mx_worley_noise_float = exports.mx_transform_uv = void 0;
+var _mx_noise = require("./lib/mx_noise.js");
+var _mx_hsv = require("./lib/mx_hsv.js");
+var _mx_transform_color = require("./lib/mx_transform_color.js");
+var _ShaderNodeElements = require("../shadernode/ShaderNodeElements.js");
+var mx_aastep = function mx_aastep(threshold, value) {
+  threshold = (0, _ShaderNodeElements.float)(threshold);
+  value = (0, _ShaderNodeElements.float)(value);
+  var afwidth = (0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.length)((0, _ShaderNodeElements.vec2)((0, _ShaderNodeElements.dFdx)(value), (0, _ShaderNodeElements.dFdy)(value))), 0.70710678118654757);
+  return (0, _ShaderNodeElements.smoothstep)((0, _ShaderNodeElements.sub)(threshold, afwidth), (0, _ShaderNodeElements.add)(threshold, afwidth), value);
+};
+exports.mx_aastep = mx_aastep;
+var _ramp = function _ramp(a, b, uv, p) {
+  return (0, _ShaderNodeElements.mix)(a, b, (0, _ShaderNodeElements.clamp)((0, _ShaderNodeElements.nodeObject)(uv)[p]));
+};
+var mx_ramplr = function mx_ramplr(valuel, valuer, texcoord = (0, _ShaderNodeElements.uv)()) {
+  return _ramp(valuel, valuer, texcoord, 'x');
+};
+exports.mx_ramplr = mx_ramplr;
+var mx_ramptb = function mx_ramptb(valuet, valueb, texcoord = (0, _ShaderNodeElements.uv)()) {
+  return _ramp(valuet, valueb, texcoord, 'y');
+};
+exports.mx_ramptb = mx_ramptb;
+var _split = function _split(a, b, center, uv, p) {
+  return (0, _ShaderNodeElements.mix)(a, b, mx_aastep(center, (0, _ShaderNodeElements.nodeObject)(uv)[p]));
+};
+var mx_splitlr = function mx_splitlr(valuel, valuer, center, texcoord = (0, _ShaderNodeElements.uv)()) {
+  return _split(valuel, valuer, center, texcoord, 'x');
+};
+exports.mx_splitlr = mx_splitlr;
+var mx_splittb = function mx_splittb(valuet, valueb, center, texcoord = (0, _ShaderNodeElements.uv)()) {
+  return _split(valuet, valueb, center, texcoord, 'y');
+};
+exports.mx_splittb = mx_splittb;
+var mx_transform_uv = function mx_transform_uv(uv_scale = 1, uv_offset = 0, uv_geo = (0, _ShaderNodeElements.uv)()) {
+  return (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)(uv_geo, uv_scale), uv_offset);
+};
+exports.mx_transform_uv = mx_transform_uv;
+var mx_safepower = function mx_safepower(in1, in2 = 1) {
+  return (0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.sign)(in1), (0, _ShaderNodeElements.pow)((0, _ShaderNodeElements.abs)(in1), in2));
+};
+exports.mx_safepower = mx_safepower;
+var mx_contrast = function mx_contrast(input, amount = 1, pivot = .5) {
+  return (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)((0, _ShaderNodeElements.sub)(input, pivot), amount), pivot);
+};
+exports.mx_contrast = mx_contrast;
+var mx_noise_float = function mx_noise_float(texcoord = (0, _ShaderNodeElements.uv)(), amplitude = 1, pivot = 0) {
+  return (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)(amplitude, (0, _mx_noise.mx_perlin_noise_float)((0, _ShaderNodeElements.convert)(texcoord, 'vec2|vec3'))), pivot);
+};
+exports.mx_noise_float = mx_noise_float;
+var mx_noise_vec2 = function mx_noise_vec2(texcoord = (0, _ShaderNodeElements.uv)(), amplitude = 1, pivot = 0) {
+  return (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)(amplitude, (0, _mx_noise.mx_perlin_noise_vec2)((0, _ShaderNodeElements.convert)(texcoord, 'vec2|vec3'))), pivot);
+};
+exports.mx_noise_vec2 = mx_noise_vec2;
+var mx_noise_vec3 = function mx_noise_vec3(texcoord = (0, _ShaderNodeElements.uv)(), amplitude = 1, pivot = 0) {
+  return (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)(amplitude, (0, _mx_noise.mx_perlin_noise_vec3)((0, _ShaderNodeElements.convert)(texcoord, 'vec2|vec3'))), pivot);
+};
+exports.mx_noise_vec3 = mx_noise_vec3;
+var mx_noise_vec4 = function mx_noise_vec4(texcoord = (0, _ShaderNodeElements.uv)(), amplitude = 1, pivot = 0) {
+  texcoord = (0, _ShaderNodeElements.convert)(texcoord, 'vec2|vec3'); // overloading type
+
+  var noise_vec4 = (0, _ShaderNodeElements.vec4)((0, _mx_noise.mx_perlin_noise_vec3)(texcoord), (0, _mx_noise.mx_perlin_noise_float)((0, _ShaderNodeElements.add)(texcoord, (0, _ShaderNodeElements.vec2)(19, 73))));
+  return (0, _ShaderNodeElements.add)((0, _ShaderNodeElements.mul)(amplitude, noise_vec4), pivot);
+};
+exports.mx_noise_vec4 = mx_noise_vec4;
+var mx_worley_noise_float = function mx_worley_noise_float(texcoord = (0, _ShaderNodeElements.uv)(), jitter = 1) {
+  return (0, _mx_noise.mx_worley_noise_float)((0, _ShaderNodeElements.convert)(texcoord, 'vec2|vec3'), jitter, 1);
+};
+exports.mx_worley_noise_float = mx_worley_noise_float;
+var mx_worley_noise_vec2 = function mx_worley_noise_vec2(texcoord = (0, _ShaderNodeElements.uv)(), jitter = 1) {
+  return (0, _mx_noise.mx_worley_noise_vec2)((0, _ShaderNodeElements.convert)(texcoord, 'vec2|vec3'), jitter, 1);
+};
+exports.mx_worley_noise_vec2 = mx_worley_noise_vec2;
+var mx_worley_noise_vec3 = function mx_worley_noise_vec3(texcoord = (0, _ShaderNodeElements.uv)(), jitter = 1) {
+  return (0, _mx_noise.mx_worley_noise_vec3)((0, _ShaderNodeElements.convert)(texcoord, 'vec2|vec3'), jitter, 1);
+};
+exports.mx_worley_noise_vec3 = mx_worley_noise_vec3;
+var mx_cell_noise_float = function mx_cell_noise_float(texcoord = (0, _ShaderNodeElements.uv)()) {
+  return (0, _mx_noise.mx_cell_noise_float)((0, _ShaderNodeElements.convert)(texcoord, 'vec2|vec3'));
+};
+exports.mx_cell_noise_float = mx_cell_noise_float;
+var mx_fractal_noise_float = function mx_fractal_noise_float(position = (0, _ShaderNodeElements.uv)(), octaves = 3, lacunarity = 2, diminish = .5, amplitude = 1) {
+  return (0, _ShaderNodeElements.mul)((0, _mx_noise.mx_fractal_noise_float)(position, octaves, lacunarity, diminish), amplitude);
+};
+exports.mx_fractal_noise_float = mx_fractal_noise_float;
+var mx_fractal_noise_vec2 = function mx_fractal_noise_vec2(position = (0, _ShaderNodeElements.uv)(), octaves = 3, lacunarity = 2, diminish = .5, amplitude = 1) {
+  return (0, _ShaderNodeElements.mul)((0, _mx_noise.mx_fractal_noise_vec2)(position, octaves, lacunarity, diminish), amplitude);
+};
+exports.mx_fractal_noise_vec2 = mx_fractal_noise_vec2;
+var mx_fractal_noise_vec3 = function mx_fractal_noise_vec3(position = (0, _ShaderNodeElements.uv)(), octaves = 3, lacunarity = 2, diminish = .5, amplitude = 1) {
+  return (0, _ShaderNodeElements.mul)((0, _mx_noise.mx_fractal_noise_vec3)(position, octaves, lacunarity, diminish), amplitude);
+};
+exports.mx_fractal_noise_vec3 = mx_fractal_noise_vec3;
+var mx_fractal_noise_vec4 = function mx_fractal_noise_vec4(position = (0, _ShaderNodeElements.uv)(), octaves = 3, lacunarity = 2, diminish = .5, amplitude = 1) {
+  return (0, _ShaderNodeElements.mul)((0, _mx_noise.mx_fractal_noise_vec4)(position, octaves, lacunarity, diminish), amplitude);
+};
+exports.mx_fractal_noise_vec4 = mx_fractal_noise_vec4;
+},{"./lib/mx_noise.js":"../node_modules/three/examples/jsm/nodes/materialx/lib/mx_noise.js","./lib/mx_hsv.js":"../node_modules/three/examples/jsm/nodes/materialx/lib/mx_hsv.js","./lib/mx_transform_color.js":"../node_modules/three/examples/jsm/nodes/materialx/lib/mx_transform_color.js","../shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js"}],"../node_modules/three/examples/jsm/nodes/Nodes.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var _exportNames = {
+  fromType: true,
+  ArrayUniformNode: true,
+  AttributeNode: true,
+  BypassNode: true,
+  CodeNode: true,
+  ConstNode: true,
+  ContextNode: true,
+  ExpressionNode: true,
+  FunctionCallNode: true,
+  FunctionNode: true,
+  InstanceIndexNode: true,
+  Node: true,
+  NodeAttribute: true,
+  NodeBuilder: true,
+  defaultShaderStages: true,
+  NodeCode: true,
+  NodeFrame: true,
+  NodeFunctionInput: true,
+  NodeKeywords: true,
+  NodeUniform: true,
+  NodeVar: true,
+  NodeVarying: true,
+  PropertyNode: true,
+  TempNode: true,
+  UniformNode: true,
+  VarNode: true,
+  VaryingNode: true,
+  BitangentNode: true,
+  BufferNode: true,
+  CameraNode: true,
+  CubeTextureNode: true,
+  InstanceNode: true,
+  MaterialNode: true,
+  MaterialReferenceNode: true,
+  ModelNode: true,
+  ModelViewProjectionNode: true,
+  NormalNode: true,
+  Object3DNode: true,
+  PointUVNode: true,
+  PositionNode: true,
+  ReferenceNode: true,
+  ReflectVectorNode: true,
+  SkinningNode: true,
+  TangentNode: true,
+  TextureNode: true,
+  UVNode: true,
+  UserDataNode: true,
+  RangeNode: true,
+  ComputeNode: true,
+  BlendModeNode: true,
+  ColorAdjustmentNode: true,
+  ColorSpaceNode: true,
+  FrontFacingNode: true,
+  NormalMapNode: true,
+  PosterizeNode: true,
+  ToneMappingNode: true,
+  MathNode: true,
+  OperatorNode: true,
+  CondNode: true,
+  PunctualLightNode: true,
+  LightsNode: true,
+  LightingNode: true,
+  LightingContextNode: true,
+  HemisphereLightNode: true,
+  EnvironmentNode: true,
+  AONode: true,
+  AnalyticLightNode: true,
+  ArrayElementNode: true,
+  ConvertNode: true,
+  EquirectUVNode: true,
+  JoinNode: true,
+  MatcapUVNode: true,
+  MaxMipLevelNode: true,
+  OscNode: true,
+  RemapNode: true,
+  RotateUVNode: true,
+  SplitNode: true,
+  SpriteSheetUVNode: true,
+  TimerNode: true,
+  TriplanarTexturesNode: true,
+  NodeLoader: true,
+  NodeObjectLoader: true,
+  NodeMaterialLoader: true,
+  WGSLNodeParser: true,
+  GLSLNodeParser: true,
+  CheckerNode: true,
+  FogNode: true,
+  FogRangeNode: true
+};
+Object.defineProperty(exports, "AONode", {
+  enumerable: true,
+  get: function () {
+    return _AONode.default;
+  }
+});
+Object.defineProperty(exports, "AnalyticLightNode", {
+  enumerable: true,
+  get: function () {
+    return _AnalyticLightNode.default;
+  }
+});
+Object.defineProperty(exports, "ArrayElementNode", {
+  enumerable: true,
+  get: function () {
+    return _ArrayElementNode.default;
+  }
+});
+Object.defineProperty(exports, "ArrayUniformNode", {
+  enumerable: true,
+  get: function () {
+    return _ArrayUniformNode.default;
+  }
+});
+Object.defineProperty(exports, "AttributeNode", {
+  enumerable: true,
+  get: function () {
+    return _AttributeNode.default;
+  }
+});
+Object.defineProperty(exports, "BitangentNode", {
+  enumerable: true,
+  get: function () {
+    return _BitangentNode.default;
+  }
+});
+Object.defineProperty(exports, "BlendModeNode", {
+  enumerable: true,
+  get: function () {
+    return _BlendModeNode.default;
+  }
+});
+Object.defineProperty(exports, "BufferNode", {
+  enumerable: true,
+  get: function () {
+    return _BufferNode.default;
+  }
+});
+Object.defineProperty(exports, "BypassNode", {
+  enumerable: true,
+  get: function () {
+    return _BypassNode.default;
+  }
+});
+Object.defineProperty(exports, "CameraNode", {
+  enumerable: true,
+  get: function () {
+    return _CameraNode.default;
+  }
+});
+Object.defineProperty(exports, "CheckerNode", {
+  enumerable: true,
+  get: function () {
+    return _CheckerNode.default;
+  }
+});
+Object.defineProperty(exports, "CodeNode", {
+  enumerable: true,
+  get: function () {
+    return _CodeNode.default;
+  }
+});
+Object.defineProperty(exports, "ColorAdjustmentNode", {
+  enumerable: true,
+  get: function () {
+    return _ColorAdjustmentNode.default;
+  }
+});
+Object.defineProperty(exports, "ColorSpaceNode", {
+  enumerable: true,
+  get: function () {
+    return _ColorSpaceNode.default;
+  }
+});
+Object.defineProperty(exports, "ComputeNode", {
+  enumerable: true,
+  get: function () {
+    return _ComputeNode.default;
+  }
+});
+Object.defineProperty(exports, "CondNode", {
+  enumerable: true,
+  get: function () {
+    return _CondNode.default;
+  }
+});
+Object.defineProperty(exports, "ConstNode", {
+  enumerable: true,
+  get: function () {
+    return _ConstNode.default;
+  }
+});
+Object.defineProperty(exports, "ContextNode", {
+  enumerable: true,
+  get: function () {
+    return _ContextNode.default;
+  }
+});
+Object.defineProperty(exports, "ConvertNode", {
+  enumerable: true,
+  get: function () {
+    return _ConvertNode.default;
+  }
+});
+Object.defineProperty(exports, "CubeTextureNode", {
+  enumerable: true,
+  get: function () {
+    return _CubeTextureNode.default;
+  }
+});
+Object.defineProperty(exports, "EnvironmentNode", {
+  enumerable: true,
+  get: function () {
+    return _EnvironmentNode.default;
+  }
+});
+Object.defineProperty(exports, "EquirectUVNode", {
+  enumerable: true,
+  get: function () {
+    return _EquirectUVNode.default;
+  }
+});
+Object.defineProperty(exports, "ExpressionNode", {
+  enumerable: true,
+  get: function () {
+    return _ExpressionNode.default;
+  }
+});
+Object.defineProperty(exports, "FogNode", {
+  enumerable: true,
+  get: function () {
+    return _FogNode.default;
+  }
+});
+Object.defineProperty(exports, "FogRangeNode", {
+  enumerable: true,
+  get: function () {
+    return _FogRangeNode.default;
+  }
+});
+Object.defineProperty(exports, "FrontFacingNode", {
+  enumerable: true,
+  get: function () {
+    return _FrontFacingNode.default;
+  }
+});
+Object.defineProperty(exports, "FunctionCallNode", {
+  enumerable: true,
+  get: function () {
+    return _FunctionCallNode.default;
+  }
+});
+Object.defineProperty(exports, "FunctionNode", {
+  enumerable: true,
+  get: function () {
+    return _FunctionNode.default;
+  }
+});
+Object.defineProperty(exports, "GLSLNodeParser", {
+  enumerable: true,
+  get: function () {
+    return _GLSLNodeParser.default;
+  }
+});
+Object.defineProperty(exports, "HemisphereLightNode", {
+  enumerable: true,
+  get: function () {
+    return _HemisphereLightNode.default;
+  }
+});
+Object.defineProperty(exports, "InstanceIndexNode", {
+  enumerable: true,
+  get: function () {
+    return _InstanceIndexNode.default;
+  }
+});
+Object.defineProperty(exports, "InstanceNode", {
+  enumerable: true,
+  get: function () {
+    return _InstanceNode.default;
+  }
+});
+Object.defineProperty(exports, "JoinNode", {
+  enumerable: true,
+  get: function () {
+    return _JoinNode.default;
+  }
+});
+Object.defineProperty(exports, "LightingContextNode", {
+  enumerable: true,
+  get: function () {
+    return _LightingContextNode.default;
+  }
+});
+Object.defineProperty(exports, "LightingNode", {
+  enumerable: true,
+  get: function () {
+    return _LightingNode.default;
+  }
+});
+Object.defineProperty(exports, "LightsNode", {
+  enumerable: true,
+  get: function () {
+    return _LightsNode.default;
+  }
+});
+Object.defineProperty(exports, "MatcapUVNode", {
+  enumerable: true,
+  get: function () {
+    return _MatcapUVNode.default;
+  }
+});
+Object.defineProperty(exports, "MaterialNode", {
+  enumerable: true,
+  get: function () {
+    return _MaterialNode.default;
+  }
+});
+Object.defineProperty(exports, "MaterialReferenceNode", {
+  enumerable: true,
+  get: function () {
+    return _MaterialReferenceNode.default;
+  }
+});
+Object.defineProperty(exports, "MathNode", {
+  enumerable: true,
+  get: function () {
+    return _MathNode.default;
+  }
+});
+Object.defineProperty(exports, "MaxMipLevelNode", {
+  enumerable: true,
+  get: function () {
+    return _MaxMipLevelNode.default;
+  }
+});
+Object.defineProperty(exports, "ModelNode", {
+  enumerable: true,
+  get: function () {
+    return _ModelNode.default;
+  }
+});
+Object.defineProperty(exports, "ModelViewProjectionNode", {
+  enumerable: true,
+  get: function () {
+    return _ModelViewProjectionNode.default;
+  }
+});
+Object.defineProperty(exports, "Node", {
+  enumerable: true,
+  get: function () {
+    return _Node.default;
+  }
+});
+Object.defineProperty(exports, "NodeAttribute", {
+  enumerable: true,
+  get: function () {
+    return _NodeAttribute.default;
+  }
+});
+Object.defineProperty(exports, "NodeBuilder", {
+  enumerable: true,
+  get: function () {
+    return _NodeBuilder.default;
+  }
+});
+Object.defineProperty(exports, "NodeCode", {
+  enumerable: true,
+  get: function () {
+    return _NodeCode.default;
+  }
+});
+Object.defineProperty(exports, "NodeFrame", {
+  enumerable: true,
+  get: function () {
+    return _NodeFrame.default;
+  }
+});
+Object.defineProperty(exports, "NodeFunctionInput", {
+  enumerable: true,
+  get: function () {
+    return _NodeFunctionInput.default;
+  }
+});
+Object.defineProperty(exports, "NodeKeywords", {
+  enumerable: true,
+  get: function () {
+    return _NodeKeywords.default;
+  }
+});
+Object.defineProperty(exports, "NodeLoader", {
+  enumerable: true,
+  get: function () {
+    return _NodeLoader.default;
+  }
+});
+Object.defineProperty(exports, "NodeMaterialLoader", {
+  enumerable: true,
+  get: function () {
+    return _NodeMaterialLoader.default;
+  }
+});
+Object.defineProperty(exports, "NodeObjectLoader", {
+  enumerable: true,
+  get: function () {
+    return _NodeObjectLoader.default;
+  }
+});
+Object.defineProperty(exports, "NodeUniform", {
+  enumerable: true,
+  get: function () {
+    return _NodeUniform.default;
+  }
+});
+Object.defineProperty(exports, "NodeVar", {
+  enumerable: true,
+  get: function () {
+    return _NodeVar.default;
+  }
+});
+Object.defineProperty(exports, "NodeVarying", {
+  enumerable: true,
+  get: function () {
+    return _NodeVarying.default;
+  }
+});
+Object.defineProperty(exports, "NormalMapNode", {
+  enumerable: true,
+  get: function () {
+    return _NormalMapNode.default;
+  }
+});
+Object.defineProperty(exports, "NormalNode", {
+  enumerable: true,
+  get: function () {
+    return _NormalNode.default;
+  }
+});
+Object.defineProperty(exports, "Object3DNode", {
+  enumerable: true,
+  get: function () {
+    return _Object3DNode.default;
+  }
+});
+Object.defineProperty(exports, "OperatorNode", {
+  enumerable: true,
+  get: function () {
+    return _OperatorNode.default;
+  }
+});
+Object.defineProperty(exports, "OscNode", {
+  enumerable: true,
+  get: function () {
+    return _OscNode.default;
+  }
+});
+Object.defineProperty(exports, "PointUVNode", {
+  enumerable: true,
+  get: function () {
+    return _PointUVNode.default;
+  }
+});
+Object.defineProperty(exports, "PositionNode", {
+  enumerable: true,
+  get: function () {
+    return _PositionNode.default;
+  }
+});
+Object.defineProperty(exports, "PosterizeNode", {
+  enumerable: true,
+  get: function () {
+    return _PosterizeNode.default;
+  }
+});
+Object.defineProperty(exports, "PropertyNode", {
+  enumerable: true,
+  get: function () {
+    return _PropertyNode.default;
+  }
+});
+Object.defineProperty(exports, "PunctualLightNode", {
+  enumerable: true,
+  get: function () {
+    return _PunctualLightNode.default;
+  }
+});
+Object.defineProperty(exports, "RangeNode", {
+  enumerable: true,
+  get: function () {
+    return _RangeNode.default;
+  }
+});
+Object.defineProperty(exports, "ReferenceNode", {
+  enumerable: true,
+  get: function () {
+    return _ReferenceNode.default;
+  }
+});
+Object.defineProperty(exports, "ReflectVectorNode", {
+  enumerable: true,
+  get: function () {
+    return _ReflectVectorNode.default;
+  }
+});
+Object.defineProperty(exports, "RemapNode", {
+  enumerable: true,
+  get: function () {
+    return _RemapNode.default;
+  }
+});
+Object.defineProperty(exports, "RotateUVNode", {
+  enumerable: true,
+  get: function () {
+    return _RotateUVNode.default;
+  }
+});
+Object.defineProperty(exports, "SkinningNode", {
+  enumerable: true,
+  get: function () {
+    return _SkinningNode.default;
+  }
+});
+Object.defineProperty(exports, "SplitNode", {
+  enumerable: true,
+  get: function () {
+    return _SplitNode.default;
+  }
+});
+Object.defineProperty(exports, "SpriteSheetUVNode", {
+  enumerable: true,
+  get: function () {
+    return _SpriteSheetUVNode.default;
+  }
+});
+Object.defineProperty(exports, "TangentNode", {
+  enumerable: true,
+  get: function () {
+    return _TangentNode.default;
+  }
+});
+Object.defineProperty(exports, "TempNode", {
+  enumerable: true,
+  get: function () {
+    return _TempNode.default;
+  }
+});
+Object.defineProperty(exports, "TextureNode", {
+  enumerable: true,
+  get: function () {
+    return _TextureNode.default;
+  }
+});
+Object.defineProperty(exports, "TimerNode", {
+  enumerable: true,
+  get: function () {
+    return _TimerNode.default;
+  }
+});
+Object.defineProperty(exports, "ToneMappingNode", {
+  enumerable: true,
+  get: function () {
+    return _ToneMappingNode.default;
+  }
+});
+Object.defineProperty(exports, "TriplanarTexturesNode", {
+  enumerable: true,
+  get: function () {
+    return _TriplanarTexturesNode.default;
+  }
+});
+Object.defineProperty(exports, "UVNode", {
+  enumerable: true,
+  get: function () {
+    return _UVNode.default;
+  }
+});
+Object.defineProperty(exports, "UniformNode", {
+  enumerable: true,
+  get: function () {
+    return _UniformNode.default;
+  }
+});
+Object.defineProperty(exports, "UserDataNode", {
+  enumerable: true,
+  get: function () {
+    return _UserDataNode.default;
+  }
+});
+Object.defineProperty(exports, "VarNode", {
+  enumerable: true,
+  get: function () {
+    return _VarNode.default;
+  }
+});
+Object.defineProperty(exports, "VaryingNode", {
+  enumerable: true,
+  get: function () {
+    return _VaryingNode.default;
+  }
+});
+Object.defineProperty(exports, "WGSLNodeParser", {
+  enumerable: true,
+  get: function () {
+    return _WGSLNodeParser.default;
+  }
+});
+Object.defineProperty(exports, "defaultShaderStages", {
+  enumerable: true,
+  get: function () {
+    return _NodeBuilder.defaultShaderStages;
+  }
+});
+exports.fromType = void 0;
+var _ArrayUniformNode = _interopRequireDefault(require("./core/ArrayUniformNode.js"));
+var _AttributeNode = _interopRequireDefault(require("./core/AttributeNode.js"));
+var _BypassNode = _interopRequireDefault(require("./core/BypassNode.js"));
+var _CodeNode = _interopRequireDefault(require("./core/CodeNode.js"));
+var _ConstNode = _interopRequireDefault(require("./core/ConstNode.js"));
+var _ContextNode = _interopRequireDefault(require("./core/ContextNode.js"));
+var _ExpressionNode = _interopRequireDefault(require("./core/ExpressionNode.js"));
+var _FunctionCallNode = _interopRequireDefault(require("./core/FunctionCallNode.js"));
+var _FunctionNode = _interopRequireDefault(require("./core/FunctionNode.js"));
+var _InstanceIndexNode = _interopRequireDefault(require("./core/InstanceIndexNode.js"));
+var _Node = _interopRequireDefault(require("./core/Node.js"));
+var _NodeAttribute = _interopRequireDefault(require("./core/NodeAttribute.js"));
+var _NodeBuilder = _interopRequireWildcard(require("./core/NodeBuilder.js"));
+var _NodeCode = _interopRequireDefault(require("./core/NodeCode.js"));
+var _NodeFrame = _interopRequireDefault(require("./core/NodeFrame.js"));
+var _NodeFunctionInput = _interopRequireDefault(require("./core/NodeFunctionInput.js"));
+var _NodeKeywords = _interopRequireDefault(require("./core/NodeKeywords.js"));
+var _NodeUniform = _interopRequireDefault(require("./core/NodeUniform.js"));
+var _NodeVar = _interopRequireDefault(require("./core/NodeVar.js"));
+var _NodeVarying = _interopRequireDefault(require("./core/NodeVarying.js"));
+var _PropertyNode = _interopRequireDefault(require("./core/PropertyNode.js"));
+var _TempNode = _interopRequireDefault(require("./core/TempNode.js"));
+var _UniformNode = _interopRequireDefault(require("./core/UniformNode.js"));
+var _VarNode = _interopRequireDefault(require("./core/VarNode.js"));
+var _VaryingNode = _interopRequireDefault(require("./core/VaryingNode.js"));
+var _BitangentNode = _interopRequireDefault(require("./accessors/BitangentNode.js"));
+var _BufferNode = _interopRequireDefault(require("./accessors/BufferNode.js"));
+var _CameraNode = _interopRequireDefault(require("./accessors/CameraNode.js"));
+var _CubeTextureNode = _interopRequireDefault(require("./accessors/CubeTextureNode.js"));
+var _InstanceNode = _interopRequireDefault(require("./accessors/InstanceNode.js"));
+var _MaterialNode = _interopRequireDefault(require("./accessors/MaterialNode.js"));
+var _MaterialReferenceNode = _interopRequireDefault(require("./accessors/MaterialReferenceNode.js"));
+var _ModelNode = _interopRequireDefault(require("./accessors/ModelNode.js"));
+var _ModelViewProjectionNode = _interopRequireDefault(require("./accessors/ModelViewProjectionNode.js"));
+var _NormalNode = _interopRequireDefault(require("./accessors/NormalNode.js"));
+var _Object3DNode = _interopRequireDefault(require("./accessors/Object3DNode.js"));
+var _PointUVNode = _interopRequireDefault(require("./accessors/PointUVNode.js"));
+var _PositionNode = _interopRequireDefault(require("./accessors/PositionNode.js"));
+var _ReferenceNode = _interopRequireDefault(require("./accessors/ReferenceNode.js"));
+var _ReflectVectorNode = _interopRequireDefault(require("./accessors/ReflectVectorNode.js"));
+var _SkinningNode = _interopRequireDefault(require("./accessors/SkinningNode.js"));
+var _TangentNode = _interopRequireDefault(require("./accessors/TangentNode.js"));
+var _TextureNode = _interopRequireDefault(require("./accessors/TextureNode.js"));
+var _UVNode = _interopRequireDefault(require("./accessors/UVNode.js"));
+var _UserDataNode = _interopRequireDefault(require("./accessors/UserDataNode.js"));
+var _RangeNode = _interopRequireDefault(require("./geometry/RangeNode.js"));
+var _ComputeNode = _interopRequireDefault(require("./gpgpu/ComputeNode.js"));
+var _BlendModeNode = _interopRequireDefault(require("./display/BlendModeNode.js"));
+var _ColorAdjustmentNode = _interopRequireDefault(require("./display/ColorAdjustmentNode.js"));
+var _ColorSpaceNode = _interopRequireDefault(require("./display/ColorSpaceNode.js"));
+var _FrontFacingNode = _interopRequireDefault(require("./display/FrontFacingNode.js"));
+var _NormalMapNode = _interopRequireDefault(require("./display/NormalMapNode.js"));
+var _PosterizeNode = _interopRequireDefault(require("./display/PosterizeNode.js"));
+var _ToneMappingNode = _interopRequireDefault(require("./display/ToneMappingNode.js"));
+var _MathNode = _interopRequireDefault(require("./math/MathNode.js"));
+var _OperatorNode = _interopRequireDefault(require("./math/OperatorNode.js"));
+var _CondNode = _interopRequireDefault(require("./math/CondNode.js"));
+var _PunctualLightNode = _interopRequireDefault(require("./lighting/PunctualLightNode.js"));
+var _LightsNode = _interopRequireDefault(require("./lighting/LightsNode.js"));
+var _LightingNode = _interopRequireDefault(require("./lighting/LightingNode.js"));
+var _LightingContextNode = _interopRequireDefault(require("./lighting/LightingContextNode.js"));
+var _HemisphereLightNode = _interopRequireDefault(require("./lighting/HemisphereLightNode.js"));
+var _EnvironmentNode = _interopRequireDefault(require("./lighting/EnvironmentNode.js"));
+var _AONode = _interopRequireDefault(require("./lighting/AONode.js"));
+var _AnalyticLightNode = _interopRequireDefault(require("./lighting/AnalyticLightNode.js"));
+var _ArrayElementNode = _interopRequireDefault(require("./utils/ArrayElementNode.js"));
+var _ConvertNode = _interopRequireDefault(require("./utils/ConvertNode.js"));
+var _EquirectUVNode = _interopRequireDefault(require("./utils/EquirectUVNode.js"));
+var _JoinNode = _interopRequireDefault(require("./utils/JoinNode.js"));
+var _MatcapUVNode = _interopRequireDefault(require("./utils/MatcapUVNode.js"));
+var _MaxMipLevelNode = _interopRequireDefault(require("./utils/MaxMipLevelNode.js"));
+var _OscNode = _interopRequireDefault(require("./utils/OscNode.js"));
+var _RemapNode = _interopRequireDefault(require("./utils/RemapNode.js"));
+var _RotateUVNode = _interopRequireDefault(require("./utils/RotateUVNode.js"));
+var _SplitNode = _interopRequireDefault(require("./utils/SplitNode.js"));
+var _SpriteSheetUVNode = _interopRequireDefault(require("./utils/SpriteSheetUVNode.js"));
+var _TimerNode = _interopRequireDefault(require("./utils/TimerNode.js"));
+var _TriplanarTexturesNode = _interopRequireDefault(require("./utils/TriplanarTexturesNode.js"));
+var _NodeLoader = _interopRequireDefault(require("./loaders/NodeLoader.js"));
+var _NodeObjectLoader = _interopRequireDefault(require("./loaders/NodeObjectLoader.js"));
+var _NodeMaterialLoader = _interopRequireDefault(require("./loaders/NodeMaterialLoader.js"));
+var _WGSLNodeParser = _interopRequireDefault(require("./parsers/WGSLNodeParser.js"));
+var _GLSLNodeParser = _interopRequireDefault(require("./parsers/GLSLNodeParser.js"));
+var _CheckerNode = _interopRequireDefault(require("./procedural/CheckerNode.js"));
+var _FogNode = _interopRequireDefault(require("./fog/FogNode.js"));
+var _FogRangeNode = _interopRequireDefault(require("./fog/FogRangeNode.js"));
+var _constants = require("./core/constants.js");
+Object.keys(_constants).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _constants[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _constants[key];
+    }
+  });
+});
+var _Materials = require("./materials/Materials.js");
+Object.keys(_Materials).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _Materials[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _Materials[key];
+    }
+  });
+});
+var _ShaderNodeElements = require("./shadernode/ShaderNodeElements.js");
+Object.keys(_ShaderNodeElements).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _ShaderNodeElements[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _ShaderNodeElements[key];
+    }
+  });
+});
+var _MaterialXNodes = require("./materialx/MaterialXNodes.js");
+Object.keys(_MaterialXNodes).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _MaterialXNodes[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _MaterialXNodes[key];
+    }
+  });
+});
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+// core
+
+// accessors
+
+// geometry
+
+// gpgpu
+
+// display
+
+// math
+
+// lighting
+
+// utils
+
+// loaders
+
+// parsers
+
+// procedural
+
+// fog
+
+// core
+
+// materials
+
+// shader node
+
+// extensions
+
+// shader stages
+
+var nodeLib = {
+  // core
+  ArrayUniformNode: _ArrayUniformNode.default,
+  AttributeNode: _AttributeNode.default,
+  BypassNode: _BypassNode.default,
+  CodeNode: _CodeNode.default,
+  ContextNode: _ContextNode.default,
+  ConstNode: _ConstNode.default,
+  ExpressionNode: _ExpressionNode.default,
+  FunctionCallNode: _FunctionCallNode.default,
+  FunctionNode: _FunctionNode.default,
+  InstanceIndexNode: _InstanceIndexNode.default,
+  Node: _Node.default,
+  NodeAttribute: _NodeAttribute.default,
+  NodeBuilder: _NodeBuilder.default,
+  NodeCode: _NodeCode.default,
+  NodeFrame: _NodeFrame.default,
+  NodeFunctionInput: _NodeFunctionInput.default,
+  NodeKeywords: _NodeKeywords.default,
+  NodeUniform: _NodeUniform.default,
+  NodeVar: _NodeVar.default,
+  NodeVarying: _NodeVarying.default,
+  PropertyNode: _PropertyNode.default,
+  TempNode: _TempNode.default,
+  UniformNode: _UniformNode.default,
+  VarNode: _VarNode.default,
+  VaryingNode: _VaryingNode.default,
+  // geometry
+  RangeNode: _RangeNode.default,
+  // gpgpu
+  ComputeNode: _ComputeNode.default,
+  // accessors
+  BitangentNode: _BitangentNode.default,
+  BufferNode: _BufferNode.default,
+  CameraNode: _CameraNode.default,
+  CubeTextureNode: _CubeTextureNode.default,
+  InstanceNode: _InstanceNode.default,
+  MaterialNode: _MaterialNode.default,
+  MaterialReferenceNode: _MaterialReferenceNode.default,
+  ModelNode: _ModelNode.default,
+  ModelViewProjectionNode: _ModelViewProjectionNode.default,
+  NormalNode: _NormalNode.default,
+  Object3DNode: _Object3DNode.default,
+  PointUVNode: _PointUVNode.default,
+  PositionNode: _PositionNode.default,
+  ReferenceNode: _ReferenceNode.default,
+  ReflectVectorNode: _ReflectVectorNode.default,
+  SkinningNode: _SkinningNode.default,
+  TangentNode: _TangentNode.default,
+  TextureNode: _TextureNode.default,
+  UVNode: _UVNode.default,
+  UserDataNode: _UserDataNode.default,
+  // display
+  BlendModeNode: _BlendModeNode.default,
+  ColorAdjustmentNode: _ColorAdjustmentNode.default,
+  ColorSpaceNode: _ColorSpaceNode.default,
+  FrontFacingNode: _FrontFacingNode.default,
+  NormalMapNode: _NormalMapNode.default,
+  PosterizeNode: _PosterizeNode.default,
+  ToneMappingNode: _ToneMappingNode.default,
+  // math
+  MathNode: _MathNode.default,
+  OperatorNode: _OperatorNode.default,
+  CondNode: _CondNode.default,
+  // lighting
+  PunctualLightNode: _PunctualLightNode.default,
+  LightsNode: _LightsNode.default,
+  LightingNode: _LightingNode.default,
+  LightingContextNode: _LightingContextNode.default,
+  HemisphereLightNode: _HemisphereLightNode.default,
+  EnvironmentNode: _EnvironmentNode.default,
+  AONode: _AONode.default,
+  AnalyticLightNode: _AnalyticLightNode.default,
+  // utils
+  ArrayElementNode: _ArrayElementNode.default,
+  ConvertNode: _ConvertNode.default,
+  EquirectUVNode: _EquirectUVNode.default,
+  JoinNode: _JoinNode.default,
+  MatcapUVNode: _MatcapUVNode.default,
+  MaxMipLevelNode: _MaxMipLevelNode.default,
+  OscNode: _OscNode.default,
+  RemapNode: _RemapNode.default,
+  RotateUVNode: _RotateUVNode.default,
+  SplitNode: _SplitNode.default,
+  SpriteSheetUVNode: _SpriteSheetUVNode.default,
+  TimerNode: _TimerNode.default,
+  TriplanarTexturesNode: _TriplanarTexturesNode.default,
+  // procedural
+  CheckerNode: _CheckerNode.default,
+  // fog
+  FogNode: _FogNode.default,
+  FogRangeNode: _FogRangeNode.default,
+  // loaders
+  NodeLoader: _NodeLoader.default,
+  NodeObjectLoader: _NodeObjectLoader.default,
+  NodeMaterialLoader: _NodeMaterialLoader.default,
+  // parsers
+  WGSLNodeParser: _WGSLNodeParser.default,
+  GLSLNodeParser: _GLSLNodeParser.default
+};
+var fromType = function fromType(type) {
+  return new nodeLib[type]();
+};
+exports.fromType = fromType;
+},{"./core/ArrayUniformNode.js":"../node_modules/three/examples/jsm/nodes/core/ArrayUniformNode.js","./core/AttributeNode.js":"../node_modules/three/examples/jsm/nodes/core/AttributeNode.js","./core/BypassNode.js":"../node_modules/three/examples/jsm/nodes/core/BypassNode.js","./core/CodeNode.js":"../node_modules/three/examples/jsm/nodes/core/CodeNode.js","./core/ConstNode.js":"../node_modules/three/examples/jsm/nodes/core/ConstNode.js","./core/ContextNode.js":"../node_modules/three/examples/jsm/nodes/core/ContextNode.js","./core/ExpressionNode.js":"../node_modules/three/examples/jsm/nodes/core/ExpressionNode.js","./core/FunctionCallNode.js":"../node_modules/three/examples/jsm/nodes/core/FunctionCallNode.js","./core/FunctionNode.js":"../node_modules/three/examples/jsm/nodes/core/FunctionNode.js","./core/InstanceIndexNode.js":"../node_modules/three/examples/jsm/nodes/core/InstanceIndexNode.js","./core/Node.js":"../node_modules/three/examples/jsm/nodes/core/Node.js","./core/NodeAttribute.js":"../node_modules/three/examples/jsm/nodes/core/NodeAttribute.js","./core/NodeBuilder.js":"../node_modules/three/examples/jsm/nodes/core/NodeBuilder.js","./core/NodeCode.js":"../node_modules/three/examples/jsm/nodes/core/NodeCode.js","./core/NodeFrame.js":"../node_modules/three/examples/jsm/nodes/core/NodeFrame.js","./core/NodeFunctionInput.js":"../node_modules/three/examples/jsm/nodes/core/NodeFunctionInput.js","./core/NodeKeywords.js":"../node_modules/three/examples/jsm/nodes/core/NodeKeywords.js","./core/NodeUniform.js":"../node_modules/three/examples/jsm/nodes/core/NodeUniform.js","./core/NodeVar.js":"../node_modules/three/examples/jsm/nodes/core/NodeVar.js","./core/NodeVarying.js":"../node_modules/three/examples/jsm/nodes/core/NodeVarying.js","./core/PropertyNode.js":"../node_modules/three/examples/jsm/nodes/core/PropertyNode.js","./core/TempNode.js":"../node_modules/three/examples/jsm/nodes/core/TempNode.js","./core/UniformNode.js":"../node_modules/three/examples/jsm/nodes/core/UniformNode.js","./core/VarNode.js":"../node_modules/three/examples/jsm/nodes/core/VarNode.js","./core/VaryingNode.js":"../node_modules/three/examples/jsm/nodes/core/VaryingNode.js","./accessors/BitangentNode.js":"../node_modules/three/examples/jsm/nodes/accessors/BitangentNode.js","./accessors/BufferNode.js":"../node_modules/three/examples/jsm/nodes/accessors/BufferNode.js","./accessors/CameraNode.js":"../node_modules/three/examples/jsm/nodes/accessors/CameraNode.js","./accessors/CubeTextureNode.js":"../node_modules/three/examples/jsm/nodes/accessors/CubeTextureNode.js","./accessors/InstanceNode.js":"../node_modules/three/examples/jsm/nodes/accessors/InstanceNode.js","./accessors/MaterialNode.js":"../node_modules/three/examples/jsm/nodes/accessors/MaterialNode.js","./accessors/MaterialReferenceNode.js":"../node_modules/three/examples/jsm/nodes/accessors/MaterialReferenceNode.js","./accessors/ModelNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ModelNode.js","./accessors/ModelViewProjectionNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ModelViewProjectionNode.js","./accessors/NormalNode.js":"../node_modules/three/examples/jsm/nodes/accessors/NormalNode.js","./accessors/Object3DNode.js":"../node_modules/three/examples/jsm/nodes/accessors/Object3DNode.js","./accessors/PointUVNode.js":"../node_modules/three/examples/jsm/nodes/accessors/PointUVNode.js","./accessors/PositionNode.js":"../node_modules/three/examples/jsm/nodes/accessors/PositionNode.js","./accessors/ReferenceNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ReferenceNode.js","./accessors/ReflectVectorNode.js":"../node_modules/three/examples/jsm/nodes/accessors/ReflectVectorNode.js","./accessors/SkinningNode.js":"../node_modules/three/examples/jsm/nodes/accessors/SkinningNode.js","./accessors/TangentNode.js":"../node_modules/three/examples/jsm/nodes/accessors/TangentNode.js","./accessors/TextureNode.js":"../node_modules/three/examples/jsm/nodes/accessors/TextureNode.js","./accessors/UVNode.js":"../node_modules/three/examples/jsm/nodes/accessors/UVNode.js","./accessors/UserDataNode.js":"../node_modules/three/examples/jsm/nodes/accessors/UserDataNode.js","./geometry/RangeNode.js":"../node_modules/three/examples/jsm/nodes/geometry/RangeNode.js","./gpgpu/ComputeNode.js":"../node_modules/three/examples/jsm/nodes/gpgpu/ComputeNode.js","./display/BlendModeNode.js":"../node_modules/three/examples/jsm/nodes/display/BlendModeNode.js","./display/ColorAdjustmentNode.js":"../node_modules/three/examples/jsm/nodes/display/ColorAdjustmentNode.js","./display/ColorSpaceNode.js":"../node_modules/three/examples/jsm/nodes/display/ColorSpaceNode.js","./display/FrontFacingNode.js":"../node_modules/three/examples/jsm/nodes/display/FrontFacingNode.js","./display/NormalMapNode.js":"../node_modules/three/examples/jsm/nodes/display/NormalMapNode.js","./display/PosterizeNode.js":"../node_modules/three/examples/jsm/nodes/display/PosterizeNode.js","./display/ToneMappingNode.js":"../node_modules/three/examples/jsm/nodes/display/ToneMappingNode.js","./math/MathNode.js":"../node_modules/three/examples/jsm/nodes/math/MathNode.js","./math/OperatorNode.js":"../node_modules/three/examples/jsm/nodes/math/OperatorNode.js","./math/CondNode.js":"../node_modules/three/examples/jsm/nodes/math/CondNode.js","./lighting/PunctualLightNode.js":"../node_modules/three/examples/jsm/nodes/lighting/PunctualLightNode.js","./lighting/LightsNode.js":"../node_modules/three/examples/jsm/nodes/lighting/LightsNode.js","./lighting/LightingNode.js":"../node_modules/three/examples/jsm/nodes/lighting/LightingNode.js","./lighting/LightingContextNode.js":"../node_modules/three/examples/jsm/nodes/lighting/LightingContextNode.js","./lighting/HemisphereLightNode.js":"../node_modules/three/examples/jsm/nodes/lighting/HemisphereLightNode.js","./lighting/EnvironmentNode.js":"../node_modules/three/examples/jsm/nodes/lighting/EnvironmentNode.js","./lighting/AONode.js":"../node_modules/three/examples/jsm/nodes/lighting/AONode.js","./lighting/AnalyticLightNode.js":"../node_modules/three/examples/jsm/nodes/lighting/AnalyticLightNode.js","./utils/ArrayElementNode.js":"../node_modules/three/examples/jsm/nodes/utils/ArrayElementNode.js","./utils/ConvertNode.js":"../node_modules/three/examples/jsm/nodes/utils/ConvertNode.js","./utils/EquirectUVNode.js":"../node_modules/three/examples/jsm/nodes/utils/EquirectUVNode.js","./utils/JoinNode.js":"../node_modules/three/examples/jsm/nodes/utils/JoinNode.js","./utils/MatcapUVNode.js":"../node_modules/three/examples/jsm/nodes/utils/MatcapUVNode.js","./utils/MaxMipLevelNode.js":"../node_modules/three/examples/jsm/nodes/utils/MaxMipLevelNode.js","./utils/OscNode.js":"../node_modules/three/examples/jsm/nodes/utils/OscNode.js","./utils/RemapNode.js":"../node_modules/three/examples/jsm/nodes/utils/RemapNode.js","./utils/RotateUVNode.js":"../node_modules/three/examples/jsm/nodes/utils/RotateUVNode.js","./utils/SplitNode.js":"../node_modules/three/examples/jsm/nodes/utils/SplitNode.js","./utils/SpriteSheetUVNode.js":"../node_modules/three/examples/jsm/nodes/utils/SpriteSheetUVNode.js","./utils/TimerNode.js":"../node_modules/three/examples/jsm/nodes/utils/TimerNode.js","./utils/TriplanarTexturesNode.js":"../node_modules/three/examples/jsm/nodes/utils/TriplanarTexturesNode.js","./loaders/NodeLoader.js":"../node_modules/three/examples/jsm/nodes/loaders/NodeLoader.js","./loaders/NodeObjectLoader.js":"../node_modules/three/examples/jsm/nodes/loaders/NodeObjectLoader.js","./loaders/NodeMaterialLoader.js":"../node_modules/three/examples/jsm/nodes/loaders/NodeMaterialLoader.js","./parsers/WGSLNodeParser.js":"../node_modules/three/examples/jsm/nodes/parsers/WGSLNodeParser.js","./parsers/GLSLNodeParser.js":"../node_modules/three/examples/jsm/nodes/parsers/GLSLNodeParser.js","./procedural/CheckerNode.js":"../node_modules/three/examples/jsm/nodes/procedural/CheckerNode.js","./fog/FogNode.js":"../node_modules/three/examples/jsm/nodes/fog/FogNode.js","./fog/FogRangeNode.js":"../node_modules/three/examples/jsm/nodes/fog/FogRangeNode.js","./core/constants.js":"../node_modules/three/examples/jsm/nodes/core/constants.js","./materials/Materials.js":"../node_modules/three/examples/jsm/nodes/materials/Materials.js","./shadernode/ShaderNodeElements.js":"../node_modules/three/examples/jsm/nodes/shadernode/ShaderNodeElements.js","./materialx/MaterialXNodes.js":"../node_modules/three/examples/jsm/nodes/materialx/MaterialXNodes.js"}],"main.js":[function(require,module,exports) {
 "use strict";
 
 var THREE = _interopRequireWildcard(require("three"));
 var _OrbitControls = require("three/examples/jsm/controls/OrbitControls");
 var _gsap = _interopRequireDefault(require("gsap"));
 var dat = _interopRequireWildcard(require("dat.gui"));
+var _Nodes = require("three/examples/jsm/nodes/Nodes.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -44741,20 +55110,59 @@ scene.add(camera);
 
 // 添加物体
 //创建几何体
-// const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+var cubeGeometry = new THREE.BoxGeometry(15.5, 13.5, 1);
 //几何体材质
-// const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-// const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-// scene.add(cube);
+var textureLoader = new THREE.TextureLoader();
+var texture = textureLoader.load('https://cdn.shopify.com/s/files/1/0741/5129/7333/files/exam-test.jpg');
+var materials = [new THREE.MeshBasicMaterial({
+  map: texture,
+  roughness: 50,
+  metalness: 0.5
+}),
+// 正面
+new THREE.MeshBasicMaterial({
+  map: texture,
+  roughness: 50,
+  metalness: 0.5
+}),
+// 右
+new THREE.MeshBasicMaterial({
+  map: texture,
+  roughness: 50,
+  metalness: 0.5
+}),
+// 上面
+new THREE.MeshBasicMaterial({
+  map: texture,
+  roughness: 50,
+  metalness: 0.5
+}),
+// 下面
+new THREE.MeshBasicMaterial({
+  map: texture,
+  roughness: 50,
+  metalness: 0.5
+}),
+// 正面
+new THREE.MeshBasicMaterial() // 后
+];
+// const cubeMaterial = new THREE.MeshBasicMaterial(materials);
+var cube = new THREE.Mesh(cubeGeometry, materials);
+scene.add(cube);
 
-var geometry = new THREE.BufferGeometry();
-var vertices = new Float32Array([-1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0]);
-geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-var Material = new THREE.MeshBasicMaterial({
-  color: 0xffff00
-});
-var mesh = new THREE.Mesh(geometry, Material);
-scene.add(mesh);
+// const geometry = new THREE.BufferGeometry();
+// const vertices = new Float32Array([
+//     -1.0,-1.0,1.0,
+//     1.0,-1.0,1.0,
+//     1.0,1.0,1.0,
+//     1.0,1.0,1.0,
+//     -1.0,1.0,1.0,
+//     -1.0,-1.0,1.0,
+// ]);
+// geometry.setAttribute('position', new THREE.BufferAttribute(vertices,3))
+// const Material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+// const mesh = new THREE.Mesh(geometry, Material);
+// scene.add(mesh);
 
 //gui 控制库
 var gui = new dat.GUI();
@@ -44868,7 +55276,7 @@ window.addEventListener("resize", function () {
   //渲染器像素比例
   renderer.setPixelRatio(window.devicePixelRatio);
 });
-},{"three":"../node_modules/three/build/three.module.js","three/examples/jsm/controls/OrbitControls":"../node_modules/three/examples/jsm/controls/OrbitControls.js","gsap":"../node_modules/gsap/index.js","dat.gui":"../node_modules/dat.gui/build/dat.gui.module.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"three":"../node_modules/three/build/three.module.js","three/examples/jsm/controls/OrbitControls":"../node_modules/three/examples/jsm/controls/OrbitControls.js","gsap":"../node_modules/gsap/index.js","dat.gui":"../node_modules/dat.gui/build/dat.gui.module.js","three/examples/jsm/nodes/Nodes.js":"../node_modules/three/examples/jsm/nodes/Nodes.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -44893,7 +55301,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53405" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53178" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

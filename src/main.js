@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 //动画库
 import gsap from "gsap";
 import * as dat from "dat.gui";
+import { roughness } from "three/examples/jsm/nodes/Nodes.js";
 
 //创建场景
 const scene = new THREE.Scene();
@@ -21,25 +22,35 @@ scene.add(camera);
 
 // 添加物体
 //创建几何体
-// const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+const cubeGeometry = new THREE.BoxGeometry(15.5, 13.5, 1);
 //几何体材质
-// const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-// const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-// scene.add(cube);
+const textureLoader = new THREE.TextureLoader();
+const texture = textureLoader.load('https://cdn.shopify.com/s/files/1/0741/5129/7333/files/exam-test.jpg');
+const materials = [
+    new THREE.MeshBasicMaterial({ map: texture, roughness: 50, metalness: 0.5 }), // 正面
+    new THREE.MeshBasicMaterial({ map: texture, roughness: 50, metalness: 0.5 }), // 右
+    new THREE.MeshBasicMaterial({ map: texture, roughness: 50, metalness: 0.5 }), // 上面
+    new THREE.MeshBasicMaterial({ map: texture, roughness: 50, metalness: 0.5 }), // 下面
+    new THREE.MeshBasicMaterial({ map: texture, roughness: 50, metalness: 0.5 }), // 正面
+    new THREE.MeshBasicMaterial(), // 后
+];
+// const cubeMaterial = new THREE.MeshBasicMaterial(materials);
+const cube = new THREE.Mesh(cubeGeometry, materials);
+scene.add(cube);
 
-const geometry = new THREE.BufferGeometry();
-const vertices = new Float32Array([
-    -1.0,-1.0,1.0,
-    1.0,-1.0,1.0,
-    1.0,1.0,1.0,
-    1.0,1.0,1.0,
-    -1.0,1.0,1.0,
-    -1.0,-1.0,1.0,
-]);
-geometry.setAttribute('position', new THREE.BufferAttribute(vertices,3))
-const Material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-const mesh = new THREE.Mesh(geometry, Material);
-scene.add(mesh);
+// const geometry = new THREE.BufferGeometry();
+// const vertices = new Float32Array([
+//     -1.0,-1.0,1.0,
+//     1.0,-1.0,1.0,
+//     1.0,1.0,1.0,
+//     1.0,1.0,1.0,
+//     -1.0,1.0,1.0,
+//     -1.0,-1.0,1.0,
+// ]);
+// geometry.setAttribute('position', new THREE.BufferAttribute(vertices,3))
+// const Material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+// const mesh = new THREE.Mesh(geometry, Material);
+// scene.add(mesh);
 
 //gui 控制库
 const gui = new dat.GUI();
